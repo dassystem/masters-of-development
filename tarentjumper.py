@@ -40,8 +40,14 @@ class TarentJumper:
         self.clock = pygame.time.Clock()
         self.fps = fps
         
-        self.player_1 = Player(0, 400)
-        #self.player_2 = Player(0, 400)
+        # TODO: vorsicht bei width = 0 und/oder height = 0 (fullscreen)
+        half_width = width // 2
+        player_1_rect = pygame.Rect(0, 0, half_width, height)
+        player_2_rect = pygame.Rect(half_width, 0, half_width, height)
+        player_1_surface = self.display_surface.subsurface(player_1_rect)
+        player_2_surface = self.display_surface.subsurface(player_2_rect)
+        self.player_1 = Player(player_1_surface, 0, 400, "dev1.png")
+        self.player_2 = Player(player_2_surface, 0, 400, "dev2.png")
         
         self.fill_blocks()
         
@@ -73,15 +79,24 @@ class TarentJumper:
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         running = False
-                    elif event.key == pygame.K_RIGHT:
-                        self.player_1.move_right()
-                    elif event.key == pygame.K_LEFT:
-                        self.player_1.move_left()
-                    elif event.key == pygame.K_UP:
+                    elif event.key == pygame.K_w:
                         self.player_1.jump()
+                    elif event.key == pygame.K_a:
+                        self.player_1.move_left()
+                    elif event.key == pygame.K_d:
+                        self.player_1.move_right()
+                    elif event.key == pygame.K_RIGHT:
+                        self.player_2.move_right()
+                    elif event.key == pygame.K_LEFT:
+                        self.player_2.move_left()
+                    elif event.key == pygame.K_UP:
+                        self.player_2.jump()
 
             self.player_1.update(self.gravity, self.blocks)
-            self.player_1.render(self.display_surface)
+            self.player_1.render()
+            
+            self.player_2.update(self.gravity, self.blocks)
+            self.player_2.render()
             
             self.clock.tick(self.fps)
             pygame.display.flip()
