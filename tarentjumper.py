@@ -16,12 +16,12 @@ level1 = [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
+    [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+    [0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+    [0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0]
 ]
 
 class TarentJumper:
@@ -40,27 +40,42 @@ class TarentJumper:
         self.clock = pygame.time.Clock()
         self.fps = fps
         
+        self.fill_blocks()
+
         # TODO: vorsicht bei width = 0 und/oder height = 0 (fullscreen)
         half_width = width // 2
         player_1_rect = pygame.Rect(0, 0, half_width, height)
         player_2_rect = pygame.Rect(half_width, 0, half_width, height)
         player_1_surface = self.display_surface.subsurface(player_1_rect)
         player_2_surface = self.display_surface.subsurface(player_2_rect)
-        self.player_1 = Player(player_1_surface, 0, 400, "dev1.png")
-        self.player_2 = Player(player_2_surface, 0, 400, "dev2.png")
-        
-        self.fill_blocks()
-        
+        self.player_1 = Player(1, player_1_surface, "dev1.png", self.blocks, 1)
+        self.player_2 = Player(2, player_2_surface, "dev2.png", self.blocks, 1)
+                
         self.level = Block(50, 50)
-        self.gravity = -1
 
     def fill_blocks(self):
         self.blocks = []
 
         for y in range(0, len(level1)):
+            prev_line_block = None
             for x in range(0, len(level1[y])):
                 if (level1[y][x] == 1):
-                    self.blocks.append(Block(x * 32, y * 32))
+                    new_x = x * 32
+                    new_y = y * 32
+                    new_width = 32
+                    new_height = 32
+                    
+                    if prev_line_block:
+                        if prev_line_block.rect.x / 32 == x - 1:
+                            self.blocks.pop()
+                            new_x = prev_line_block.rect.x
+                            new_y = prev_line_block.rect.y
+                            new_width = prev_line_block.rect.width + 32
+                            new_height = 32
+                    
+                    new_block = Block(new_x, new_y, new_width, new_height)
+                    self.blocks.append(new_block)
+                    prev_line_block = new_block
 
     def run(self):
         """The mainloop
@@ -92,11 +107,8 @@ class TarentJumper:
                     elif event.key == pygame.K_UP:
                         self.player_2.jump()
 
-            self.player_1.update(self.gravity, self.blocks)
-            self.player_1.render()
-            
-            self.player_2.update(self.gravity, self.blocks)
-            self.player_2.render()
+            self.player_1.update()
+            self.player_2.update()
             
             self.clock.tick(self.fps)
             pygame.display.flip()
