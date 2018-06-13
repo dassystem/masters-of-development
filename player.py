@@ -1,12 +1,8 @@
 import pygame
-from time import sleep
 
 class Player:
-    def __init__(self, x, y):
-        #self.x = x
-        #self.y = y
-        #self.width = 0
-        #self.height = 0
+    def __init__(self, screen_surface, x, y):
+        self.screen_surface = screen_surface
         self.velocity = 0
         self.player_img = None
         self.falling = True
@@ -17,8 +13,6 @@ class Player:
         
         # TODO: use sprite?
         self.image_surface = pygame.image.load("smile.png")
-        #self.height = image.get_height
-        #self.width = image.get_width
         self.rect = self.image_surface.get_rect(x = x, y = y)
 
     def update(self, gravity, blocklist):
@@ -44,15 +38,20 @@ class Player:
         elif self.on_ground ==False:
             self.rect.y -= self.velocity
 
-    def render(self, window):
-        window.blit(self.image_surface, self.rect)
-        sleep(0.03)
+    def render(self):
+        self.screen_surface.blit(self.image_surface, self.rect)
 
     def move_right(self):
-        self.rect.x = self.rect.x + self.speed
+        """Moves the player to the right. If on the right edge, the player won't move further right.
+        """
+        if self.rect.x <= self.screen_surface.get_width() - self.rect.width - self.speed:
+            self.rect.x = self.rect.x + self.speed
 
     def move_left(self):
-        self.rect.x = self.rect.x - self.speed
+        """Moves the player to the left. If on the left edge, the player won't move further left.
+        """
+        if self.rect.x - self.speed >= 0:
+            self.rect.x = self.rect.x - self.speed
 
     def jump(self):
         if self.on_ground == True:
