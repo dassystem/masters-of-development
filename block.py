@@ -1,11 +1,9 @@
 import pygame
 
-
 class Block:
-    def __init__(self, x , y):
-        self.width=32
-        self.height=32
-        self.rect = (x, y, self.width, self.height)
+    def __init__(self, x , y, width = 32, height = 32):
+        self.rect = (x, y, width, height)
+        self.color = pygame.Color(50, 0, 0)
 
-    def render(self, window):
-        pygame.draw.rect(window, (50,0,0), self.rect)
+    def render(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
