@@ -46,8 +46,8 @@ class TarentJumper:
         player_2_rect = pygame.Rect(half_width, 0, half_width, height)
         player_1_surface = self.display_surface.subsurface(player_1_rect)
         player_2_surface = self.display_surface.subsurface(player_2_rect)
-        self.player_1 = Player(player_1_surface, 0, 400)
-        self.player_2 = Player(player_2_surface, 0, 400)
+        self.player_1 = Player(player_1_surface, 0, 400, "dev1.png")
+        self.player_2 = Player(player_2_surface, 0, 400, "dev2.png")
         
         self.fill_blocks()
         

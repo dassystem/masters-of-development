@@ -1,7 +1,7 @@
 import pygame
 
 class Player:
-    def __init__(self, screen_surface, x, y):
+    def __init__(self, screen_surface, x, y, image_file_name):
         self.screen_surface = screen_surface
         self.velocity = 0
         self.player_img = None
@@ -12,7 +12,7 @@ class Player:
         self.jump_height = 15
         
         # TODO: use sprite?
-        self.image_surface = pygame.image.load("smile.png")
+        self.image_surface = pygame.image.load(image_file_name)
         self.rect = self.image_surface.get_rect(x = x, y = y)
 
     def update(self, gravity, blocklist):
