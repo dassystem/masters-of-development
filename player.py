@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         self.rect.left = screen_surface.get_width() // 2 - self.image.get_width() // 2
-        self.rect.bottom = screen_surface.get_height() - 42
+        self.rect.bottom = screen_surface.get_height() - 44
        
         self.blocks = blocks
         self.gravity = gravity
@@ -68,8 +68,8 @@ class Player(pygame.sprite.Sprite):
             #Überprüft die Kollision mit allen vorhanden blöcken
             for block in self.blocks:
                 if self.rect.colliderect(block.rect):
-                    falled_on = self.falling and self.rect.bottom >= block.rect.top
-                    jumped_on = self.is_jump and self.rect.bottom <= block.rect.top
+                    falled_on = self.falling and self.rect.bottom >= block.rect.top and self.rect.bottom <= block.rect.centery
+                    jumped_on = self.is_jump and self.rect.bottom == block.rect.top
                     
                     if falled_on or jumped_on:
                         self.on_block = block
