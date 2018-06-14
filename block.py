@@ -5,8 +5,11 @@ class Block(pygame.sprite.Sprite):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = pygame.Color(255, 0, 0)
+        self.__rect = pygame.Rect(x, y, width, height)
+        self.__color = pygame.Color(255, 0, 0)
+    
+    def get_rect(self):
+        return self.__rect
 
     def render(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect, 1)
+        pygame.draw.rect(surface, self.__color, self.__rect, 1)
