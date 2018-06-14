@@ -85,37 +85,7 @@ class Player(pygame.sprite.Sprite):
         self.__debug_info = DebugInfo(self)
         self.__font = pygame.font.SysFont("sans", 20)
         self.__joystick = joystick
-        
-    def move_right(self):
-        """Moves the player to the right. If on the right edge, the player won't move further right.
-        """
-        if self.__dead:
-            return
-        
-        if self.__rect.x <= self.__screen_surface.get_width() - self.__rect.width - self.__speed:
-            self.__rect.x = self.__rect.x + self.__speed
-
-    def move_left(self):
-        """Moves the player to the left. If on the left edge, the player won't move further left.
-        """
-        if self.__dead:
-            return
-        
-        if self.__rect.x - self.__speed >= 0:
-            self.__rect.x = self.__rect.x - self.__speed
-
-    def jump(self):
-        if self.__dead:
-            return
-        
-        # jump only possible if standing on a block
-        if self.__on_block:
-            self.__on_block = None
-            self.__falling = False
-            self.__jumping = True
-            self.__velocity = 6
-            # go up 10 pixel
-            self.__rect.y = self.__rect.y - Block.BLOCK_HEIGHT * 3
+        self.__move = None
 
     def update(self):
         if self.__dead:
@@ -157,7 +127,27 @@ class Player(pygame.sprite.Sprite):
             self.__rect.y -= self.__velocity
             self.__jump_height = self.__jump_height - 2
     
+        if self.__move is not None:
+            if self.__move == "left":
+                self.__move_left()
+            elif self.__move == "right":
+                self.__move_right()
+    
         self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom        
+
+    def __move_left(self):
+        if self.__rect.x - self.__speed >= 0:
+            self.__rect.x = self.__rect.x - self.__speed
+        else:
+            # stop movement at the left edge
+            self.stop()
+
+    def __move_right(self):
+        if self.__rect.x <= self.__screen_surface.get_width() - self.__rect.width - self.__speed:
+            self.__rect.x = self.__rect.x + self.__speed
+        else:
+            # stop movement at the right edge
+            self.stop()
 
     def __check_still_on_block(self):
         if self.__on_block:
@@ -184,18 +174,60 @@ class Player(pygame.sprite.Sprite):
                     self.__rect.bottom = block.get_rect().y
                     print("Collision detected of player #" + str(self.__number) + " pos " + str(old_rect) + " with block pos "+ str(block.get_rect()) + "  new pos now " + str(self.__rect))
                     break
+    
+    def move_right(self):
+        """Marks the player as moving to the right.
+        """
+        if self.__dead:
+            return
         
+        self.__move = "right"
+
+    def move_left(self):
+        """Marks the player as moving to the left.
+        """
+        if self.__dead:
+            return
+        
+        self.__move = "left"
+
+    def stop(self):
+        """Stops player movement to left or right.
+        """
+        
+        if self.__dead:
+            return
+        
+        self.__move = None
+
+    def jump(self):
+        """Marks the player as jumping.
+        """
+        if self.__dead:
+            return
+        
+        # jump only possible if standing on a block
+        if self.__on_block:
+            self.__on_block = None
+            self.__falling = False
+            self.__jumping = True
+            self.__velocity = 6
+            # go up 10 pixel
+            self.__rect.y = self.__rect.y - Block.BLOCK_HEIGHT * 3
+            
     def switch_debug(self):
+        """Switches the debug information on/off.
+        """
         self.__debug_info.switch_visibility()
 
     def get_surface(self):
         return self.__screen_surface
-    
+
+    def get_joystick(self):
+        return self.__joystick
+        
     def is_falling(self):
         return self.__falling
     
     def is_jumping(self):
         return self.__jumping
-
-    def get_joystick(self):
-        return self.__joystick

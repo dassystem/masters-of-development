@@ -65,38 +65,54 @@ class QuitEventHandler(BaseEventHandler):
         self._tarent_jumper.shutdown()
 
 class KeyboardEventHandler(BaseEventHandler):
-    TYPE = pygame.KEYDOWN
+    #TYPE = pygame.KEYDOWN
     
     def __init__(self, tarent_jumper):
         BaseEventHandler.__init__(self, tarent_jumper)
 
     def can_handle(self, event):
-        return event.type == pygame.KEYDOWN
+        return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            self.__handle_keydown_event(event)  
+            self.__handle_keydown_event(event)
+        elif event.type == pygame.KEYUP:
+            self.__handle_keyup_event(event)
 
     def __handle_keydown_event(self, event):
-        BaseEventHandler.handle_event(self, event)
-         
         if event.key == pygame.K_ESCAPE:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.shutdown()
         elif event.key == pygame.K_w:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[0].jump()
         elif event.key == pygame.K_a:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[0].move_left()
         elif event.key == pygame.K_d:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[0].move_right()
         elif event.key == pygame.K_RIGHT:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[1].move_right()
         elif event.key == pygame.K_LEFT:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[1].move_left()
         elif event.key == pygame.K_UP:
+            BaseEventHandler.handle_event(self, event)
             self._tarent_jumper.get_players()[1].jump()
         elif event.key == pygame.K_i:
+            BaseEventHandler.handle_event(self, event)
             for player in self._tarent_jumper.get_players():
                 player.switch_debug()
+
+    def __handle_keyup_event(self, event):
+        if event.type == pygame.K_a or event.type == pygame.K_d:
+            BaseEventHandler.handle_event(self, event)
+            self._tarent_jumper.get_players()[0].stop()
+        elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+            BaseEventHandler.handle_event(self, event)
+            self._tarent_jumper.get_players()[1].stop()
 
 class JoystickEventHandler(BaseEventHandler):
     VERTICAL_AXIS = 1
@@ -105,6 +121,7 @@ class JoystickEventHandler(BaseEventHandler):
     DOWN = 1
     LEFT = -1
     RIGHT = 1
+    STOP = 0
     
     def __init__(self, tarent_jumper):
         BaseEventHandler.__init__(self, tarent_jumper)
@@ -159,6 +176,8 @@ class JoystickEventHandler(BaseEventHandler):
             player.move_left()
         elif event_value == JoystickEventHandler.RIGHT:
             player.move_right()
+        elif event_value == JoystickEventHandler.STOP:
+            player.stop()
 
     def __round_event_value(self, event):
         return round(event.value, 0)
