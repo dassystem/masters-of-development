@@ -23,6 +23,14 @@ class DebugInfo:
             str(self.__player.is_falling()), str(self.__player.is_jumping()))
         
         self.__render_debug_info(debug_info, 0, 16)
+        
+        joystick = self.__player.get_joystick()
+        
+        if joystick != None:
+            debug_info = "joystick: {0:s} {1:s}".format(
+                str(joystick.get_id()), str(joystick.get_name()))
+        
+            self.__render_debug_info(debug_info, 0, 32)
     
     def __render_debug_info(self, debug_info, x, y):
         debug_surface = self.__font.render(debug_info, False, self.__color)
@@ -36,12 +44,11 @@ class DebugInfo:
         self.__visible = not self.__visible
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, number, screen_surface, image_file_name, blocks, gravity):
+    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
         self.__number = number
-        
         self.__screen_surface = screen_surface
         
         self.__image = pygame.image.load(image_file_name).convert_alpha()
@@ -52,20 +59,17 @@ class Player(pygame.sprite.Sprite):
        
         self.__blocks = blocks
         self.__gravity = gravity
-
         self.__velocity = 0
         self.__falling = True
         self.__jumping = False
         self.__on_block = None
         self.__speed = 10
         self.__jump_height = 15
-        
         self.__dead = False
-        
         self.__debug_info = DebugInfo(self)
-        
         self.__font = pygame.font.SysFont("sans", 20)
-
+        self.__joystick = joystick
+        
     def move_right(self):
         """Moves the player to the right. If on the right edge, the player won't move further right.
         """
@@ -176,3 +180,6 @@ class Player(pygame.sprite.Sprite):
     
     def is_jumping(self):
         return self.__jumping
+
+    def get_joystick(self):
+        return self.__joystick
