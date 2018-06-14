@@ -99,10 +99,10 @@ class KeyboardEventHandler(BaseEventHandler):
                 player.switch_debug()
 
 class JoystickEventHandler(BaseEventHandler):
-    VERTICAL_AXIS = 0
-    HORIZONTAL_AXIS = 1
-    UP = 1
-    DOWN = -1
+    VERTICAL_AXIS = 1
+    HORIZONTAL_AXIS = 0
+    UP = -1
+    DOWN = 1
     LEFT = -1
     RIGHT = 1
     
@@ -123,7 +123,7 @@ class JoystickEventHandler(BaseEventHandler):
             print("Ignoring event " + str(event))
             
     def __handle_axis_motion(self, event):
-        if event.axis > JoystickEventHandler.HORIZONTAL_AXIS:
+        if event.axis > JoystickEventHandler.VERTICAL_AXIS:
             return
         
         BaseEventHandler.handle_event(self, event)
@@ -225,8 +225,16 @@ class TarentJumper:
         half_width = self.__display.get_width() // 2
         height = self.__display.get_height()
 
-        self.__players.append(self.__init_player(1, 0, half_width, height, "dev1.png", self.__joysticks[0]))
-        self.__players.append(self.__init_player(2, half_width, half_width, height, "dev2.png", None))
+        joystick_count = len(self.__joysticks)
+
+        for i in range(0, 2):
+            joystick = None
+            
+            if i < joystick_count:
+                joystick = self.__joysticks[i]
+        
+            self.__players.append(
+                self.__init_player(i + 1, i * half_width, half_width, height, "dev" + str(i + 1) + ".png", joystick))
 
     def __init_player(self, number, screen_x, screen_width, screen_height, image_file_name, joystick):
         player_rect = pygame.Rect(screen_x, 0, screen_width, screen_height)

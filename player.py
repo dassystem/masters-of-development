@@ -28,9 +28,24 @@ class DebugInfo:
         
         if joystick != None:
             debug_info = "joystick: {0:s} {1:s}".format(
-                str(joystick.get_id()), str(joystick.get_name()))
+                str(joystick.get_id()), self.__remove_whitespace(joystick.get_name()))
         
             self.__render_debug_info(debug_info, 0, 32)
+    
+    def __remove_whitespace(self, name):
+        whitespaces = 0
+        new_name = ""
+        
+        for char in name:
+            if char.isspace():
+                whitespaces += 1
+            else:
+                whitespaces = 0
+            
+            if whitespaces <= 1:
+                new_name += char
+
+        return new_name
     
     def __render_debug_info(self, debug_info, x, y):
         debug_surface = self.__font.render(debug_info, False, self.__color)
