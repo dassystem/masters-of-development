@@ -19,9 +19,9 @@ level1 = [
     [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
     [0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
     [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-    [0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
-    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-    [0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0]
+    [0,1,1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+    [1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0]
 ]
 
 class BaseEventHandler:
@@ -200,12 +200,12 @@ class TarentJumper:
                     new_height = 32
                     
                     if prev_line_block:
-                        if prev_line_block.get_rect().x / 32 == x - 1:
+                        if prev_line_block.get_rect().x / Block.BLOCK_WIDTH == x - 1:
                             self.__blocks.pop()
                             new_x = prev_line_block.get_rect().x
                             new_y = prev_line_block.get_rect().y
-                            new_width = prev_line_block.get_rect().width + 32
-                            new_height = 32
+                            new_width = prev_line_block.get_rect().width + Block.BLOCK_WIDTH
+                            new_height = Block.BLOCK_HEIGHT
                     
                     new_block = Block(new_x, new_y, new_width, new_height)
                     self.__blocks.append(new_block)

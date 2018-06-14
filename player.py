@@ -1,4 +1,5 @@
 import pygame
+from block import Block
 
 class DebugInfo:
     def __init__(self, player):
@@ -114,7 +115,7 @@ class Player(pygame.sprite.Sprite):
             self.__jumping = True
             self.__velocity = 6
             # go up 10 pixel
-            self.__rect.y = self.__rect.y - 10
+            self.__rect.y = self.__rect.y - Block.BLOCK_HEIGHT * 3
 
     def update(self):
         if self.__dead:

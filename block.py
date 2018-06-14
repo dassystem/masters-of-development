@@ -1,7 +1,10 @@
 import pygame
 
 class Block(pygame.sprite.Sprite):
-    def __init__(self, x , y, width = 32, height = 32):
+    BLOCK_WIDTH = 32
+    BLOCK_HEIGHT = 32
+    
+    def __init__(self, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
