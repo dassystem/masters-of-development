@@ -20,15 +20,20 @@ class DebugInfo:
         
         self.__render_debug_info(debug_info, 0, 0)
        
-        debug_info = "falling: {0:s} jumping: {1:s} speed: {2:d}".format(
-            str(self.__player.is_falling()), str(self.__player.is_jumping()), self.__player.get_speed())
+        debug_info = "falling: {0:s} jumping: {1:s}".format(
+            str(self.__player.is_falling()), str(self.__player.is_jumping()))
         
         self.__render_debug_info(debug_info, 0, 16)
-        
-        debug_info = "screen width {0:s} height {0:s}".format(
-            str(self.__player.get_surface().get_width()), str(self.__player.get_surface().get_height()))
+
+        debug_info = "speed: {0:d} velocity: {1:d}".format(
+            self.__player.get_speed(), self.__player.get_velocity())
         
         self.__render_debug_info(debug_info, 0, 32)
+        
+        debug_info = "screen width {0:d} height {0:d}".format(
+            self.__player.get_surface().get_width(), self.__player.get_surface().get_height())
+        
+        self.__render_debug_info(debug_info, 0, 48)
         
         joystick = self.__player.get_joystick()
         
@@ -36,9 +41,7 @@ class DebugInfo:
             debug_info = "joystick: {0:s} {1:s}".format(
                 str(joystick.get_id()), self.__remove_whitespace(joystick.get_name()))
         
-            self.__render_debug_info(debug_info, 0, 48)
-    
-            
+            self.__render_debug_info(debug_info, 0, 64)
     
     def __remove_whitespace(self, name):
         whitespaces = 0
@@ -131,11 +134,9 @@ class Player(pygame.sprite.Sprite):
             self.__check_still_on_block()
 
         if self.__falling:
-            self.__rect.y += self.__velocity
-            self.__velocity += self.__gravity
+            self.__move_down()
         elif self.__jumping:
-            self.__rect.y -= self.__velocity
-            self.__jump_height = self.__jump_height - 2
+            self.__move_up()
     
         if self.__move is not None:
             if self.__move == "left":
@@ -145,19 +146,33 @@ class Player(pygame.sprite.Sprite):
     
         self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom        
 
+    def __move_down(self):
+        self.__rect.move_ip(0, self.__velocity)
+        self.__velocity += self.__gravity
+
+    def __move_up(self):
+        self.__rect.move_ip(0, self.__velocity * -1)
+        self.__jump_height = self.__jump_height - 2
+
     def __move_left(self):
-        if self.__rect.x - self.__speed >= 0:
-            self.__rect.x = self.__rect.x - self.__speed
+        if self.__check_left_edge():
+            self.__rect.move_ip(self.__speed * -1, 0)
         else:
             # stop movement at the left edge
             self.stop()
 
+    def __check_left_edge(self):
+        return self.__rect.x - self.__speed >= 0
+
     def __move_right(self):
-        if self.__rect.x <= self.__screen_surface.get_width() - self.__rect.width - self.__speed:
-            self.__rect.x = self.__rect.x + self.__speed
+        if self.__check_right_edge():
+            self.__rect.move_ip(self.__speed, 0)
         else:
             # stop movement at the right edge
             self.stop()
+
+    def __check_right_edge(self):
+        return self.__rect.x <= self.__screen_surface.get_width() - self.__rect.width - self.__speed
 
     def __check_still_on_block(self):
         if self.__on_block:
@@ -247,3 +262,6 @@ class Player(pygame.sprite.Sprite):
 
     def get_speed(self):
         return self.__speed
+    
+    def get_velocity(self):
+        return self.__velocity
