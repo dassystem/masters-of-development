@@ -13,17 +13,22 @@ class DebugInfo:
         if not self.__visible:
             return
         
-        player_rect = self.__player.get_surface().get_rect()
+        player_rect = self.__player.get_rect()
         
-        debug_info = "left {0:3d} right {1:3d} top {2:3d} bottom {3:3d}".format(
+        debug_info = "player left {0:3d} right {1:3d} top {2:3d} bottom {3:3d}".format(
             player_rect.left, player_rect.right, player_rect.top, player_rect.bottom)
         
         self.__render_debug_info(debug_info, 0, 0)
        
-        debug_info = "falling: {0:s} jumping: {1:s}".format(
-            str(self.__player.is_falling()), str(self.__player.is_jumping()))
+        debug_info = "falling: {0:s} jumping: {1:s} speed: {2:d}".format(
+            str(self.__player.is_falling()), str(self.__player.is_jumping()), self.__player.get_speed())
         
         self.__render_debug_info(debug_info, 0, 16)
+        
+        debug_info = "screen width {0:s} height {0:s}".format(
+            str(self.__player.get_surface().get_width()), str(self.__player.get_surface().get_height()))
+        
+        self.__render_debug_info(debug_info, 0, 32)
         
         joystick = self.__player.get_joystick()
         
@@ -31,7 +36,9 @@ class DebugInfo:
             debug_info = "joystick: {0:s} {1:s}".format(
                 str(joystick.get_id()), self.__remove_whitespace(joystick.get_name()))
         
-            self.__render_debug_info(debug_info, 0, 32)
+            self.__render_debug_info(debug_info, 0, 48)
+    
+            
     
     def __remove_whitespace(self, name):
         whitespaces = 0
@@ -60,7 +67,9 @@ class DebugInfo:
         self.__visible = not self.__visible
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick, jump_sound):
+    SPEED_TO_FPS_RATIO = 1 / 8
+    
+    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick, jump_sound, fps):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
@@ -79,7 +88,7 @@ class Player(pygame.sprite.Sprite):
         self.__falling = True
         self.__jumping = False
         self.__on_block = None
-        self.__speed = 10
+        self.__speed = round(Player.SPEED_TO_FPS_RATIO * fps)
         self.__jump_height = 15
         self.__dead = False
         self.__debug_info = DebugInfo(self)
@@ -224,6 +233,9 @@ class Player(pygame.sprite.Sprite):
     def get_surface(self):
         return self.__screen_surface
 
+    def get_rect(self):
+        return self.__rect
+
     def get_joystick(self):
         return self.__joystick
         
@@ -232,3 +244,6 @@ class Player(pygame.sprite.Sprite):
     
     def is_jumping(self):
         return self.__jumping
+
+    def get_speed(self):
+        return self.__speed
