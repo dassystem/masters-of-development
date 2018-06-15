@@ -60,7 +60,7 @@ class DebugInfo:
         self.__visible = not self.__visible
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick):
+    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick, jump_sound):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
@@ -86,6 +86,7 @@ class Player(pygame.sprite.Sprite):
         self.__font = pygame.font.SysFont("sans", 20)
         self.__joystick = joystick
         self.__move = None
+        self.__jump_sound = jump_sound
 
     def update(self):
         if self.__dead:
@@ -152,7 +153,6 @@ class Player(pygame.sprite.Sprite):
     def __check_still_on_block(self):
         if self.__on_block:
             if self.__rect.left > self.__on_block.get_rect().right or self.__rect.right < self.__on_block.get_rect().left:
-                print("player #" + str(self.__number) + ": " + str(self.__rect) + " fell off the block: " + str(self.__on_block.get_rect()))
                 self.__on_block = None
                 self.__falling = True
                 self.__jumping = False
@@ -172,7 +172,6 @@ class Player(pygame.sprite.Sprite):
                     self.__velocity = 0
                     old_rect = self.__rect
                     self.__rect.bottom = block.get_rect().y
-                    print("Collision detected of player #" + str(self.__number) + " pos " + str(old_rect) + " with block pos "+ str(block.get_rect()) + "  new pos now " + str(self.__rect))
                     break
     
     def move_right(self):
@@ -205,6 +204,8 @@ class Player(pygame.sprite.Sprite):
         """
         if self.__dead:
             return
+
+        self.__jump_sound.play()
         
         # jump only possible if standing on a block
         if self.__on_block:
