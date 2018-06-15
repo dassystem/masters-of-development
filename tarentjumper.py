@@ -96,9 +96,11 @@ class KeyboardEventHandler(BaseEventHandler):
         elif event.key == pygame.K_i:
             for player in self._tarent_jumper.get_players():
                 player.switch_debug()
+        elif event.key == pygame.K_m:
+            self._tarent_jumper.switch_music()
 
     def __handle_keyup_event(self, event):
-        if event.type == pygame.K_a or event.type == pygame.K_d:
+        if event.key == pygame.K_a or event.key == pygame.K_d:
             self._tarent_jumper.get_players()[0].stop()
         elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
             self._tarent_jumper.get_players()[1].stop()
@@ -180,6 +182,10 @@ class TarentJumper:
         # pygame.HWSURFACE only for fullscreen...
         self.__display = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("tarent Jumper")
+
+        pygame.mixer.music.load("tetrisc.mid")
+        self.__music = False
+        self.switch_music()
         
         self.__background_color = pygame.Color(50, 60, 200)
         
@@ -193,6 +199,7 @@ class TarentJumper:
         self.level = Block(50, 50)
         self.__event_handler = EventHandler(self)
         self.__running = True
+        
 
     def __fill_blocks(self):
         self.__blocks = []
@@ -249,6 +256,14 @@ class TarentJumper:
         player_surface = self.__display.subsurface(player_rect)
         
         return Player(number, player_surface, image_file_name, self.__blocks, 1, joystick, jump_sound, self.__fps)
+
+    def switch_music(self):
+        self.__music = not self.__music
+        
+        if self.__music:
+            pygame.mixer.music.play(-1)
+        else:
+            pygame.mixer.music.stop()
 
     def shutdown(self):
         self.__running = False
