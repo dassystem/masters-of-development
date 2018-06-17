@@ -1,4 +1,6 @@
 import pygame
+
+from handlers.main_event_handler import EventHandler
 from player import Player
 from block import Block
 
@@ -24,150 +26,6 @@ level1 = [
     [1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0]
 ]
 
-class BaseEventHandler:
-    def __init__(self, tarent_jumper):
-        self._tarent_jumper = tarent_jumper
-
-    def can_handle(self, event):
-        return False
-
-    def handle_event(self, event):
-        pass
-
-class EventHandler(BaseEventHandler):
-    def __init__(self, tarent_jumper):
-        BaseEventHandler.__init__(self, tarent_jumper)
-        self.__handlers = []
-        self.__handlers.append(QuitEventHandler(self._tarent_jumper))
-        self.__handlers.append(KeyboardEventHandler(self._tarent_jumper))
-        self.__handlers.append(JoystickEventHandler(self._tarent_jumper))
-        
-    def handle_event(self, event):
-        handler = None
-        
-        for h in self.__handlers:
-            if h.can_handle(event):
-                handler = h
-                break
-            
-        if handler is not None:
-            handler.handle_event(event)
-
-class QuitEventHandler(BaseEventHandler):
-    def __init__(self, tarent_jumper):
-        BaseEventHandler.__init__(self, tarent_jumper)    
-
-    def can_handle(self, event):
-        return event.type == pygame.QUIT
-
-    def handle_event(self, event):
-        self._tarent_jumper.shutdown()
-
-class KeyboardEventHandler(BaseEventHandler):
-    #TYPE = pygame.KEYDOWN
-    
-    def __init__(self, tarent_jumper):
-        BaseEventHandler.__init__(self, tarent_jumper)
-
-    def can_handle(self, event):
-        return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
-
-    def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            self.__handle_keydown_event(event)
-        elif event.type == pygame.KEYUP:
-            self.__handle_keyup_event(event)
-
-    def __handle_keydown_event(self, event):
-        if event.key == pygame.K_ESCAPE:
-            self._tarent_jumper.shutdown()
-        elif event.key == pygame.K_w:
-            self._tarent_jumper.get_players()[0].jump()
-        elif event.key == pygame.K_a:
-            self._tarent_jumper.get_players()[0].move_left()
-        elif event.key == pygame.K_d:
-            self._tarent_jumper.get_players()[0].move_right()
-        elif event.key == pygame.K_RIGHT:
-            self._tarent_jumper.get_players()[1].move_right()
-        elif event.key == pygame.K_LEFT:
-            self._tarent_jumper.get_players()[1].move_left()
-        elif event.key == pygame.K_UP:
-            self._tarent_jumper.get_players()[1].jump()
-        elif event.key == pygame.K_i:
-            for player in self._tarent_jumper.get_players():
-                player.switch_debug()
-        elif event.key == pygame.K_m:
-            self._tarent_jumper.switch_music()
-
-    def __handle_keyup_event(self, event):
-        if event.key == pygame.K_a or event.key == pygame.K_d:
-            self._tarent_jumper.get_players()[0].stop()
-        elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-            self._tarent_jumper.get_players()[1].stop()
-
-class JoystickEventHandler(BaseEventHandler):
-    VERTICAL_AXIS = 1
-    HORIZONTAL_AXIS = 0
-    UP = -1
-    DOWN = 1
-    LEFT = -1
-    RIGHT = 1
-    STOP = 0
-    
-    def __init__(self, tarent_jumper):
-        BaseEventHandler.__init__(self, tarent_jumper)
-        self.__joysticks = []
-        
-        for player in self._tarent_jumper.get_players():
-            self.__joysticks.append(player.get_joystick())
-
-    def can_handle(self, event):
-        return event.type == pygame.JOYAXISMOTION
-        
-    def handle_event(self, event):
-        if event.type == pygame.JOYAXISMOTION:
-            self.__handle_axis_motion(event)
-            
-    def __handle_axis_motion(self, event):
-        if event.axis > JoystickEventHandler.VERTICAL_AXIS:
-            return
-        
-        player = self.__player_for_event(event)
-                
-        if player is None:
-            return
-        
-        if event.axis == JoystickEventHandler.VERTICAL_AXIS:
-            self.__handle_vertical_axis_motion(event, player)
-        elif event.axis == JoystickEventHandler.HORIZONTAL_AXIS:
-            self.__handle_horizontal_axis_motion(event, player)
-
-    def __player_for_event(self, event):
-        player = None
-        
-        for i in range(len(self.__joysticks)):
-            if self.__joysticks[i] is not None and self.__joysticks[i].get_id() == event.joy:
-                player = self._tarent_jumper.get_players()[i]
-                break
-            
-        return player
-
-    def __handle_vertical_axis_motion(self, event, player):
-        if self.__round_event_value(event) == JoystickEventHandler.UP:
-            player.jump()
-
-    def __handle_horizontal_axis_motion(self, event, player):
-        event_value = self.__round_event_value(event)
-        
-        if event_value == JoystickEventHandler.LEFT:
-            player.move_left()
-        elif event_value == JoystickEventHandler.RIGHT:
-            player.move_right()
-        elif event_value == JoystickEventHandler.STOP:
-            player.stop()
-
-    def __round_event_value(self, event):
-        return round(event.value, 0)
 
 class TarentJumper:
     # width and height = 0 -> current screen resolution
@@ -183,7 +41,7 @@ class TarentJumper:
         self.__display = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("tarent Jumper")
 
-        pygame.mixer.music.load("tetrisc.mid")
+        pygame.mixer.music.load("assets/sounds/tetrisc.mid")
         self.__music = False
         self.switch_music()
         
@@ -234,7 +92,7 @@ class TarentJumper:
     def __init_players(self):
         self.__players = []
         
-        self.__jump_sound = pygame.mixer.Sound("jump.wav")
+        self.__jump_sound = pygame.mixer.Sound("assets/sounds/jump.wav")
         
         # TODO: vorsicht bei width = 0 und/oder height = 0 (fullscreen)
         half_width = self.__display.get_width() // 2
@@ -249,7 +107,7 @@ class TarentJumper:
                 joystick = self.__joysticks[i]
         
             self.__players.append(
-                self.__init_player(i + 1, i * half_width, half_width, height, "dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
+                self.__init_player(i + 1, i * half_width, half_width, height, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
 
     def __init_player(self, number, screen_x, screen_width, screen_height, image_file_name, joystick, jump_sound):
         player_rect = pygame.Rect(screen_x, 0, screen_width, screen_height)
