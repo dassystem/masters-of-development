@@ -41,11 +41,18 @@ class TarentJumper:
         self.__display = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("tarent Jumper")
 
+        # colors
+        self._tarent_red = pygame.Color(204, 0, 0)
+        self._tarent_grey = pygame.Color(180, 180, 180)
+        self._white = pygame.Color(255, 255, 255)
+        self.__background_color = pygame.Color(50, 60, 200)
+
+        self._width = width
+        self._height = height
+
         pygame.mixer.music.load("assets/sounds/tetrisc.mid")
         self.__music = False
         self.switch_music()
-        
-        self.__background_color = pygame.Color(50, 60, 200)
         
         self.__clock = pygame.time.Clock()
         self.__fps = fps
@@ -57,7 +64,38 @@ class TarentJumper:
         self.level = Block(50, 50)
         self.__event_handler = EventHandler(self)
         self.__running = True
-        
+
+    def __start_screen(self):
+        intro = True
+        bigFont = pygame.font.SysFont("comicsansms", 72)
+        smallFont = pygame.font.SysFont("comicsansms", 24)
+        startTitle = bigFont.render("Tarent Jumper", True, self._tarent_red)
+        startHint = smallFont.render("Press Enter to start the game", True, self._tarent_grey)
+        startSound = pygame.mixer.Sound("assets/sounds/start_game.wav")
+
+        while intro:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        startSound.play(0)
+                        pygame.time.wait(350)
+                        intro = False
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        quit()
+
+            self.__display.fill(self._white)
+            # tries to center the texts
+            self.__display.blit(startTitle, (
+                self._width // 2 - startTitle.get_width() // 2, self._height // 2 - startTitle.get_height() // 2 - 100))
+            self.__display.blit(startHint, (
+                self._width // 2 - startHint.get_width() // 2, self._height // 2 - startHint.get_height() // 2 + 50))
+            pygame.display.flip()
+            self.__clock.tick(self.__fps)
 
     def __fill_blocks(self):
         self.__blocks = []
@@ -133,6 +171,7 @@ class TarentJumper:
         """The mainloop
         """
 
+        self.__start_screen()
         while self.__running:
             self.__display.fill(self.__background_color)
             
