@@ -108,7 +108,15 @@ class Player(pygame.sprite.Sprite):
             self.__update_alive()
         
         self.__debug_info.update()
-                
+        #scrolling
+        if self.__rect.top <= self.__screen_surface.get_height() / 2:
+            self.__rect.y += self.__velocity
+            for block in self.__blocks:
+                block.get_rect().y += self.__velocity
+                #delete blocks offscreen
+                if block.get_rect().top >= self.__screen_surface.get_height():
+                    block.kill()
+
         self.__screen_surface.blit(self.__image, self.__rect)
 
     def __render_game_over(self):
