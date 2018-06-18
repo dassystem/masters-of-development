@@ -72,35 +72,35 @@ class DebugInfo:
 class Player(pygame.sprite.Sprite):
     SPEED_TO_FPS_RATIO = 1 / 8
     
-    def __init__(self, number, screen_surface, image_file_name, blocks, gravity, joystick, jump_sound, fps):
+    def __init__(self, number, image_file_name, gravity, joystick, jump_sound, fps):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
         self.__number = number
-        self.__screen_surface = screen_surface
         
         self.__image = pygame.image.load(image_file_name).convert_alpha()
         self.__rect = self.__image.get_rect()
-
-        self.__rect.left = screen_surface.get_width() // 2 - self.__image.get_width() // 2
-        self.__rect.bottom = screen_surface.get_height() - 44
-
-        self._is_ready = False
-        self.__blocks = blocks
+       
+        self.__fps = fps
+       
         self.__gravity = gravity
+        self.__debug_info = DebugInfo(self)
+        self.__font = pygame.font.SysFont("sans", 20)
+        self.__joystick = joystick
+        self.__jump_sound = jump_sound
+        self.reset()
+
+    def reset(self):
+        self.__dead = False
         self.__velocity = 0
         self.__falling = True
         self.__jumping = False
         self.__on_block = None
-        self.__speed = round(Player.SPEED_TO_FPS_RATIO * fps)
+        self.__speed = round(Player.SPEED_TO_FPS_RATIO * self.__fps)
         self.__jump_height = 15
-        self.__dead = True
-        self.__debug_info = DebugInfo(self)
-        self.__font = pygame.font.SysFont("sans", 20)
-        self.__joystick = joystick
         self.__move = None
-        self.__jump_sound = jump_sound
-
+        self.__ready = False
+    
     def update(self):
         if self.__dead:
             self.__render_game_over()
@@ -195,7 +195,6 @@ class Player(pygame.sprite.Sprite):
                     self.__falling = False
                     self.__jumping = False
                     self.__velocity = 0
-                    old_rect = self.__rect
                     self.__rect.bottom = block.get_rect().y
                     break
     
@@ -246,17 +245,19 @@ class Player(pygame.sprite.Sprite):
         """
         self.__debug_info.switch_visibility()
 
-    def set_ready(self):
-        if self._is_ready == False:
-            self._is_ready = True
-        else:
-            return
-
     def start_player(self):
         self.__dead = False
 
     def get_surface(self):
         return self.__screen_surface
+
+    def set_surface(self, surface):
+        self.__screen_surface = surface
+        self.__rect.left = self.__screen_surface.get_width() // 2 - self.__image.get_width() // 2
+        self.__rect.bottom = self.__screen_surface.get_height() - 44
+
+    def set_blocks(self, blocks):
+        self.__blocks = blocks
 
     def get_rect(self):
         return self.__rect
@@ -276,5 +277,11 @@ class Player(pygame.sprite.Sprite):
     def get_velocity(self):
         return self.__velocity
 
-    def get_ready_status(self):
-        return self._is_ready
+    def is_ready(self):
+        return self.__ready
+    
+    def set_ready(self, ready):
+        self.__ready = ready
+    
+    def is_dead(self):
+        return self.__dead

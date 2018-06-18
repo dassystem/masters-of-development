@@ -1,33 +1,21 @@
 import pygame
 
-from handlers.main_event_handler import EventHandler
+import handlers.global_event_handler
 from player import Player
-from block import Block
 
-level1 = [
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
-    [1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
-    [1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
-    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-    [0,1,1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
-    [1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0]
-]
-
+import screens.start_screen
+import screens.get_ready_screen
+import screens.countdown_screen
+import screens.in_game_screen
 
 class TarentJumper:
+    # colors
+    TARENT_RED = pygame.Color(204, 0, 0)
+    TARENT_GREY = pygame.Color(180, 180, 180)
+    WHITE = pygame.Color(255, 255, 255)
+    BLACK = pygame.Color(0, 0, 0)
+    BACKGROUND_COLOR = pygame.Color(50, 60, 200)
+    
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):
         """Initialie pygame, window, background, ...
@@ -40,14 +28,9 @@ class TarentJumper:
         # pygame.HWSURFACE only for fullscreen...
         self.__display = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("tarent Jumper")
-        self._screens = []
+        #self._screens = []
 
-        # colors
-        self._tarent_red = pygame.Color(204, 0, 0)
-        self._tarent_grey = pygame.Color(180, 180, 180)
-        self._white = pygame.Color(255, 255, 255)
-        self.__background_color = pygame.Color(50, 60, 200)
-        self._black = pygame.Color(0, 0, 0)
+        pygame.event.set_blocked(pygame.MOUSEMOTION)
 
         self._width = width
         self._height = height
@@ -56,153 +39,52 @@ class TarentJumper:
         self.__music = False
         self.switch_music()
         
+        self.__init_fonts()
+        
         self.__clock = pygame.time.Clock()
         self.__fps = fps
 
-        self.__fill_blocks()
         self.__init_joysticks()
         self.__init_players()
-                
-        self.level = Block(50, 50)
-        self.__event_handler = EventHandler(self)
+        
+        self.__screen_dict = {
+            "start": screens.start_screen.StartScreen(self.__display, self.__big_font, self.__small_font),
+            "getready": screens.get_ready_screen.GetReadyScreen(
+                self.__display, self.__players, self.__small_font),
+            "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
+            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks)
+        }
+        
+        for item in self.__screen_dict.items():
+            if item[0] == "start":
+                item[1].set_next_screen(self.__screen_dict["getready"])
+            elif item[0] == "getready":
+                item[1].set_next_screen(self.__screen_dict["countdown"])
+            elif item[0] == "countdown":
+                item[1].set_next_screen(self.__screen_dict["ingame"])
+            elif item[0] == "ingame":
+                item[1].set_next_screen(self.__screen_dict["start"])
+        
+        for i, player_surface in enumerate(self.__screen_dict["ingame"].get_player_surfaces()):
+            self.__players[i].set_surface(player_surface)
+        
+        self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
         self.__running = True
 
-    def __start_screen(self):
-        intro = True
-        bigFont = pygame.font.SysFont("comicsansms", 72)
-        smallFont = pygame.font.SysFont("comicsansms", 24)
-        startTitle = bigFont.render("Tarent Jumper", True, self._tarent_red)
-        startHint = smallFont.render("Press Enter to start the game", True, self._tarent_grey)
-        startSound = pygame.mixer.Sound("assets/sounds/start_game.wav")
+    def get_screens(self):
+        return self.__screen_dict.values()
 
-        while intro:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+    def change_screen(self, old_screen):
+        next_screen = old_screen.get_next_screen()
+        
+        for screen in self.__screen_dict.values():
+            if screen == next_screen:
+                next_screen.set_active(True)
+                break;
 
-                # TODO handle joystick / buttons
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        startSound.play(0)
-                        pygame.time.wait(350)
-                        intro = False
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        quit()
-
-            self.__display.fill(self._white)
-            # tries to center the texts
-            self.__display.blit(startTitle, (
-                self._width // 2 - startTitle.get_width() // 2, self._height // 2 - startTitle.get_height() // 2 - 100))
-            self.__display.blit(startHint, (
-                self._width // 2 - startHint.get_width() // 2, self._height // 2 - startHint.get_height() // 2 + 50))
-            pygame.display.flip()
-            self.__clock.tick(self.__fps)
-
-    def __ready_screen(self):
-        player_count_ready = 0
-        font = pygame.font.SysFont("sans", 20)
-
-        while player_count_ready != 2:
-            player_count_ready = 0
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
-
-                self.__event_handler.handle_event(event)
-
-            for player in self.get_players():
-                if player.get_ready_status():
-                    player_count_ready += 1
-
-            for index ,screen in enumerate(self._screens):
-                # refill the background to 'delete' the old rendered text
-                screen.fill(self.__background_color, None, 0)
-                if index == 0:
-                    text = "Player" + str(index + 1) + " are you ready?"
-                    hint = "Press W to get ready!"
-                    if self.get_players()[index].get_ready_status():
-                        text = "Player" + str(index + 1) + " is ready!"
-                        hint = ""
-                else:
-                    text = "Player" + str(index + 1) + " are you ready?"
-                    hint = "Press UP to get ready!"
-                    if self.get_players()[index].get_ready_status():
-                        text = "Player" + str(index + 1) + " is ready!"
-                        hint = ""
-
-                text_surface = font.render(text, True, (255, 0, 0))
-                text_rect = text_surface.get_rect()
-                text_rect.x = screen.get_rect().centerx - text_surface.get_width() // 2
-                text_rect.y = screen.get_rect().centery - text_surface.get_height() // 2
-
-                text_surface_hint = font.render(hint, True , (255, 0 , 0))
-                text_rect_hint = pygame.Rect.copy(text_rect)
-                text_rect_hint.y += text_rect.height
-
-                screen.blit(text_surface, text_rect)
-                if hint != "":
-                    screen.blit(text_surface_hint, text_rect_hint)
-                pygame.display.flip()
-                self.__clock.tick(self.__fps)
-
-    def __countdown_start(self):
-        dt = 0
-        '''
-        timer is 6 seconds because ur not able to see the 6
-        and for the user the countdown starts visible at 5
-        '''
-        timer = 6
-
-        while timer > 1:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-
-            timer -= dt
-            bigFont = pygame.font.SysFont("comicsansms", 72)
-
-            self.__display.fill(self.__background_color)
-
-            countdown_title = bigFont.render("Game starts in", True, self._black)
-            time_txt = bigFont.render(str(int((timer))), True, self._black)
-
-            self.__display.blit(time_txt, (self.__text_center_rect(time_txt, 0, 0)))
-            self.__display.blit(countdown_title, (self.__text_center_rect(countdown_title,0, 200)))
-
-            pygame.display.flip()
-            dt = self.__clock.tick(30) / 1000
-
-
-    def __text_center_rect(self, text, offset_x, offset_y):
-        center_rect = (self._width // 2 - text.get_width() // 2 - offset_x, self._height // 2 - text.get_height() // 2 - offset_y)
-        return center_rect
-
-    def __fill_blocks(self):
-        self.__blocks = []
-
-        for y in range(0, len(level1)):
-            prev_line_block = None
-            for x in range(0, len(level1[y])):
-                if (level1[y][x] == 1):
-                    new_x = x * 32
-                    new_y = y * 32
-                    new_width = 32
-                    new_height = 32
-                    
-                    if prev_line_block:
-                        if prev_line_block.get_rect().x / Block.BLOCK_WIDTH == x - 1:
-                            self.__blocks.pop()
-                            new_x = prev_line_block.get_rect().x
-                            new_y = prev_line_block.get_rect().y
-                            new_width = prev_line_block.get_rect().width + Block.BLOCK_WIDTH
-                            new_height = Block.BLOCK_HEIGHT
-                    
-                    new_block = Block(new_x, new_y, new_width, new_height)
-                    self.__blocks.append(new_block)
-                    prev_line_block = new_block
+    def __init_fonts(self):
+        self.__big_font = pygame.font.SysFont("sans", 72)
+        self.__small_font = pygame.font.SysFont("sans", 24)
 
     def __init_joysticks(self):
         self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
@@ -215,10 +97,6 @@ class TarentJumper:
         
         self.__jump_sound = pygame.mixer.Sound("assets/sounds/jump.wav")
         
-        # TODO: vorsicht bei width = 0 und/oder height = 0 (fullscreen)
-        half_width = self.__display.get_width() // 2
-        height = self.__display.get_height()
-
         joystick_count = len(self.__joysticks)
 
         for i in range(0, 2):
@@ -227,23 +105,11 @@ class TarentJumper:
             if i < joystick_count:
                 joystick = self.__joysticks[i]
 
-            self._screens.append(
-                self.__init_screens(i * half_width, half_width, height))
-
             self.__players.append(
-                self.__init_player(i + 1, i * half_width, half_width, height, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
+                self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
 
-    def __init_player(self, number, screen_x, screen_width, screen_height, image_file_name, joystick, jump_sound):
-        player_rect = pygame.Rect(screen_x, 0, screen_width, screen_height)
-        player_surface = self.__display.subsurface(player_rect)
-        
-        return Player(number, player_surface, image_file_name, self.__blocks, 1, joystick, jump_sound, self.__fps)
-
-    def __init_screens(self, screen_x, screen_width, screen_height):
-        player_rect = pygame.Rect(screen_x, 0, screen_width, screen_height)
-        player_surface = self.__display.subsurface(player_rect)
-
-        return player_surface
+    def __init_player(self, number, image_file_name, joystick, jump_sound):
+        return Player(number, image_file_name, 1, joystick, jump_sound, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music
@@ -263,29 +129,12 @@ class TarentJumper:
         """The mainloop
         """
 
-        self.__start_screen()
-        self.__ready_screen()
-        self.__countdown_start()
-
-        '''
-        since a player is dead by default
-        so your not able to move with keys before the game runs
-        (f.e jump sounds) so they can be used for options instead
-        we need to set the player alive right before the game actualy starts        
-        '''
-        for player in self.__players:
-            player.start_player()
         while self.__running:
-            self.__display.fill(self.__background_color)
-
-            for block in self.__blocks:
-                block.render(self.__display)
+            for screen in self.__screen_dict.values():
+                screen.render()
             
             for event in pygame.event.get():
                 self.__event_handler.handle_event(event)
-            
-            for player in self.__players:
-                player.update()
             
             self.__clock.tick(self.__fps)
             pygame.display.flip()
