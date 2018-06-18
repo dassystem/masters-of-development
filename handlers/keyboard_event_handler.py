@@ -22,6 +22,7 @@ class KeyboardEventHandler(BaseEventHandler):
         if event.key == pygame.K_ESCAPE:
             self._tarent_jumper.shutdown()
         elif event.key == pygame.K_w:
+            self._tarent_jumper.get_players()[0].set_ready()
             self._tarent_jumper.get_players()[0].jump()
         elif event.key == pygame.K_a:
             self._tarent_jumper.get_players()[0].move_left()
@@ -32,6 +33,7 @@ class KeyboardEventHandler(BaseEventHandler):
         elif event.key == pygame.K_LEFT:
             self._tarent_jumper.get_players()[1].move_left()
         elif event.key == pygame.K_UP:
+            self._tarent_jumper.get_players()[1].set_ready()
             self._tarent_jumper.get_players()[1].jump()
         elif event.key == pygame.K_i:
             for player in self._tarent_jumper.get_players():

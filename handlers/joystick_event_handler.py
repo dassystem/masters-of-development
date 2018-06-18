@@ -52,6 +52,7 @@ class JoystickEventHandler(BaseEventHandler):
 
     def __handle_vertical_axis_motion(self, event, player):
         if self.__round_event_value(event) == JoystickEventHandler.UP:
+            player.set_ready()
             player.jump()
 
     def __handle_horizontal_axis_motion(self, event, player):

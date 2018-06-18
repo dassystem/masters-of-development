@@ -84,7 +84,8 @@ class Player(pygame.sprite.Sprite):
 
         self.__rect.left = screen_surface.get_width() // 2 - self.__image.get_width() // 2
         self.__rect.bottom = screen_surface.get_height() - 44
-       
+
+        self._is_ready = False
         self.__blocks = blocks
         self.__gravity = gravity
         self.__velocity = 0
@@ -93,7 +94,7 @@ class Player(pygame.sprite.Sprite):
         self.__on_block = None
         self.__speed = round(Player.SPEED_TO_FPS_RATIO * fps)
         self.__jump_height = 15
-        self.__dead = False
+        self.__dead = True
         self.__debug_info = DebugInfo(self)
         self.__font = pygame.font.SysFont("sans", 20)
         self.__joystick = joystick
@@ -203,7 +204,7 @@ class Player(pygame.sprite.Sprite):
         """
         if self.__dead:
             return
-        
+
         self.__move = "right"
 
     def move_left(self):
@@ -245,6 +246,15 @@ class Player(pygame.sprite.Sprite):
         """
         self.__debug_info.switch_visibility()
 
+    def set_ready(self):
+        if self._is_ready == False:
+            self._is_ready = True
+        else:
+            return
+
+    def start_player(self):
+        self.__dead = False
+
     def get_surface(self):
         return self.__screen_surface
 
@@ -265,3 +275,6 @@ class Player(pygame.sprite.Sprite):
     
     def get_velocity(self):
         return self.__velocity
+
+    def get_ready_status(self):
+        return self._is_ready

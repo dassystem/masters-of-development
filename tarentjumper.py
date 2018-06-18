@@ -101,34 +101,38 @@ class TarentJumper:
             self.__clock.tick(self.__fps)
 
     def __ready_screen(self):
-        player_one_ready = True
-        player_two_ready = True
+        player_count_ready = 0
+        font = pygame.font.SysFont("sans", 20)
 
-
-        self.__display.fill(self.__background_color)
-
-        while player_one_ready or player_two_ready:
+        while player_count_ready != 2:
+            player_count_ready = 0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
-                # TODO handle joystick / buttons
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_w:
-                        player_one_ready = False
-                    if event.key == pygame.K_UP:
-                        player_two_ready = False
 
-            font = pygame.font.SysFont("sans", 20)
+                self.__event_handler.handle_event(event)
 
-            #TODO change text to (Player X is ready!)
+            for player in self.get_players():
+                if player.get_ready_status():
+                    player_count_ready += 1
+
             for index ,screen in enumerate(self._screens):
+                # refill the background to 'delete' the old rendered text
+                screen.fill(self.__background_color, None, 0)
                 if index == 0:
                     text = "Player" + str(index + 1) + " are you ready?"
                     hint = "Press W to get ready!"
+                    if self.get_players()[index].get_ready_status():
+                        text = "Player" + str(index + 1) + " is ready!"
+                        hint = ""
                 else:
                     text = "Player" + str(index + 1) + " are you ready?"
                     hint = "Press UP to get ready!"
+                    if self.get_players()[index].get_ready_status():
+                        text = "Player" + str(index + 1) + " is ready!"
+                        hint = ""
+
                 text_surface = font.render(text, True, (255, 0, 0))
                 text_rect = text_surface.get_rect()
                 text_rect.x = screen.get_rect().centerx - text_surface.get_width() // 2
@@ -139,7 +143,8 @@ class TarentJumper:
                 text_rect_hint.y += text_rect.height
 
                 screen.blit(text_surface, text_rect)
-                screen.blit(text_surface_hint, text_rect_hint)
+                if hint != "":
+                    screen.blit(text_surface_hint, text_rect_hint)
                 pygame.display.flip()
                 self.__clock.tick(self.__fps)
 
@@ -161,11 +166,19 @@ class TarentJumper:
 
             self.__display.fill(self.__background_color)
 
+            countdown_title = bigFont.render("Game starts in", True, self._black)
             time_txt = bigFont.render(str(int((timer))), True, self._black)
-            self.__display.blit(time_txt, (self._width // 2 - time_txt.get_width() // 2, self._height // 2 - time_txt.get_height() // 2))
+
+            self.__display.blit(time_txt, (self.__text_center_rect(time_txt, 0, 0)))
+            self.__display.blit(countdown_title, (self.__text_center_rect(countdown_title,0, 200)))
 
             pygame.display.flip()
             dt = self.__clock.tick(30) / 1000
+
+
+    def __text_center_rect(self, text, offset_x, offset_y):
+        center_rect = (self._width // 2 - text.get_width() // 2 - offset_x, self._height // 2 - text.get_height() // 2 - offset_y)
+        return center_rect
 
     def __fill_blocks(self):
         self.__blocks = []
@@ -253,6 +266,15 @@ class TarentJumper:
         self.__start_screen()
         self.__ready_screen()
         self.__countdown_start()
+
+        '''
+        since a player is dead by default
+        so your not able to move with keys before the game runs
+        (f.e jump sounds) so they can be used for options instead
+        we need to set the player alive right before the game actualy starts        
+        '''
+        for player in self.__players:
+            player.start_player()
         while self.__running:
             self.__display.fill(self.__background_color)
 
