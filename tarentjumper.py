@@ -8,7 +8,7 @@ import screens.get_ready_screen
 import screens.countdown_screen
 import screens.in_game_screen
 
-class TarentJumper:
+class TarentJumper(object):
     # colors
     TARENT_RED = pygame.Color(204, 0, 0)
     TARENT_GREY = pygame.Color(180, 180, 180)

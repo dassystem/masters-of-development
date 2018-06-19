@@ -5,8 +5,6 @@ class Timer(object):
     ELASPED_EVENT = pygame.USEREVENT + 3
     
     def __init__(self, initial_seconds):
-        super(Timer, self).__init__()
-        
         self.__initial_seconds = initial_seconds
         self.__timer_started = False
         self.__seconds_left = 0

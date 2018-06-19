@@ -1,6 +1,6 @@
 import pygame
 
-class BaseScreen:
+class BaseScreen(object):
     DEACTIVE_SCREEN_EVENT = pygame.USEREVENT + 1
     
     def __init__(self, surface, event_handlers, active = False):
@@ -36,7 +36,7 @@ class BaseScreen:
         if not self.__active:
             return
 
-class BaseScreenEventHandler:
+class BaseScreenEventHandler(object):
     def __init__(self, screen):
         self.__screen = screen
 

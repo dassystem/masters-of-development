@@ -1,13 +1,13 @@
 import pygame
 from screens.base import BaseScreen
 
-class GlobalBaseEventHandler:
+class GlobalBaseEventHandler(object):
     def __init__(self, tarent_jumper):
         self._tarent_jumper = tarent_jumper
 
 class GlobalQuitEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
-        GlobalBaseEventHandler.__init__(self, tarent_jumper)
+        super(GlobalQuitEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event):
         return event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
@@ -18,7 +18,7 @@ class GlobalQuitEventHandler(GlobalBaseEventHandler):
 
 class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
-        GlobalBaseEventHandler.__init__(self, tarent_jumper)
+        super(GlobalSwitchMusicEventHandler, self).__init__(tarent_jumper)
         
     def can_handle(self, event):
         return event.type == pygame.KEYDOWN and event.key == pygame.K_m
@@ -29,7 +29,7 @@ class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
 
 class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
-        GlobalBaseEventHandler.__init__(self, tarent_jumper)
+        super(GlobalScreenDeactivateEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event):
         return event.type == BaseScreen.DEACTIVE_SCREEN_EVENT
@@ -39,7 +39,7 @@ class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
         
 class GlobalEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
-        GlobalBaseEventHandler.__init__(self, tarent_jumper)
+        super(GlobalEventHandler, self).__init__(tarent_jumper)
 
     def __get_event_handlers(self):
         event_handlers = []

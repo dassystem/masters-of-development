@@ -2,7 +2,7 @@ import pygame
 from block import Block
 import tarentjumper
 
-class DebugInfo:
+class DebugInfo(object):
     def __init__(self, player):
         self.__player = player
         self.__visible = False

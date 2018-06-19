@@ -5,7 +5,7 @@ from utils.timer import Timer
 
 class CountdownScreen(BaseScreen):
     def __init__(self, surface, font, seconds = 5):
-        BaseScreen.__init__(self, surface, [CountdownScreenEventHandler(self)])
+        super(CountdownScreen, self).__init__(surface, [CountdownScreenEventHandler(self)])
         self.__font = font
         self.__seconds = seconds
         self.__timer = Timer(seconds)
@@ -13,7 +13,7 @@ class CountdownScreen(BaseScreen):
         self._add_event_handler(self.__timer.get_event_handler())
         
     def set_active(self, active):
-        BaseScreen.set_active(self, active)
+        super().set_active(active)
         
         if self.is_active():
             self.__start_timer()
@@ -48,10 +48,10 @@ class CountdownScreen(BaseScreen):
 
 class CountdownScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, count_down_screen):
-        BaseScreenEventHandler.__init__(self, count_down_screen)
+        super(CountdownScreenEventHandler, self).__init__(count_down_screen)
     
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == Timer.ELASPED_EVENT

@@ -29,8 +29,7 @@ level1 = [
 
 class InGameScreen(BaseScreen):
     def __init__(self, surface, players, joysticks, seconds = 100):
-        BaseScreen.__init__(
-            self,
+        super(InGameScreen, self).__init__(
             surface,
             [InGameScreenKeyboardEventHandler(self, players),
              InGameScreenJoystickEventHandler(self, players, joysticks),
@@ -115,7 +114,7 @@ class InGameScreen(BaseScreen):
         self._surface.blit(text_surface_2, text_rect_2)
 
     def set_active(self, active):
-        BaseScreen.set_active(self, active)
+        super().set_active(active)
         
         if self.is_active():
             self._add_event_handler(self.__timer.get_event_handler())
@@ -132,11 +131,11 @@ class InGameScreen(BaseScreen):
 
 class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, players):
-        BaseScreenEventHandler.__init__(self, in_game_screen)
+        super(InGameScreenKeyboardEventHandler, self).__init__(in_game_screen)
         self.__players = players
 
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
@@ -183,12 +182,12 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
     STOP = 0
 
     def __init__(self, in_game_screen, players, joysticks):
-        BaseScreenEventHandler.__init__(self, in_game_screen)
+        super(InGameScreenJoystickEventHandler, self).__init__(in_game_screen)
         self.__players = players
         self.__joysticks = joysticks
 
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == pygame.JOYAXISMOTION or event.type == pygame.JOYBUTTONDOWN
@@ -243,10 +242,10 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         
 class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen):
-        BaseScreenEventHandler.__init__(self, in_game_screen)
+        super(InGameScreenTimerElapsedEventHandler, self).__init__(in_game_screen)
     
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == Timer.ELASPED_EVENT

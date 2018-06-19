@@ -5,7 +5,7 @@ import tarentjumper
 
 class GetReadyScreen(BaseScreen):
     def __init__(self, surface, joysticks, players, font):
-        BaseScreen.__init__(self, surface, [GetReadyScreenEventHandler(self, joysticks, players)])
+        super(GetReadyScreen, self).__init__(surface, [GetReadyScreenEventHandler(self, joysticks, players)])
         self.__players = players
         self.__player_screens = Utils.split_screen(self._surface)
         
@@ -61,12 +61,12 @@ class GetReadyScreen(BaseScreen):
     
 class GetReadyScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, ready_screen, joysticks, players):
-        BaseScreenEventHandler.__init__(self, ready_screen)
+        super(GetReadyScreenEventHandler, self).__init__(ready_screen)
         self.__joysticks = joysticks
         self.__players = players
     
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
     
         return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN
