@@ -168,7 +168,7 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         if not BaseScreenEventHandler.can_handle(self, event):
             return False
         
-        return event.type == pygame.JOYAXISMOTION
+        return event.type == pygame.JOYAXISMOTION or event.type == pygame.JOYBUTTONDOWN
 
     def handle_event(self, event):
         if not self.can_handle(event):
@@ -176,6 +176,8 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         
         if event.type == pygame.JOYAXISMOTION:
             self.__handle_axis_motion(event)
+        elif event.type == pygame.JOYBUTTONDOWN:
+            self.__handle_button_down(event)
 
     def __handle_axis_motion(self, event):
         if event.axis > InGameScreenJoystickEventHandler.VERTICAL_AXIS:
@@ -207,3 +209,11 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
 
     def __round_event_value(self, event):
         return round(event.value, 0)
+    
+    def __handle_button_down(self, event):
+        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
+        
+        if player is None:
+            return
+        
+        player.jump()
