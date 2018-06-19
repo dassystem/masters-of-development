@@ -40,19 +40,24 @@ class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
 class GlobalEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
         GlobalBaseEventHandler.__init__(self, tarent_jumper)
-        self.__handlers = []
-        self.__handlers.append(GlobalQuitEventHandler(self._tarent_jumper))
-        self.__handlers.append(GlobalSwitchMusicEventHandler(self._tarent_jumper))
-        self.__handlers.append(GlobalScreenDeactivateEventHandler(self._tarent_jumper))
+
+    def __get_event_handlers(self):
+        event_handlers = []
         
-        for screen in tarent_jumper.get_screens():
+        event_handlers.append(GlobalQuitEventHandler(self._tarent_jumper))
+        event_handlers.append(GlobalSwitchMusicEventHandler(self._tarent_jumper))
+        event_handlers.append(GlobalScreenDeactivateEventHandler(self._tarent_jumper))
+        
+        for screen in self._tarent_jumper.get_screens():
             for event_handler in screen.get_event_handlers():
-                self.__handlers.append(event_handler)
+                event_handlers.append(event_handler)
+        
+        return event_handlers
 
     def handle_event(self, event):
         handler = None
 
-        for h in self.__handlers:
+        for h in self.__get_event_handlers():
             if h.can_handle(event):
                 handler = h
                 break
