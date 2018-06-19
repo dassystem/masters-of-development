@@ -75,7 +75,7 @@ class Player(pygame.sprite.Sprite):
     
     def __init__(self, number, image_file_name, gravity, joystick, sounds, fps):
         # call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        super(Player, self).__init__()
         
         self.__number = number
         
@@ -313,7 +313,7 @@ class Score(pygame.sprite.Sprite):
     PLATFORM_LEVEL_SCORE = 100
     
     def __init__(self, pos, font, sound):
-        pygame.sprite.Sprite.__init__(self)
+        super(Score, self).__init__()
         self.__font = font
         self.__sound = sound
         self.rect = pygame.Rect(pos, (1, 1))

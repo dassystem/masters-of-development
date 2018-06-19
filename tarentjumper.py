@@ -70,7 +70,6 @@ class TarentJumper:
         for i, player_surface in enumerate(self.__screen_dict["ingame"].get_player_surfaces()):
             self.__players[i].set_surface(player_surface)
 
-        
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
         self.__running = True
 

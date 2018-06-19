@@ -1,14 +1,16 @@
 from screens.base import BaseScreen, BaseScreenEventHandler
 import tarentjumper
 from utils import Utils
-import pygame
+from utils.timer import Timer
 
 class CountdownScreen(BaseScreen):
     def __init__(self, surface, font, seconds = 5):
         BaseScreen.__init__(self, surface, [CountdownScreenEventHandler(self)])
         self.__font = font
         self.__seconds = seconds
-        self.__timer_started = False
+        self.__timer = Timer(seconds)
+        
+        self._add_event_handler(self.__timer.get_event_handler())
         
     def set_active(self, active):
         BaseScreen.set_active(self, active)
@@ -19,19 +21,14 @@ class CountdownScreen(BaseScreen):
             self.__stop_timer()
     
     def __start_timer(self):
-        if not self.__timer_started:
-            self.__timer_started = True
-            self.__seconds_left = self.__seconds
-            pygame.time.set_timer(pygame.USEREVENT, 1000)
+        self.__timer.start()
 
     def __stop_timer(self):
-        pygame.time.set_timer(pygame.USEREVENT, 0)
-        self.__timer_started = False
+        self.__timer.stop()
+        self._remove_event_handler(self.__timer.get_event_handler())
     
     def countdown(self):
-        self.__seconds_left -= 1
-        
-        self.set_active(self.__seconds_left > 0)
+        self.__timer.countdown()
     
     def render(self):
         if not self.is_active():
@@ -43,7 +40,7 @@ class CountdownScreen(BaseScreen):
         countdown_txt_rect = Utils.center(countdown_txt, self._surface)
         self._surface.blit(countdown_txt, countdown_txt_rect)
 
-        time_txt = self.__font.render(str(self.__seconds_left), True, tarentjumper.TarentJumper.BLACK)
+        time_txt = self.__font.render(str(self.__timer.get_seconds_left()), True, tarentjumper.TarentJumper.BLACK)
         time_txt_rect = Utils.center(time_txt, self._surface)
         time_txt_rect.move_ip(0, 200)
         
@@ -57,11 +54,11 @@ class CountdownScreenEventHandler(BaseScreenEventHandler):
         if not BaseScreenEventHandler.can_handle(self, event):
             return False
         
-        return event.type == pygame.USEREVENT
+        return event.type == Timer.ELASPED_EVENT
     
     def handle_event(self, event):
         if not self.can_handle(event):
             return
         
-        if event.type == pygame.USEREVENT:
-            self.get_screen().countdown()
+        if event.type == Timer.ELASPED_EVENT:
+            self.get_screen().set_active(False)

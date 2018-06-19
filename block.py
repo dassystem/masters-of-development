@@ -6,7 +6,7 @@ class Block(pygame.sprite.Sprite):
     
     def __init__(self, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # call the parent class (Sprite) constructor
-        pygame.sprite.Sprite.__init__(self)
+        super(Block, self).__init__()
 
         self.__level = level
         self.__rect = pygame.Rect(x, y, width, height)
