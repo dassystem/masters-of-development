@@ -73,7 +73,7 @@ class DebugInfo:
 class Player(pygame.sprite.Sprite):
     SPEED_TO_FPS_RATIO = 1 / 8
     
-    def __init__(self, number, image_file_name, gravity, joystick, jump_sound, fps):
+    def __init__(self, number, image_file_name, gravity, joystick, sounds, fps):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
@@ -88,8 +88,8 @@ class Player(pygame.sprite.Sprite):
         self.__debug_info = DebugInfo(self)
         self.__font = pygame.font.SysFont("sans", 20)
         self.__joystick = joystick
-        self.__jump_sound = jump_sound
-        self.__score = Score((0, 0), self.__font)
+        self.__sounds = sounds
+        self.__score = Score((0, 0), self.__font, self.__sounds["score"])
         self.__all_sprites = pygame.sprite.Group(self.__score)
         self.reset()
 
@@ -242,7 +242,7 @@ class Player(pygame.sprite.Sprite):
         if self.__dead:
             return
 
-        self.__jump_sound.play()
+        self.__sounds["jump"].play()
         
         # jump only possible if standing on a block
         if self.__on_block:
@@ -258,9 +258,6 @@ class Player(pygame.sprite.Sprite):
         """
         self.__debug_info.switch_visibility()
 
-    def start_player(self):
-        self.__dead = False
-
     def get_surface(self):
         return self.__screen_surface
 
@@ -274,7 +271,7 @@ class Player(pygame.sprite.Sprite):
         self.__rect.bottom = self.__screen_surface.get_height() - 44
 
     def __init_score_display(self):
-        self.__score_display = Score((0, 0), self.__font)
+        self.__score_display = Score((0, 0), self.__font, self.__sounds["score"])
 
     def set_blocks(self, blocks):
         self.__blocks = blocks
@@ -315,9 +312,10 @@ class Player(pygame.sprite.Sprite):
 class Score(pygame.sprite.Sprite):
     PLATFORM_LEVEL_SCORE = 100
     
-    def __init__(self, pos, font):
+    def __init__(self, pos, font, sound):
         pygame.sprite.Sprite.__init__(self)
         self.__font = font
+        self.__sound = sound
         self.rect = pygame.Rect(pos, (1, 1))
         self.reset()
 
@@ -347,6 +345,7 @@ class Score(pygame.sprite.Sprite):
     def add_score(self, score):
         self.__score += score
         self.__update_image()
+        self.__sound.play()
     
     def get_score(self):
         return self.__score
