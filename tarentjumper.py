@@ -50,7 +50,7 @@ class TarentJumper:
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__big_font, self.__small_font),
             "getready": screens.get_ready_screen.GetReadyScreen(
-                self.__display, self.__players, self.__small_font),
+                self.__display, self.__joysticks, self.__players, self.__small_font),
             "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks)
         }

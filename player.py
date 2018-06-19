@@ -285,3 +285,7 @@ class Player(pygame.sprite.Sprite):
     
     def is_dead(self):
         return self.__dead
+    
+    def get_number(self):
+        return self.__number
+

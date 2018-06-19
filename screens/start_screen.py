@@ -8,7 +8,7 @@ class StartScreen(BaseScreen):
         BaseScreen.__init__(self, surface, [StartScreenEventHandler(self)], True)
 
         self.__start_title = big_font.render("tarent Jumper", True, tarentjumper.TarentJumper.TARENT_RED)
-        self.__start_hint = small_font.render("Press Enter to start the game", True, tarentjumper.TarentJumper.TARENT_GREY)
+        self.__start_hint = small_font.render("Press Button or Enter to start the game", True, tarentjumper.TarentJumper.TARENT_GREY)
         self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")
   
     def start(self):
@@ -45,5 +45,5 @@ class StartScreenEventHandler(BaseScreenEventHandler):
         if not self.can_handle(event):
             return
         
-        if event.key == pygame.K_RETURN or event.type == pygame.JOYBUTTONDOWN:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN or event.type == pygame.JOYBUTTONDOWN:
             self.get_screen().start()

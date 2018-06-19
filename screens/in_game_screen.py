@@ -181,7 +181,7 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         if event.axis > InGameScreenJoystickEventHandler.VERTICAL_AXIS:
             return
 
-        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self._players)
+        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
 
         if player is None:
             return
