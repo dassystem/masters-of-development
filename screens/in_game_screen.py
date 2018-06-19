@@ -44,7 +44,7 @@ class InGameScreen(BaseScreen):
         for player in self.__players:
             player.set_blocks(self.__blocks)
         
-        self.level = Block(50, 50)
+        self.level = Block(0, 50, 50)
 
     def __init_player_surfaces(self):
         split_screen = Utils.split_screen(self._surface)
@@ -73,7 +73,7 @@ class InGameScreen(BaseScreen):
                             new_width = prev_line_block.get_rect().width + Block.BLOCK_WIDTH
                             new_height = Block.BLOCK_HEIGHT
                     
-                    new_block = Block(new_x, new_y, new_width, new_height)
+                    new_block = Block(len(level1) - y, new_x, new_y, new_width, new_height)
                     self.__blocks.append(new_block)
                     prev_line_block = new_block
 

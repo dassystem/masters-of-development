@@ -103,6 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.__jump_height = 15
         self.__move = None
         self.__ready = False
+        self.__highest_block_level = 0
         self.__score.reset()
     
     def update(self):
@@ -199,6 +200,11 @@ class Player(pygame.sprite.Sprite):
                 
                 if falled_on or jumped_on:
                     self.__on_block = block
+                    
+                    if self.__on_block.get_level() > self.__highest_block_level:
+                        self.__score.add_platform_score(self.__on_block.get_level() - self.__highest_block_level)
+                        self.__highest_block_level = self.__on_block.get_level()
+                    
                     self.__falling = False
                     self.__jumping = False
                     self.__velocity = 0
@@ -307,17 +313,19 @@ class Player(pygame.sprite.Sprite):
         return self.__score
 
 class Score(pygame.sprite.Sprite):
+    PLATFORM_LEVEL_SCORE = 100
+    
     def __init__(self, pos, font):
         pygame.sprite.Sprite.__init__(self)
         self.__font = font
         self.rect = pygame.Rect(pos, (1, 1))
         self.reset()
-        self.update_image()
 
     def reset(self):
-        self.__score = 0;
+        self.__score = 0
+        self.__update_image()
         
-    def update_image(self):
+    def __update_image(self):
         height = self.__font.get_height()
         text_surfaces = []
         
@@ -332,9 +340,13 @@ class Score(pygame.sprite.Sprite):
             self.image.blit(txt_surface, (0, y * height))
         
         self.rect = self.image.get_rect(topleft = self.rect.topleft)
+    
+    def add_platform_score(self, uplevel):
+        self.add_score(uplevel * Score.PLATFORM_LEVEL_SCORE)
         
     def add_score(self, score):
         self.__score += score
+        self.__update_image()
     
     def get_score(self):
         return self.__score
