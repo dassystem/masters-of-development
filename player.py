@@ -1,4 +1,5 @@
 import pygame
+import random
 from block import Block
 import tarentjumper
 
@@ -112,16 +113,49 @@ class Player(pygame.sprite.Sprite):
             self.__update_alive()
         
         self.__debug_info.update()
-        #scrolling
-        if self.__rect.top <= self.__screen_surface.get_height() / 2:
-            self.__rect.y += self.__velocity
-            for block in self.__blocks:
-                block.get_rect().y += self.__velocity
-                #delete blocks offscreen
-                if block.get_rect().top >= self.__screen_surface.get_height():
-                    block.kill()
 
         self.__screen_surface.blit(self.__image, self.__rect)
+
+    def __generate_blocks(self):
+        # TODO the x position of some blocks are off despite 2 checks, need to fix
+        while len(self.__blocks) < 13:
+            ygaps = random.randrange(50, 100)
+            width = random.randrange(80, 160)
+            xgaps = random.randrange(100, 150)
+            min_space = 10
+            last_block = self.__blocks[len(self.__blocks)-1]
+
+            last_block_top = last_block.get_rect().top
+            max_y_space = last_block_top - ygaps
+            min_y_space = last_block_top - Block.BLOCK_HEIGHT - min_space
+            random_y_position = random.randrange( max_y_space , min_y_space)
+            random_x_position = last_block.get_rect().centerx
+
+            # random if the platform spawns left or right to last one
+            if random.randint(0,1) == 1:
+                random_x_position += xgaps
+                check = random_x_position + width + min_space
+            else:
+                random_x_position -=  xgaps
+                check = random_x_position - width - min_space
+
+            # make sure that the new position is not out of screen bounds
+            if  check > self.__screen_surface.get_rect().right:
+                random_x_position = random_x_position - (xgaps + width)
+            elif check < self.__screen_surface.get_rect().left:
+                random_x_position = random_x_position + (xgaps + width)
+
+
+
+            b = Block(random_x_position,
+                      random_y_position,
+                      width, Block.BLOCK_HEIGHT)
+            # second check to make sure the block is not out of screen bounds
+            if b.get_rect().x + b.get_rect().width + min_space> self.__screen_surface.get_rect().right:
+                b.get_rect().x -= b.get_rect().width
+            elif b.get_rect().x - min_space < self.__screen_surface.get_rect().left:
+                b.get_rect().x += b.get_rect().width
+            self.__blocks.append(b)
 
     def __render_game_over(self):
         font_surface = self.__font.render("GAME OVER", True, (255, 0, 0))
@@ -134,12 +168,18 @@ class Player(pygame.sprite.Sprite):
     def __update_alive(self):
         self.__all_sprites.update()
         self.__all_sprites.draw(self.__screen_surface)
-        
+
+        self.__scroll_screen()
+        self.__generate_blocks()
+
+        for block in self.__blocks:
+            block.render(self.get_surface())
+
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
                     
             if self.__jump_height <= 0:
-                self.__jump_height = 15
+                self.__jump_height = 10
                 self.__jumping = False
                 self.__falling = True
                 self.__velocity = 6
@@ -159,8 +199,20 @@ class Player(pygame.sprite.Sprite):
                 self.__move_left()
             elif self.__move == "right":
                 self.__move_right()
-    
-        self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom        
+
+
+        self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom
+
+    def __scroll_screen(self):
+        # TODO if u jump fast this bugs , probably because we need to fix jump
+        if self.__rect.top <= self.__screen_surface.get_height() / 2:
+            self.__rect.y += abs(self.__velocity)
+            for block in self.__blocks:
+                block.get_rect().y += abs(self.__velocity)
+                # delete blocks offscreen
+                if block.get_rect().top >= self.__screen_surface.get_height():
+                    self.__blocks.remove(block)
+                    block.kill()
 
     def __move_down(self):
         self.__rect.move_ip(0, self.__velocity)
@@ -239,6 +291,7 @@ class Player(pygame.sprite.Sprite):
         self.__move = None
 
     def jump(self):
+        # TODO fix jumping, jumping right now is "teleporting" then falling, this might affect the scrolling
         """Marks the player as jumping.
         """
         if self.__dead:
