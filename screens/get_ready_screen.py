@@ -4,8 +4,8 @@ from utils import Utils
 import tarentjumper
 
 class GetReadyScreen(BaseScreen):
-    def __init__(self, surface, players, font):
-        BaseScreen.__init__(self, surface, [GetReadyScreenEventHandler(self)])
+    def __init__(self, surface, joysticks, players, font):
+        BaseScreen.__init__(self, surface, [GetReadyScreenEventHandler(self, joysticks, players)])
         self.__players = players
         self.__player_screens = Utils.split_screen(self._surface)
         
@@ -60,8 +60,10 @@ class GetReadyScreen(BaseScreen):
                 player_screen.blit(text_surface_hint2, text_rect_hint2)
     
 class GetReadyScreenEventHandler(BaseScreenEventHandler):
-    def __init__(self, ready_screen):
+    def __init__(self, ready_screen, joysticks, players):
         BaseScreenEventHandler.__init__(self, ready_screen)
+        self.__joysticks = joysticks
+        self.__players = players
     
     def can_handle(self, event):
         if not BaseScreenEventHandler.can_handle(self, event):
@@ -82,4 +84,4 @@ class GetReadyScreenEventHandler(BaseScreenEventHandler):
             player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
 
             if player is not None:
-                self.get_screen().set_player_ready(player.getNumber())
+                self.get_screen().set_player_ready(player.get_number() - 1)

@@ -23,7 +23,7 @@ def get_player_from_joystick_event(event, joysticks, players):
 
     for i in range(len(joysticks)):
         if joysticks[i] is not None and joysticks[i].get_id() == event.joy:
-            player = players()[i]
+            player = players[i]
             break
 
     return player

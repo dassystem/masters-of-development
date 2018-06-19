@@ -1,7 +1,7 @@
 import pygame
 
 import handlers.global_event_handler
-from player import Player
+import player
 
 import screens.start_screen
 import screens.get_ready_screen
@@ -50,7 +50,7 @@ class TarentJumper:
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__big_font, self.__small_font),
             "getready": screens.get_ready_screen.GetReadyScreen(
-                self.__display, self.__players, self.__small_font),
+                self.__display, self.__joysticks, self.__players, self.__small_font),
             "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks)
         }
@@ -109,7 +109,7 @@ class TarentJumper:
                 self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
 
     def __init_player(self, number, image_file_name, joystick, jump_sound):
-        return Player(number, image_file_name, 1, joystick, jump_sound, self.__fps)
+        return player.Player(number, image_file_name, 1, joystick, jump_sound, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music
