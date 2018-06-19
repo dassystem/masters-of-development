@@ -1,5 +1,6 @@
 import pygame
 from block import Block
+import tarentjumper
 
 class DebugInfo:
     def __init__(self, player):
@@ -88,6 +89,8 @@ class Player(pygame.sprite.Sprite):
         self.__font = pygame.font.SysFont("sans", 20)
         self.__joystick = joystick
         self.__jump_sound = jump_sound
+        self.__score = Score((0, 0), self.__font)
+        self.__all_sprites = pygame.sprite.Group(self.__score)
         self.reset()
 
     def reset(self):
@@ -100,6 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.__jump_height = 15
         self.__move = None
         self.__ready = False
+        self.__score.reset()
     
     def update(self):
         if self.__dead:
@@ -120,6 +124,9 @@ class Player(pygame.sprite.Sprite):
         self.__screen_surface.blit(font_surface, font_rect)
 
     def __update_alive(self):
+        self.__all_sprites.update()
+        self.__all_sprites.draw(self.__screen_surface)
+        
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
                     
@@ -253,8 +260,15 @@ class Player(pygame.sprite.Sprite):
 
     def set_surface(self, surface):
         self.__screen_surface = surface
+        self.__init_player_position()
+        self.__init_score_display()
+        
+    def __init_player_position(self):
         self.__rect.left = self.__screen_surface.get_width() // 2 - self.__image.get_width() // 2
         self.__rect.bottom = self.__screen_surface.get_height() - 44
+
+    def __init_score_display(self):
+        self.__score_display = Score((0, 0), self.__font)
 
     def set_blocks(self, blocks):
         self.__blocks = blocks
@@ -289,3 +303,40 @@ class Player(pygame.sprite.Sprite):
     def get_number(self):
         return self.__number
 
+    def get_score(self):
+        return self.__score
+
+class Score(pygame.sprite.Sprite):
+    def __init__(self, pos, font):
+        pygame.sprite.Sprite.__init__(self)
+        self.__font = font
+        self.rect = pygame.Rect(pos, (1, 1))
+        self.reset()
+        self.update_image()
+
+    def reset(self):
+        self.__score = 0;
+        
+    def update_image(self):
+        height = self.__font.get_height()
+        text_surfaces = []
+        
+        for txt in ("SCORE", "{0:d}".format(self.__score)):
+            text_surfaces.append(self.__font.render(txt, True, tarentjumper.TarentJumper.BLACK))
+        
+        width = max(txt_surface.get_width() for txt_surface in text_surfaces)
+        
+        self.image = pygame.Surface((width, height * len(text_surfaces)), pygame.SRCALPHA)
+        
+        for y, txt_surface in enumerate(text_surfaces):
+            self.image.blit(txt_surface, (0, y * height))
+        
+        self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        
+    def add_score(self, score):
+        self.__score += score
+    
+    def get_score(self):
+        return self.__score
+
+    
