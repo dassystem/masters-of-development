@@ -1,0 +1,40 @@
+= Masters of Development
+
+Masters of Development is a game developed with Python and Pygame.
+
+== Installation
+
+In order to run the game, install https://www.python.org/downloads/[Python 3.x] and https://www.pygame.org/wiki/GettingStarted[Pygame].
+
+== Start
+
+Start the game through calling `./masters_of_development.py`.
+
+=== Arguments
+
+==== width
+
+Pass the desired screen width as first argument. Default is 800.
+
+==== height
+
+Pass the desired screen height as second argument. Default is 600.
+
+==== fullscreen
+
+Pass as only or third argument `fullscreen` for fullscreen mode.
+
+== The Game
+
+=== Background Music
+
+Switch the background music on/off throuh pressing `m`.
+
+=== In game
+
+Use Joysticks or keys `a` and `d` for player 1 or cursor keys `LEFT` and `RIGHT` for player 2 to move a player left or right.
+
+Use Joystick button or Joystick up or key 'w' for player 1 or cursor key `UP`.
+
+Press key `i` for some debug info.
+

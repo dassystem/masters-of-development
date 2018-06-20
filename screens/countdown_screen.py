@@ -1,5 +1,5 @@
 from screens.base import BaseScreen, BaseScreenEventHandler
-import tarentjumper
+import masters_of_development
 from utils import Utils
 from utils.timer import Timer
 
@@ -35,13 +35,13 @@ class CountdownScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.fill(tarentjumper.TarentJumper.BACKGROUND_COLOR)
+        self._surface.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
 
-        countdown_txt = self.__font.render("Games starts in", True, tarentjumper.TarentJumper.BLACK)
+        countdown_txt = self.__font.render("Games starts in", True, masters_of_development.MastersOfDevelopment.BLACK)
         countdown_txt_rect = Utils.center_with_offset(countdown_txt, self._surface, 0, 100)
         self._surface.blit(countdown_txt, countdown_txt_rect)
 
-        time_txt = self.__font.render(str(self.__timer.get_seconds_left()), True, tarentjumper.TarentJumper.BLACK)
+        time_txt = self.__font.render(str(self.__timer.get_seconds_left()), True, masters_of_development.MastersOfDevelopment.BLACK)
         time_txt_rect = Utils.center_with_offset(time_txt, self._surface, 0 , 150)
         time_txt_rect.move_ip(0, 200)
         

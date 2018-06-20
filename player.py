@@ -1,7 +1,7 @@
 import pygame
 import random
 from block import Block
-import tarentjumper
+import masters_of_development
 
 class DebugInfo(object):
     def __init__(self, player):
@@ -407,7 +407,7 @@ class Score(pygame.sprite.Sprite):
         text_surfaces = []
         
         for txt in ("SCORE", "{0:d}".format(self.__score)):
-            text_surfaces.append(self.__font.render(txt, True, tarentjumper.TarentJumper.BLACK))
+            text_surfaces.append(self.__font.render(txt, True, masters_of_development.MastersOfDevelopment.BLACK))
         
         width = max(txt_surface.get_width() for txt_surface in text_surfaces)
         

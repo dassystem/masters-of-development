@@ -1,5 +1,5 @@
 import pygame
-import tarentjumper
+import masters_of_development
 from utils import Utils
 from screens.base import BaseScreen, BaseScreenEventHandler
 
@@ -7,8 +7,8 @@ class StartScreen(BaseScreen):
     def __init__(self, surface, big_font, small_font):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self)], True)
 
-        self.__start_title = big_font.render("tarent Jumper", True, tarentjumper.TarentJumper.TARENT_RED)
-        self.__start_hint = small_font.render("Press Button or Enter to start the game", True, tarentjumper.TarentJumper.TARENT_GREY)
+        self.__start_title = big_font.render("Masters of Development", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
+        self.__start_hint = small_font.render("Press Button or Enter to start the game", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
         self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")
   
     def start(self):
@@ -19,7 +19,7 @@ class StartScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.fill(tarentjumper.TarentJumper.WHITE)
+        self._surface.fill(masters_of_development.MastersOfDevelopment.WHITE)
         
         start_title_rect = Utils.center(self.__start_title, self._surface)
         start_title_rect.move_ip(0, -100)

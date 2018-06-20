@@ -10,7 +10,7 @@ import screens.countdown_screen
 import screens.in_game_screen
 import screens.game_over_screen
 
-class TarentJumper(object):
+class MastersOfDevelopment(object):
     # colors
     TARENT_RED = pygame.Color(204, 0, 0)
     TARENT_GREY = pygame.Color(180, 180, 180)
@@ -29,7 +29,7 @@ class TarentJumper(object):
         
         # pygame.HWSURFACE only for fullscreen...
         self.__display = pygame.display.set_mode((width, height), flags)
-        pygame.display.set_caption("tarent Jumper")
+        pygame.display.set_caption("Masters of Development")
         #self._screens = []
 
         pygame.event.set_blocked(pygame.MOUSEMOTION)
@@ -58,7 +58,7 @@ class TarentJumper(object):
             "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
-                self.__display, self.__players, self.__small_font, TarentJumper.TARENT_RED, TarentJumper.WHITE)
+                self.__display, self.__players, self.__small_font, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
         }
         
         for item in self.__screen_dict.items():
@@ -163,4 +163,4 @@ if __name__ == "__main__":
         elif i == 2:
             height = int(arg)
     
-    TarentJumper(width, height, flags).run()
+    MastersOfDevelopment(width, height, flags).run()
