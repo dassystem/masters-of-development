@@ -6,7 +6,7 @@ class Timer(object):
     
     def __init__(self, initial_seconds):
         self.__initial_seconds = initial_seconds
-        self.__timer_started = False
+        self.__started = False
         self.__seconds_left = 0
         self.__event_handler = TimerCountdownEventHandler(self)
 
@@ -16,18 +16,21 @@ class Timer(object):
     def get_seconds_left(self):
         return self.__seconds_left
 
+    def is_started(self):
+        return self.__started
+
     def start(self):
-        if not self.__timer_started:
-            self.__timer_started = True
+        if not self.__started:
+            self.__started = True
             self.__seconds_left = self.__initial_seconds
             pygame.time.set_timer(Timer.COUNTDOWN_EVENT, 1000)
 
     def stop(self):
         pygame.time.set_timer(Timer.COUNTDOWN_EVENT, 0)
-        self.__timer_started = False
+        self.__started = False
     
     def countdown(self):
-        if not self.__timer_started:
+        if not self.__started:
             return
         
         self.__seconds_left -= 1
@@ -41,7 +44,7 @@ class TimerCountdownEventHandler(object):
         self.__timer = timer
     
     def can_handle(self, event):
-        return event.type == Timer.COUNTDOWN_EVENT
+        return event.type == Timer.COUNTDOWN_EVENT and self.__timer.is_started()
     
     def handle_event(self, event):
         self.__timer.countdown()

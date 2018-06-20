@@ -10,13 +10,6 @@ class GameOverScreen(BaseScreen):
         self.__font_color = font_color
         self.__background_color = background_color
     
-    def set_active(self, active):
-        super().set_active(active)
-        
-        if not self.is_active():
-            for player in self.__players:
-                player.reset()
-    
     def render(self):
         if not self.is_active():
             return
@@ -65,4 +58,5 @@ class GameOverScreenEventHandler(BaseScreenEventHandler):
         return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN
         
     def handle_event(self, event):
-        self.get_screen().set_active(False)
+        if event.type == pygame.JOYBUTTONDOWN or event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            self.get_screen().set_active(False)

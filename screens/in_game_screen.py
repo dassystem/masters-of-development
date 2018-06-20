@@ -5,7 +5,6 @@ import tarentjumper
 from block import Block
 from utils.timer import Timer
 
-
 class InGameScreen(BaseScreen):
     def __init__(self, surface, players, joysticks, seconds = 100):
         super(InGameScreen, self).__init__(
@@ -18,7 +17,7 @@ class InGameScreen(BaseScreen):
         self.__player_surfaces = []
         
         self.__init_player_surfaces()
-        self.__init_level()
+        #self.__init_level()
 
         self.__font = pygame.font.SysFont("sans", 20)
         self.__timer = Timer(seconds)
@@ -29,16 +28,6 @@ class InGameScreen(BaseScreen):
         for i, screen in enumerate(split_screen):
             self.__player_surfaces.append(screen)
             self.__players[i].set_surface(screen)
-
-    def __init_level(self):
-        # initalize first block the player lands on
-        for index, player in enumerate(self.__players):
-            blockList = []
-            b = Block(0, player.get_surface().get_rect().x, player.get_surface().get_height() - Block.BLOCK_HEIGHT,
-                      player.get_surface().get_width(), Block.BLOCK_HEIGHT
-                      )
-            blockList.append(b)
-            player.set_blocks(blockList)
 
     def render(self):
         if not self.is_active():
@@ -54,8 +43,9 @@ class InGameScreen(BaseScreen):
         for player in self.__players:
             all_dead = all_dead and player.is_dead()
             
-        self.set_active(not all_dead)
-
+        if all_dead:
+            self.set_active(False)
+            
         self.__render_timer()
 
     def __render_timer(self):
@@ -75,8 +65,10 @@ class InGameScreen(BaseScreen):
         if self.is_active():
             self._add_event_handler(self.__timer.get_event_handler())
             self.__timer.start()
+            
+            for player in self.__players:
+                player.reset()
         else:
-            self.__init_player_surfaces()
             self.__timer.stop()
             self._remove_event_handler(self.__timer.get_event_handler())
 

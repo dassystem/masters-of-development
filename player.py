@@ -91,12 +91,20 @@ class Player(pygame.sprite.Sprite):
         self.__sounds = sounds
         self.__score = Score((0, 0), self.__font, self.__sounds["score"])
         self.__all_sprites = pygame.sprite.Group(self.__score)
-        self.reset()
+        self.__blocks = []
+        self.__reset_vars()
 
     def reset(self):
+        self.__reset_vars()
+        self.__reset_blocks()
+        self.__generate_blocks()
+        # set player on base block
+        self.__set_on_block(self.__blocks[0])
+
+    def __reset_vars(self):
         self.__dead = False
-        self.__velocity = 6
-        self.__falling = True
+        self.__velocity = 0
+        self.__falling = False
         self.__jumping = False
         self.__on_block = None
         self.__speed = round(Player.SPEED_TO_FPS_RATIO * self.__fps)
@@ -106,18 +114,18 @@ class Player(pygame.sprite.Sprite):
         self.__highest_block_level = 0
         self.__level = 0
         self.__score.reset()
-    
-    def update(self):
-        if self.__dead:
-            self.__render_game_over()
-        else:
-            self.__update_alive()
-        
-        self.__debug_info.update()
 
-        self.__screen_surface.blit(self.__image, self.__rect)
+    def __reset_blocks(self):
+        for block in self.__blocks:
+            block.kill()
+            
+        self.__blocks = []
 
     def __generate_blocks(self):
+        if len(self.__blocks) == 0:
+            self.__generate_base_block()
+        
+        # only generate as much new blocks as needed
         while len(self.__blocks) < 13:
             self.__level += 1
             ygaps = random.randrange(50, 100)
@@ -150,6 +158,26 @@ class Player(pygame.sprite.Sprite):
 
             self.__blocks.append(b)
 
+    def __generate_base_block(self):
+        baseBlock = Block(
+            0,
+            self.__screen_surface.get_rect().x,
+            self.__screen_surface.get_height() - Block.BLOCK_HEIGHT,
+            self.__screen_surface.get_width(), Block.BLOCK_HEIGHT
+        )
+        
+        self.__blocks.append(baseBlock) 
+    
+    def update(self):
+        if self.__dead:
+            self.__render_game_over()
+        else:
+            self.__update_alive()
+        
+        self.__debug_info.update()
+
+        self.__screen_surface.blit(self.__image, self.__rect)
+
     def __render_game_over(self):
         font_surface = self.__font.render("GAME OVER", True, (255, 0, 0))
         font_rect = font_surface.get_rect()
@@ -163,6 +191,7 @@ class Player(pygame.sprite.Sprite):
         self.__all_sprites.draw(self.__screen_surface)
 
         self.__scroll_screen()
+        # generate new blocks after scrolling if necessary
         self.__generate_blocks()
 
         for block in self.__blocks:
@@ -177,7 +206,7 @@ class Player(pygame.sprite.Sprite):
                 self.__falling = True
                 self.__velocity = 6
 
-        if self.__on_block == None:
+        if self.__on_block is None:
             self.__detect_block_collision()
         else:
             self.__check_still_on_block()
@@ -234,7 +263,7 @@ class Player(pygame.sprite.Sprite):
         return self.__rect.x <= self.__screen_surface.get_width() - self.__rect.width - self.__speed
 
     def __check_still_on_block(self):
-        if self.__on_block:
+        if self.__on_block is not None:
             if self.__rect.left > self.__on_block.get_rect().right or self.__rect.right < self.__on_block.get_rect().left:
                 self.__on_block = None
                 self.__falling = True
@@ -249,7 +278,7 @@ class Player(pygame.sprite.Sprite):
                 jumped_on = self.__jumping and self.__rect.bottom == block.get_rect().top
                 
                 if falled_on or jumped_on:
-                    self.__on_block = block
+                    self.__set_on_block(block)
                     
                     if self.__on_block.get_level() > self.__highest_block_level:
                         self.__score.add_platform_score(self.__on_block.get_level() - self.__highest_block_level)
@@ -258,8 +287,11 @@ class Player(pygame.sprite.Sprite):
                     self.__falling = False
                     self.__jumping = False
                     self.__velocity = 0
-                    self.__rect.bottom = block.get_rect().y
                     break
+    
+    def __set_on_block(self, block):
+        self.__on_block = block
+        self.__rect.bottom = block.get_rect().y
     
     def move_right(self):
         """Marks the player as moving to the right.
@@ -292,11 +324,10 @@ class Player(pygame.sprite.Sprite):
         """
         if self.__dead:
             return
-
-        self.__sounds["jump"].play()
-        
+       
         # jump only possible if standing on a block
-        if self.__on_block:
+        if self.__on_block is not None:
+            self.__sounds["jump"].play()
             self.__on_block = None
             self.__falling = False
             self.__jumping = True
@@ -323,9 +354,6 @@ class Player(pygame.sprite.Sprite):
 
     def __init_score_display(self):
         self.__score_display = Score((0, 0), self.__font, self.__sounds["score"])
-
-    def set_blocks(self, blocks):
-        self.__blocks = blocks
 
     def get_rect(self):
         return self.__rect
@@ -400,5 +428,3 @@ class Score(pygame.sprite.Sprite):
     
     def get_score(self):
         return self.__score
-
-    
