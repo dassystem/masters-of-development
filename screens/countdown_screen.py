@@ -4,9 +4,9 @@ from utils import Utils
 from utils.timer import Timer
 
 class CountdownScreen(BaseScreen):
-    def __init__(self, surface, font, seconds = 5):
+    def __init__(self, surface, fonts, seconds = 5):
         super(CountdownScreen, self).__init__(surface, [CountdownScreenEventHandler(self)])
-        self.__font = font
+        self.__font = fonts["big"]
         self.__seconds = seconds
         self.__timer = Timer(seconds)
         

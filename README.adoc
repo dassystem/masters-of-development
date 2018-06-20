@@ -38,3 +38,6 @@ Use Joystick button or Joystick up or key 'w' for player 1 or cursor key `UP`.
 
 Press key `i` for some debug info.
 
+== Misc
+
+* http://www.fontspace.com/codeman38/press-start-2p[Press Start 2P font]

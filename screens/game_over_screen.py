@@ -3,10 +3,10 @@ from screens.base import BaseScreen, BaseScreenEventHandler
 import utils
 
 class GameOverScreen(BaseScreen):
-    def __init__(self, surface, players, font, font_color, background_color):
+    def __init__(self, surface, players, fonts, font_color, background_color):
         super(GameOverScreen, self).__init__(surface, [GameOverScreenEventHandler(self)])
         self.__players = players
-        self.__font = font
+        self.__font = fonts["small"]
         self.__font_color = font_color
         self.__background_color = background_color
     

@@ -4,12 +4,12 @@ from utils import Utils
 import masters_of_development
 
 class GetReadyScreen(BaseScreen):
-    def __init__(self, surface, joysticks, players, font):
+    def __init__(self, surface, joysticks, players, fonts):
         super(GetReadyScreen, self).__init__(surface, [GetReadyScreenEventHandler(self, joysticks, players)])
         self.__players = players
         self.__player_screens = Utils.split_screen(self._surface)
         
-        self.__font = font
+        self.__font = fonts["small"]
 
     def set_player_ready(self, player_number):
         self.__players[player_number].set_ready(True)

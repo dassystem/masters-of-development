@@ -4,11 +4,11 @@ from utils import Utils
 from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, big_font, small_font):
+    def __init__(self, surface, fonts):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self)], True)
 
-        self.__start_title = big_font.render("Masters of Development", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
-        self.__start_hint = small_font.render("Press Button or Enter to start the game", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
+        self.__start_title = fonts["big"].render("Masters of Development", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
+        self.__start_hint = fonts["small"].render("Press Button or Enter to start the game", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
         self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")
   
     def start(self):
