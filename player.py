@@ -4,11 +4,11 @@ from block import Block
 import masters_of_development
 
 class DebugInfo(object):
-    def __init__(self, player):
+    def __init__(self, player, fonts):
         self.__player = player
         self.__visible = False
 
-        self.__font = pygame.font.SysFont("mono", 14)
+        self.__font = fonts["micro"]
         self.__color = pygame.Color(0, 255, 0)    
         
     def update(self):
@@ -74,7 +74,7 @@ class DebugInfo(object):
 class Player(pygame.sprite.Sprite):
     SPEED_TO_FPS_RATIO = 1 / 8
     
-    def __init__(self, number, image_file_name, gravity, joystick, sounds, fps):
+    def __init__(self, number, image_file_name, gravity, joystick, sounds, fonts, fps):
         # call the parent class (Sprite) constructor
         super(Player, self).__init__()
         
@@ -85,10 +85,10 @@ class Player(pygame.sprite.Sprite):
         self.__fps = fps
         self._scroll_velocity = 8
         self.__gravity = gravity
-        self.__debug_info = DebugInfo(self)
-        self.__font = pygame.font.SysFont("sans", 20)
+        self.__debug_info = DebugInfo(self, fonts)
         self.__joystick = joystick
         self.__sounds = sounds
+        self.__font = fonts["small"]
         self.__score = Score((0, 0), self.__font, self.__sounds["score"])
         self.__all_sprites = pygame.sprite.Group(self.__score)
         self.__blocks = []

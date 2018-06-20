@@ -6,12 +6,14 @@ from block import Block
 from utils.timer import Timer
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, players, joysticks, seconds = 100):
+    def __init__(self, surface, fonts, players, joysticks, seconds = 100):
         super(InGameScreen, self).__init__(
             surface,
             [InGameScreenKeyboardEventHandler(self, players),
              InGameScreenJoystickEventHandler(self, players, joysticks),
              InGameScreenTimerElapsedEventHandler(self)])
+        
+        self.__font = fonts["small"]
         
         self.__players = players
         self.__player_surfaces = []
@@ -19,7 +21,6 @@ class InGameScreen(BaseScreen):
         self.__init_player_surfaces()
         #self.__init_level()
 
-        self.__font = pygame.font.SysFont("sans", 20)
         self.__timer = Timer(seconds)
 
     def __init_player_surfaces(self):

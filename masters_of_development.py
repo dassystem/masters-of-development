@@ -52,13 +52,13 @@ class MastersOfDevelopment(object):
         self.__init_players()
         
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(self.__display, self.__big_font, self.__small_font),
+            "start": screens.start_screen.StartScreen(self.__display, self.__fonts),
             "getready": screens.get_ready_screen.GetReadyScreen(
-                self.__display, self.__joysticks, self.__players, self.__small_font),
-            "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
-            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks),
+                self.__display, self.__joysticks, self.__players, self.__fonts),
+            "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__fonts),
+            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
-                self.__display, self.__players, self.__small_font, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
+                self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
         }
         
         for item in self.__screen_dict.items():
@@ -91,8 +91,11 @@ class MastersOfDevelopment(object):
                 break;
 
     def __init_fonts(self):
-        self.__big_font = pygame.font.SysFont("sans", 72)
-        self.__small_font = pygame.font.SysFont("sans", 24)
+        self.__fonts = {}
+        
+        self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 36)
+        self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
+        self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
 
     def __init_joysticks(self):
         self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
@@ -118,7 +121,7 @@ class MastersOfDevelopment(object):
                 self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__sounds))
 
     def __init_player(self, number, image_file_name, joystick, sounds):
-        return player.Player(number, image_file_name, 1, joystick, sounds, self.__fps)
+        return player.Player(number, image_file_name, 1, joystick, sounds, self.__fonts, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music
