@@ -76,8 +76,6 @@ class InGameScreen(BaseScreen):
             self._add_event_handler(self.__timer.get_event_handler())
             self.__timer.start()
         else:
-            for player in self.__players:
-                player.reset()
             self.__init_player_surfaces()
             self.__timer.stop()
             self._remove_event_handler(self.__timer.get_event_handler())

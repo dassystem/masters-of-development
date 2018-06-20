@@ -7,6 +7,7 @@ import screens.start_screen
 import screens.get_ready_screen
 import screens.countdown_screen
 import screens.in_game_screen
+import screens.game_over_screen
 
 class TarentJumper(object):
     # colors
@@ -54,7 +55,9 @@ class TarentJumper(object):
             "getready": screens.get_ready_screen.GetReadyScreen(
                 self.__display, self.__joysticks, self.__players, self.__small_font),
             "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__big_font),
-            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks)
+            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__players, self.__joysticks),
+            "gameover": screens.game_over_screen.GameOverScreen(
+                self.__display, self.__players, self.__small_font, TarentJumper.TARENT_RED, TarentJumper.WHITE)
         }
         
         for item in self.__screen_dict.items():
@@ -65,6 +68,8 @@ class TarentJumper(object):
             elif item[0] == "countdown":
                 item[1].set_next_screen(self.__screen_dict["ingame"])
             elif item[0] == "ingame":
+                item[1].set_next_screen(self.__screen_dict["gameover"])
+            elif item[0] == "gameover":
                 item[1].set_next_screen(self.__screen_dict["start"])
         
         for i, player_surface in enumerate(self.__screen_dict["ingame"].get_player_surfaces()):
