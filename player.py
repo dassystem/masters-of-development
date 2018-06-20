@@ -104,6 +104,7 @@ class Player(pygame.sprite.Sprite):
         self.__move = None
         self.__ready = False
         self.__highest_block_level = 0
+        self.__level = 0
         self.__score.reset()
     
     def update(self):
