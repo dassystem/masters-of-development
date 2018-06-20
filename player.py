@@ -79,10 +79,9 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         
         self.__number = number
-        
         self.__image = pygame.image.load(image_file_name).convert_alpha()
         self.__rect = self.__image.get_rect()
-       
+        self.__level = 0
         self.__fps = fps
         self._scroll_velocity = 8
         self.__gravity = gravity
@@ -119,6 +118,7 @@ class Player(pygame.sprite.Sprite):
 
     def __generate_blocks(self):
         while len(self.__blocks) < 13:
+            self.__level += 1
             ygaps = random.randrange(50, 100)
             xgaps = random.randrange(100, 150)
             block_width = random.randrange(80, 160)
@@ -132,27 +132,20 @@ class Player(pygame.sprite.Sprite):
             # random if the platform spawns left or right to last one
             if random.randint(0,1) == 1:
                 random_x_position += xgaps
-
-                # TODO the x position of some blocks are off despite checks, not sure why, need to fix
-
-                # make sure that the new position is not out of screen bounds
-                check = random_x_position + block_width + side_space
-                while check > self.__screen_surface.get_rect().right:
-                    random_x_position = random_x_position - (xgaps + block_width)
-                    check = random_x_position
             else:
                 random_x_position -=  xgaps
-                # make sure that the new position is not out of screen bounds
-                check = random_x_position - block_width - side_space
-                while check < self.__screen_surface.get_rect().left:
-                    random_x_position = random_x_position + (xgaps + block_width)
-                    check = random_x_position
 
-            b = Block(len(self.__blocks),
+            b = Block(self.__level,
                        random_x_position,
                       random_y_position,
                       block_width,
                       Block.BLOCK_HEIGHT)
+            # make sure that the block is not out of screen bounds
+            while b.get_rect().right > self.__screen_surface.get_rect().right:
+                b.get_rect().right -= xgaps
+
+            while b.get_rect().left < self.__screen_surface.get_rect().left:
+                b.get_rect().right += xgaps
 
             self.__blocks.append(b)
 
@@ -198,7 +191,6 @@ class Player(pygame.sprite.Sprite):
                 self.__move_left()
             elif self.__move == "right":
                 self.__move_right()
-
 
         self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom
 

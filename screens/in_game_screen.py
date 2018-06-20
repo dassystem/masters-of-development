@@ -18,14 +18,7 @@ class InGameScreen(BaseScreen):
         self.__player_surfaces = []
         
         self.__init_player_surfaces()
-
-        # initalize first block the player lands on
-        for index, player in enumerate(self.__players):
-            blockList = []
-            b = Block(0, player.get_surface().get_rect().x, player.get_surface().get_height() - Block.BLOCK_HEIGHT, player.get_surface().get_width(), Block.BLOCK_HEIGHT
-                      )
-            blockList.append(b)
-            player.set_blocks(blockList)
+        self.__init_level()
 
         self.__font = pygame.font.SysFont("sans", 20)
         self.__timer = Timer(seconds)
@@ -36,6 +29,16 @@ class InGameScreen(BaseScreen):
         for i, screen in enumerate(split_screen):
             self.__player_surfaces.append(screen)
             self.__players[i].set_surface(screen)
+
+    def __init_level(self):
+        # initalize first block the player lands on
+        for index, player in enumerate(self.__players):
+            blockList = []
+            b = Block(0, player.get_surface().get_rect().x, player.get_surface().get_height() - Block.BLOCK_HEIGHT,
+                      player.get_surface().get_width(), Block.BLOCK_HEIGHT
+                      )
+            blockList.append(b)
+            player.set_blocks(blockList)
 
     def render(self):
         if not self.is_active():
