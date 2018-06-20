@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 import handlers.global_event_handler
 import player
@@ -150,4 +151,16 @@ class TarentJumper(object):
         pygame.quit()
     
 if __name__ == "__main__":
-    TarentJumper(800, 600).run()
+    width = 800 #1980
+    height = 600 #1024
+    flags = 0
+    
+    for i, arg in enumerate(sys.argv):
+        if arg == "fullscreen":
+            flags = pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF
+        elif i == 1:
+            width = int(arg)
+        elif i == 2:
+            height = int(arg)
+    
+    TarentJumper(width, height, flags).run()
