@@ -22,6 +22,7 @@ class CountdownScreen(BaseScreen):
     
     def __start_timer(self):
         self.__timer.start()
+        self._add_event_handler(self.__timer.get_event_handler())
 
     def __stop_timer(self):
         self.__timer.stop()

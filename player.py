@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):
 
     def reset(self):
         self.__dead = False
-        self.__velocity = 0
+        self.__velocity = 6
         self.__falling = True
         self.__jumping = False
         self.__on_block = None
