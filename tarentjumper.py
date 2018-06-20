@@ -8,7 +8,7 @@ import screens.get_ready_screen
 import screens.countdown_screen
 import screens.in_game_screen
 
-class TarentJumper:
+class TarentJumper(object):
     # colors
     TARENT_RED = pygame.Color(204, 0, 0)
     TARENT_GREY = pygame.Color(180, 180, 180)
@@ -41,6 +41,8 @@ class TarentJumper:
         
         self.__init_fonts()
         
+        self.__sounds = {}
+        
         self.__clock = pygame.time.Clock()
         self.__fps = fps
 
@@ -67,7 +69,7 @@ class TarentJumper:
         
         for i, player_surface in enumerate(self.__screen_dict["ingame"].get_player_surfaces()):
             self.__players[i].set_surface(player_surface)
-        
+
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
         self.__running = True
 
@@ -95,7 +97,8 @@ class TarentJumper:
     def __init_players(self):
         self.__players = []
         
-        self.__jump_sound = pygame.mixer.Sound("assets/sounds/jump.wav")
+        self.__sounds['jump'] = pygame.mixer.Sound("assets/sounds/jump.wav")
+        self.__sounds['score'] = pygame.mixer.Sound("assets/sounds/glass.ogg")
         
         joystick_count = len(self.__joysticks)
 
@@ -106,10 +109,10 @@ class TarentJumper:
                 joystick = self.__joysticks[i]
 
             self.__players.append(
-                self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__jump_sound))
+                self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__sounds))
 
-    def __init_player(self, number, image_file_name, joystick, jump_sound):
-        return player.Player(number, image_file_name, 1, joystick, jump_sound, self.__fps)
+    def __init_player(self, number, image_file_name, joystick, sounds):
+        return player.Player(number, image_file_name, 1, joystick, sounds, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music

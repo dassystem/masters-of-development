@@ -3,14 +3,37 @@ from utils import Utils
 import pygame
 import tarentjumper
 from block import Block
+from utils.timer import Timer
+
+level1 = [
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
+    [1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
+    [1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0],
+    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+    [0,1,1,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0],
+    [1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0]
+]
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, players, joysticks):
-        BaseScreen.__init__(
-            self,
+    def __init__(self, surface, players, joysticks, seconds = 100):
+        super(InGameScreen, self).__init__(
             surface,
             [InGameScreenKeyboardEventHandler(self, players),
-             InGameScreenJoystickEventHandler(self, players, joysticks)])
+             InGameScreenJoystickEventHandler(self, players, joysticks),
+             InGameScreenTimerElapsedEventHandler(self)])
         
         self.__players = players
         self.__player_surfaces = []
@@ -25,6 +48,17 @@ class InGameScreen(BaseScreen):
             blockList.append(b)
             player.set_blocks(blockList)
 
+
+        self.__fill_blocks()
+
+        for player in self.__players:
+            player.set_blocks(self.__blocks)
+
+        self.level = Block(0, 50, 50)
+
+        self.__font = pygame.font.SysFont("sans", 20)
+        self.__timer = Timer(seconds)
+
     def __init_player_surfaces(self):
         split_screen = Utils.split_screen(self._surface)
         
@@ -32,14 +66,38 @@ class InGameScreen(BaseScreen):
             self.__player_surfaces.append(screen)
             self.__players[i].set_surface(screen)
 
+    def __fill_blocks(self):
+        self.__blocks = []
+
+        for y in range(0, len(level1)):
+            prev_line_block = None
+            for x in range(0, len(level1[y])):
+                if (level1[y][x] == 1):
+                    new_x = x * 32
+                    new_y = y * 32
+                    new_width = 32
+                    new_height = 32
+
+                    if prev_line_block:
+                        if prev_line_block.get_rect().x / Block.BLOCK_WIDTH == x - 1:
+                            self.__blocks.pop()
+                            new_x = prev_line_block.get_rect().x
+                            new_y = prev_line_block.get_rect().y
+                            new_width = prev_line_block.get_rect().width + Block.BLOCK_WIDTH
+                            new_height = Block.BLOCK_HEIGHT
+
+                    new_block = Block(len(level1) - y, new_x, new_y, new_width, new_height)
+                    self.__blocks.append(new_block)
+                    prev_line_block = new_block
+
     def render(self):
         if not self.is_active():
             return
         
         self._surface.fill(tarentjumper.TarentJumper.BACKGROUND_COLOR)
         
-        #for block in self.__blocks:
-        #    block.render(self._surface)
+        for block in self.__blocks:
+            block.render(self._surface)
 
         for player in self.__players:
             player.update()
@@ -51,24 +109,42 @@ class InGameScreen(BaseScreen):
             
         self.set_active(not all_dead)
 
+        self.__render_timer()
+
+    def __render_timer(self):
+        text_surface_1 = self.__font.render("Time", True, tarentjumper.TarentJumper.TARENT_RED)
+        text_rect_1 = Utils.center(text_surface_1, self._surface)
+        self._surface.blit(text_surface_1, text_rect_1)
+
+        text_surface_2 = self.__font.render(
+            "{0:d}s".format(self.__timer.get_seconds_left()), True , tarentjumper.TarentJumper.TARENT_RED)
+        text_rect_2 = Utils.center(text_surface_2, self._surface)
+        text_rect_2.move_ip(0, text_rect_1.height)
+        self._surface.blit(text_surface_2, text_rect_2)
+
     def set_active(self, active):
-        BaseScreen.set_active(self, active)
+        super().set_active(active)
         
-        if not self.is_active():
+        if self.is_active():
+            self._add_event_handler(self.__timer.get_event_handler())
+            self.__timer.start()
+        else:
             for player in self.__players:
                 player.reset()
             self.__init_player_surfaces()
+            self.__timer.stop()
+            self._remove_event_handler(self.__timer.get_event_handler())
 
     def get_player_surfaces(self):
         return self.__player_surfaces
 
 class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, players):
-        BaseScreenEventHandler.__init__(self, in_game_screen)
+        super(InGameScreenKeyboardEventHandler, self).__init__(in_game_screen)
         self.__players = players
 
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
@@ -115,15 +191,15 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
     STOP = 0
 
     def __init__(self, in_game_screen, players, joysticks):
-        BaseScreenEventHandler.__init__(self, in_game_screen)
+        super(InGameScreenJoystickEventHandler, self).__init__(in_game_screen)
         self.__players = players
         self.__joysticks = joysticks
 
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
-        return event.type == pygame.JOYAXISMOTION
+        return event.type == pygame.JOYAXISMOTION or event.type == pygame.JOYBUTTONDOWN
 
     def handle_event(self, event):
         if not self.can_handle(event):
@@ -131,6 +207,8 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         
         if event.type == pygame.JOYAXISMOTION:
             self.__handle_axis_motion(event)
+        elif event.type == pygame.JOYBUTTONDOWN:
+            self.__handle_button_down(event)
 
     def __handle_axis_motion(self, event):
         if event.axis > InGameScreenJoystickEventHandler.VERTICAL_AXIS:
@@ -162,3 +240,28 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
 
     def __round_event_value(self, event):
         return round(event.value, 0)
+
+    def __handle_button_down(self, event):
+        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
+
+        if player is None:
+            return
+
+        player.jump()
+
+class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
+    def __init__(self, in_game_screen):
+        super(InGameScreenTimerElapsedEventHandler, self).__init__(in_game_screen)
+
+    def can_handle(self, event):
+        if not super().can_handle(event):
+            return False
+
+        return event.type == Timer.ELASPED_EVENT
+
+    def handle_event(self, event):
+        if not self.can_handle(event):
+            return
+
+        if event.type == Timer.ELASPED_EVENT:
+            self.get_screen().set_active(False)

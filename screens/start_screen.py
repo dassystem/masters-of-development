@@ -5,7 +5,7 @@ from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
     def __init__(self, surface, big_font, small_font):
-        BaseScreen.__init__(self, surface, [StartScreenEventHandler(self)], True)
+        super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self)], True)
 
         self.__start_title = big_font.render("tarent Jumper", True, tarentjumper.TarentJumper.TARENT_RED)
         self.__start_hint = small_font.render("Press Button or Enter to start the game", True, tarentjumper.TarentJumper.TARENT_GREY)
@@ -33,10 +33,10 @@ class StartScreen(BaseScreen):
 
 class StartScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, start_screen):
-        BaseScreenEventHandler.__init__(self, start_screen)
+        super(StartScreenEventHandler, self).__init__(start_screen)
         
     def can_handle(self, event):
-        if not BaseScreenEventHandler.can_handle(self, event):
+        if not super().can_handle(event):
             return False
         
         return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN
