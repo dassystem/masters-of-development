@@ -3,6 +3,7 @@ import tarentjumper
 from utils import Utils
 from utils.timer import Timer
 
+# TODO fix countdown screen since commit "refactor to use new python object style" the countdown wont start after a reset
 class CountdownScreen(BaseScreen):
     def __init__(self, surface, font, seconds = 5):
         super(CountdownScreen, self).__init__(surface, [CountdownScreenEventHandler(self)])
@@ -37,11 +38,11 @@ class CountdownScreen(BaseScreen):
         self._surface.fill(tarentjumper.TarentJumper.BACKGROUND_COLOR)
 
         countdown_txt = self.__font.render("Games starts in", True, tarentjumper.TarentJumper.BLACK)
-        countdown_txt_rect = Utils.center(countdown_txt, self._surface)
+        countdown_txt_rect = Utils.center_with_offset(countdown_txt, self._surface, 0, 100)
         self._surface.blit(countdown_txt, countdown_txt_rect)
 
         time_txt = self.__font.render(str(self.__timer.get_seconds_left()), True, tarentjumper.TarentJumper.BLACK)
-        time_txt_rect = Utils.center(time_txt, self._surface)
+        time_txt_rect = Utils.center_with_offset(time_txt, self._surface, 0 , 150)
         time_txt_rect.move_ip(0, 200)
         
         self._surface.blit(time_txt, time_txt_rect)

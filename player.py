@@ -1,4 +1,5 @@
 import pygame
+import random
 from block import Block
 import tarentjumper
 
@@ -78,12 +79,11 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         
         self.__number = number
-        
         self.__image = pygame.image.load(image_file_name).convert_alpha()
         self.__rect = self.__image.get_rect()
-       
+        self.__level = 0
         self.__fps = fps
-       
+        self._scroll_velocity = 8
         self.__gravity = gravity
         self.__debug_info = DebugInfo(self)
         self.__font = pygame.font.SysFont("sans", 20)
@@ -104,6 +104,7 @@ class Player(pygame.sprite.Sprite):
         self.__move = None
         self.__ready = False
         self.__highest_block_level = 0
+        self.__level = 0
         self.__score.reset()
     
     def update(self):
@@ -113,8 +114,41 @@ class Player(pygame.sprite.Sprite):
             self.__update_alive()
         
         self.__debug_info.update()
-                
+
         self.__screen_surface.blit(self.__image, self.__rect)
+
+    def __generate_blocks(self):
+        while len(self.__blocks) < 13:
+            self.__level += 1
+            ygaps = random.randrange(50, 100)
+            xgaps = random.randrange(100, 150)
+            block_width = random.randrange(80, 160)
+            side_space = 30
+            last_block = self.__blocks[len(self.__blocks)-1]
+
+            last_block_top = last_block.get_rect().top
+            random_y_position = last_block_top - ygaps
+            random_x_position = last_block.get_rect().centerx
+
+            # random if the platform spawns left or right to last one
+            if random.randint(0,1) == 1:
+                random_x_position += xgaps
+            else:
+                random_x_position -=  xgaps
+
+            b = Block(self.__level,
+                       random_x_position,
+                      random_y_position,
+                      block_width,
+                      Block.BLOCK_HEIGHT)
+            # make sure that the block is not out of screen bounds
+            while b.get_rect().right > self.__screen_surface.get_rect().right:
+                b.get_rect().right -= xgaps
+
+            while b.get_rect().left < self.__screen_surface.get_rect().left:
+                b.get_rect().right += xgaps
+
+            self.__blocks.append(b)
 
     def __render_game_over(self):
         font_surface = self.__font.render("GAME OVER", True, (255, 0, 0))
@@ -127,12 +161,18 @@ class Player(pygame.sprite.Sprite):
     def __update_alive(self):
         self.__all_sprites.update()
         self.__all_sprites.draw(self.__screen_surface)
-        
+
+        self.__scroll_screen()
+        self.__generate_blocks()
+
+        for block in self.__blocks:
+            block.render(self.get_surface())
+
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
                     
             if self.__jump_height <= 0:
-                self.__jump_height = 15
+                self.__jump_height = 10
                 self.__jumping = False
                 self.__falling = True
                 self.__velocity = 6
@@ -152,8 +192,18 @@ class Player(pygame.sprite.Sprite):
                 self.__move_left()
             elif self.__move == "right":
                 self.__move_right()
-    
-        self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom        
+
+        self.__dead = self.__falling and self.__rect.top > self.__screen_surface.get_rect().bottom
+
+    def __scroll_screen(self):
+        if self.__rect.top <= self.__screen_surface.get_height() / 2:
+            self.__rect.y += self._scroll_velocity
+            for block in self.__blocks:
+                block.get_rect().y += self._scroll_velocity
+                # delete blocks offscreen
+                if block.get_rect().top >= self.__screen_surface.get_height():
+                    self.__blocks.remove(block)
+                    block.kill()
 
     def __move_down(self):
         self.__rect.move_ip(0, self.__velocity)
@@ -237,6 +287,7 @@ class Player(pygame.sprite.Sprite):
         self.__move = None
 
     def jump(self):
+        # TODO fix jumping, jumping right now is "teleporting" up then falling, looks/feels bad
         """Marks the player as jumping.
         """
         if self.__dead:

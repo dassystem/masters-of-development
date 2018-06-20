@@ -5,6 +5,12 @@ def center(surface, target_surface):
     y = center_y(surface, target_surface)
     
     return pygame.Rect(x, y, surface.get_width(), surface.get_height())
+
+def center_with_offset(surface, target_surface, offset_x, offset_y):
+    x = center_x(surface, target_surface) - offset_x
+    y = center_y(surface, target_surface) - offset_y
+
+    return pygame.Rect(x, y, surface.get_width(), surface.get_height())
     
 def center_x(surface, target_surface):
     return target_surface.get_rect().centerx - surface.get_width() // 2
