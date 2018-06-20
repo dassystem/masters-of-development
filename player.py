@@ -148,9 +148,11 @@ class Player(pygame.sprite.Sprite):
                     random_x_position = random_x_position + (xgaps + block_width)
                     check = random_x_position
 
-            b = Block(random_x_position,
+            b = Block(len(self.__blocks),
+                       random_x_position,
                       random_y_position,
-                      block_width, Block.BLOCK_HEIGHT)
+                      block_width,
+                      Block.BLOCK_HEIGHT)
 
             self.__blocks.append(b)
 

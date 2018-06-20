@@ -1,5 +1,6 @@
 import pygame
 
+
 class Block(pygame.sprite.Sprite):
     BLOCK_WIDTH = 32
     BLOCK_HEIGHT = 32
