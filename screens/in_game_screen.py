@@ -1,7 +1,7 @@
 from screens.base import BaseScreen, BaseScreenEventHandler
 from utils import Utils
 import pygame
-import tarentjumper
+import masters_of_development
 from block import Block
 from utils.timer import Timer
 
@@ -33,7 +33,7 @@ class InGameScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.fill(tarentjumper.TarentJumper.BACKGROUND_COLOR)
+        self._surface.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
 
         for player in self.__players:
             player.update()
@@ -49,12 +49,12 @@ class InGameScreen(BaseScreen):
         self.__render_timer()
 
     def __render_timer(self):
-        text_surface_1 = self.__font.render("Time", True, tarentjumper.TarentJumper.TARENT_RED)
+        text_surface_1 = self.__font.render("Time", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
         text_rect_1 = Utils.center(text_surface_1, self._surface)
         self._surface.blit(text_surface_1, text_rect_1)
 
         text_surface_2 = self.__font.render(
-            "{0:d}s".format(self.__timer.get_seconds_left()), True , tarentjumper.TarentJumper.TARENT_RED)
+            "{0:d}s".format(self.__timer.get_seconds_left()), True , masters_of_development.MastersOfDevelopment.TARENT_RED)
         text_rect_2 = Utils.center(text_surface_2, self._surface)
         text_rect_2.move_ip(0, text_rect_1.height)
         self._surface.blit(text_surface_2, text_rect_2)

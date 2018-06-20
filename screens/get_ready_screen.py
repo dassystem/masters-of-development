@@ -1,7 +1,7 @@
 import pygame
 from screens.base import BaseScreen, BaseScreenEventHandler
 from utils import Utils
-import tarentjumper
+import masters_of_development
 
 class GetReadyScreen(BaseScreen):
     def __init__(self, surface, joysticks, players, font):
@@ -25,7 +25,7 @@ class GetReadyScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.fill(tarentjumper.TarentJumper.BACKGROUND_COLOR)
+        self._surface.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
         
         #TODO change text to (Player X is ready!)
         for index, player_screen in enumerate(self.__player_screens):
@@ -44,17 +44,17 @@ class GetReadyScreen(BaseScreen):
             
             text += str(index + 1)
                 
-            text_surface = self.__font.render(text, True, tarentjumper.TarentJumper.TARENT_RED)
+            text_surface = self.__font.render(text, True, masters_of_development.MastersOfDevelopment.TARENT_RED)
             text_surface_rect = Utils.center(text_surface, player_screen)
             player_screen.blit(text_surface, text_surface_rect)
 
             if not hint1 is None:
-                text_surface_hint1 = self.__font.render(hint1, True , tarentjumper.TarentJumper.TARENT_RED)
+                text_surface_hint1 = self.__font.render(hint1, True , masters_of_development.MastersOfDevelopment.TARENT_RED)
                 text_rect_hint1 = Utils.center(text_surface_hint1, player_screen)
                 text_rect_hint1.move_ip(0, text_surface_rect.height)
                 player_screen.blit(text_surface_hint1, text_rect_hint1)
                 
-                text_surface_hint2 = self.__font.render(hint2, True , tarentjumper.TarentJumper.TARENT_RED)
+                text_surface_hint2 = self.__font.render(hint2, True , masters_of_development.MastersOfDevelopment.TARENT_RED)
                 text_rect_hint2 = Utils.center(text_surface_hint2, player_screen)
                 text_rect_hint2.move_ip(0, text_surface_rect.height + text_rect_hint1.height)
                 player_screen.blit(text_surface_hint2, text_rect_hint2)
