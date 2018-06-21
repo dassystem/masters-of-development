@@ -5,8 +5,6 @@ import handlers.global_event_handler
 import player
 
 import screens.start_screen
-import screens.get_ready_screen
-import screens.countdown_screen
 import screens.in_game_screen
 import screens.game_over_screen
 
@@ -52,10 +50,7 @@ class MastersOfDevelopment(object):
         self.__init_players()
         
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(self.__display, self.__fonts),
-            "getready": screens.get_ready_screen.GetReadyScreen(
-                self.__display, self.__joysticks, self.__players, self.__fonts),
-            "countdown": screens.countdown_screen.CountdownScreen(self.__display, self.__fonts),
+            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
                 self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
@@ -63,10 +58,6 @@ class MastersOfDevelopment(object):
         
         for item in self.__screen_dict.items():
             if item[0] == "start":
-                item[1].set_next_screen(self.__screen_dict["getready"])
-            elif item[0] == "getready":
-                item[1].set_next_screen(self.__screen_dict["countdown"])
-            elif item[0] == "countdown":
                 item[1].set_next_screen(self.__screen_dict["ingame"])
             elif item[0] == "ingame":
                 item[1].set_next_screen(self.__screen_dict["gameover"])
