@@ -13,7 +13,7 @@ class InGameScreen(BaseScreen):
             [InGameScreenJoystickEventHandler(self, players, joysticks),
              InGameScreenTimerElapsedEventHandler(self)])
         
-        self.__font = fonts["small"]
+        self.__fonts = fonts
         
         self.__players = players
         
@@ -52,15 +52,10 @@ class InGameScreen(BaseScreen):
         self.__render_timer()
 
     def __render_timer(self):
-        text_surface_1 = self.__font.render("Time", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
-        text_rect_1 = Utils.center(text_surface_1, self._surface)
-        self._surface.blit(text_surface_1, text_rect_1)
-
-        text_surface_2 = self.__font.render(
+        text_surface = self.__fonts["big"].render(
             "{0:d}s".format(self.__timer.get_seconds_left()), True , masters_of_development.MastersOfDevelopment.TARENT_RED)
-        text_rect_2 = Utils.center(text_surface_2, self._surface)
-        text_rect_2.move_ip(0, text_rect_1.height)
-        self._surface.blit(text_surface_2, text_rect_2)
+        text_rect = text_surface.get_rect(centerx = self._surface.get_rect().centerx)
+        self._surface.blit(text_surface, text_rect)
 
     def set_active(self, active):
         super().set_active(active)
@@ -349,15 +344,7 @@ class Score(pygame.sprite.Sprite):
         if not self.__dirty:
             return
         
-        #height = self.__font.get_height()
-        #text_surface = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
-        
-        #width = max(txt_surface.get_width() for txt_surface in text_surfaces)
-        
         self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
-        
-        #for y, txt_surface in enumerate(text_surfaces):
-        #    self.image.blit(txt_surface, (0, y * height))
         
         if self.__pos == "left":
             self.rect = self.image.get_rect(topleft = (0, 0))
