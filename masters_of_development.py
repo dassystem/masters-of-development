@@ -1,3 +1,4 @@
+import os
 import pygame
 import sys
 
@@ -33,7 +34,11 @@ class MastersOfDevelopment(object):
         self._width = width
         self._height = height
 
-        pygame.mixer.music.load("assets/sounds/tetrisc.mid")
+        self.__loops = os.listdir("assets/loops")
+        self.__loops.sort()
+        self.__current_loop = 0
+
+        pygame.mixer.music.load("assets/loops/" + self.__loops[self.__current_loop])
         self.__music = False
         self.switch_music()
         
@@ -116,6 +121,32 @@ class MastersOfDevelopment(object):
             pygame.mixer.music.play(-1)
         else:
             pygame.mixer.music.stop()
+
+    def next_music(self):
+        if not self.__music:
+            return
+        
+        if self.__current_loop + 1 == len(self.__loops):
+            self.__current_loop = 0
+        else:
+            self.__current_loop += 1
+            
+        self.__change_loop()
+
+    def prev_music(self):
+        if not self.__music:
+            return
+        
+        if self.__current_loop == 0:
+            self.__current_loop = len(self.__loops) - 1
+        else:
+            self.__current_loop -= 1
+
+        self.__change_loop()
+    
+    def __change_loop(self):
+        pygame.mixer.music.load("assets/loops/" + self.__loops[self.__current_loop])
+        pygame.mixer.music.play(-1)
 
     def shutdown(self):
         self.__running = False

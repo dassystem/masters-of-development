@@ -21,11 +21,15 @@ class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
         super(GlobalSwitchMusicEventHandler, self).__init__(tarent_jumper)
         
     def can_handle(self, event):
-        return event.type == pygame.KEYDOWN and event.key == pygame.K_m
+        return event.type == pygame.KEYDOWN and (event.key == pygame.K_m or event.key == pygame.K_b or event.key == pygame.K_n)
     
     def handle_event(self, event):
-        if self.can_handle(event):
+        if event.key == pygame.K_m:
             self._tarent_jumper.switch_music()
+        elif event.key == pygame.K_b:
+            self._tarent_jumper.prev_music()
+        elif event.key == pygame.K_n:
+            self._tarent_jumper.next_music()
 
 class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
