@@ -3,7 +3,6 @@ import sys
 
 import handlers.global_event_handler
 import player
-
 import screens.start_screen
 import screens.in_game_screen
 import screens.game_over_screen
@@ -28,7 +27,6 @@ class MastersOfDevelopment(object):
         # pygame.HWSURFACE only for fullscreen...
         self.__display = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("Masters of Development")
-        #self._screens = []
 
         pygame.event.set_blocked(pygame.MOUSEMOTION)
 
@@ -51,7 +49,7 @@ class MastersOfDevelopment(object):
         
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
-            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__players, self.__joysticks),
+            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__sounds, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
                 self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
         }
@@ -64,9 +62,6 @@ class MastersOfDevelopment(object):
             elif item[0] == "gameover":
                 item[1].set_next_screen(self.__screen_dict["start"])
         
-        for i, player_surface in enumerate(self.__screen_dict["ingame"].get_player_surfaces()):
-            self.__players[i].set_surface(player_surface)
-
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
         self.__running = True
 
@@ -145,8 +140,8 @@ class MastersOfDevelopment(object):
         pygame.quit()
     
 if __name__ == "__main__":
-    width = 800 #1980
-    height = 600 #1024
+    width = 1280 #1980
+    height = 720 #1024
     flags = 0
     
     for i, arg in enumerate(sys.argv):

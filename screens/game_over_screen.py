@@ -19,10 +19,10 @@ class GameOverScreen(BaseScreen):
         winner = None
         looser = None
         
-        if self.__players[0].get_score().get_score() > self.__players[1].get_score().get_score():
+        if self.__players[0].get_score() > self.__players[1].get_score():
             winner = self.__players[0]
             looser = self.__players[1]
-        elif self.__players[0].get_score().get_score() < self.__players[1].get_score().get_score():
+        elif self.__players[0].get_score() < self.__players[1].get_score():
             winner = self.__players[1]
             looser = self.__players[0]
         
@@ -30,8 +30,8 @@ class GameOverScreen(BaseScreen):
             text_1 = "draw"
             text_2 = "draw"
         else:
-            text_1 = "Congratulations player " + str(winner.get_number()) + ", your score " + str(winner.get_score().get_score())
-            text_2 = "Sorry player " + str(looser.get_number()) + ", your score " + str(looser.get_score().get_score())
+            text_1 = "Congratulations player " + str(winner.get_number()) + ", your score " + str(winner.get_score())
+            text_2 = "Sorry player " + str(looser.get_number()) + ", your score " + str(looser.get_score())
         
         surface_text_1 = self.__font.render(text_1, True, self.__font_color)
         
