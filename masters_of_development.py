@@ -13,7 +13,7 @@ class MastersOfDevelopment(object):
     TARENT_GREY = pygame.Color(180, 180, 180)
     WHITE = pygame.Color(255, 255, 255)
     BLACK = pygame.Color(0, 0, 0)
-    BACKGROUND_COLOR = pygame.Color(50, 60, 200)
+    BACKGROUND_COLOR = WHITE
     
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):

@@ -146,4 +146,3 @@ class StartScreenEventHandler(BaseScreenEventHandler):
     
                 if player is not None:
                     self.get_screen().set_player_ready(player.get_number() - 1)
-
