@@ -1,14 +1,39 @@
 import pygame
 
-class Timer(object):
+class Timer(pygame.sprite.Sprite):
+    """A sprite representing a timer."""
+    
     COUNTDOWN_EVENT = pygame.USEREVENT + 2
     ELASPED_EVENT = pygame.USEREVENT + 3
     
-    def __init__(self, initial_seconds):
+    def __init__(self, initial_seconds, pos_dict, font, font_color, format_string = "{0:d}"):
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(Timer, self).__init__()
+        
         self.__initial_seconds = initial_seconds
+        self.__pos_dict = pos_dict
+        self.__font = font
+        self.__font_color = font_color
+        self.__format_string = format_string
         self.__started = False
         self.__seconds_left = 0
         self.__event_handler = TimerCountdownEventHandler(self)
+        self.__dirty = True
+
+    def update(self):
+        """Updates the timer in order to be drawn to a surface later on.
+           See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
+        """
+        if not self.__dirty:
+            return
+        
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = self.__font.render(self.__format_string.format(self.__seconds_left), True , self.__font_color)
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        # ** unpacks the dictionary to keyword arguments
+        self.rect = self.image.get_rect(**self.__pos_dict)
+        
+        self.__dirty = False
 
     def get_event_handler(self):
         return self.__event_handler
@@ -34,6 +59,7 @@ class Timer(object):
             return
         
         self.__seconds_left -= 1
+        self.__dirty = True
         
         if self.__seconds_left <= 0:
             self.stop()

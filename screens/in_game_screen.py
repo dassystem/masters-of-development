@@ -21,8 +21,15 @@ class InGameScreen(BaseScreen):
         self.__init_play_areas(fonts, sounds)
         
         super()._add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
+        
+        timer = Timer(
+            seconds,
+            {"centerx": self._surface.get_rect().centerx},
+            fonts["big"],
+            masters_of_development.MastersOfDevelopment.TARENT_RED,
+            "{0:d}s")
              
-        self.__timer = Timer(seconds)
+        self.__timer = pygame.sprite.GroupSingle(timer)
 
     def __init_play_areas(self, fonts, sounds):
         split_screen = Utils.split_screen(self._surface)
@@ -52,27 +59,29 @@ class InGameScreen(BaseScreen):
         self.__render_timer()
 
     def __render_timer(self):
-        text_surface = self.__fonts["big"].render(
-            "{0:d}s".format(self.__timer.get_seconds_left()), True , masters_of_development.MastersOfDevelopment.TARENT_RED)
-        text_rect = text_surface.get_rect(centerx = self._surface.get_rect().centerx)
-        self._surface.blit(text_surface, text_rect)
+        self.__timer.update()
+        self.__timer.draw(self._surface)
 
     def set_active(self, active):
         super().set_active(active)
         
         if self.is_active():
-            self._add_event_handler(self.__timer.get_event_handler())
-            self.__timer.start()
+            self._add_event_handler(self.__get_timer().get_event_handler())
+            self.__get_timer().start()
             
             for play_area in self.__play_areas:
                 play_area.reset()
         else:
-            self.__timer.stop()
-            self._remove_event_handler(self.__timer.get_event_handler())
+            self.__get_timer().stop()
+            self._remove_event_handler(self.__get_timer().get_event_handler())
 
     def get_player_surfaces(self):
         return self.__player_surfaces
 
+    def __get_timer(self):
+        """Get the timer out of the sprite group."""
+        return self.__timer.sprite
+    
 class InGameScreenPlayArea(object):
     """A area where a player is playing."""
     

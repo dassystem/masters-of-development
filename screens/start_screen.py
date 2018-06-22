@@ -22,7 +22,13 @@ class StartScreen(BaseScreen):
         
         self.__players = players
         
-        self.__timer = Timer(seconds)
+        timer = Timer(
+            seconds,
+            {"center": surface.get_rect().center},
+            fonts["big"],
+            masters_of_development.MastersOfDevelopment.BLACK)
+        
+        self.__timer = pygame.sprite.GroupSingle(timer)
         self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")
   
     def set_player_ready(self, player_number):
@@ -30,8 +36,8 @@ class StartScreen(BaseScreen):
         
         if self.all_players_ready():
             self.__start_sound.play()
-            self.__timer.start()
-            self._add_event_handler(self.__timer.get_event_handler())
+            self.__get_timer().start()
+            self._add_event_handler(self.__get_timer().get_event_handler())
   
     def all_players_ready(self):
         all_players_ready = True
@@ -42,13 +48,13 @@ class StartScreen(BaseScreen):
         return all_players_ready
   
     def countdown(self):
-        self.__timer.countdown()
+        self.__get_timer().countdown()
   
     def set_active(self, active):
         super().set_active(active)
         
         if not self.is_active():
-            self._remove_event_handler(self.__timer.get_event_handler())
+            self._remove_event_handler(self.__get_timer().get_event_handler())
     
     def render(self):
         if not self.is_active():
@@ -99,14 +105,16 @@ class StartScreen(BaseScreen):
         
         self._surface.blit(text, rect)
         
-        if self.__timer.is_started():
+        if self.__get_timer().is_started():
             self.render_countdown();
 
     def render_countdown(self):
-        time_txt = self.__fonts["big"].render(str(self.__timer.get_seconds_left()), True, masters_of_development.MastersOfDevelopment.BLACK)
-        time_txt_rect = Utils.center(time_txt, self._surface)
-        
-        self._surface.blit(time_txt, time_txt_rect)
+        self.__timer.update()
+        self.__timer.draw(self._surface)
+
+    def __get_timer(self):
+        """Get the timer out of the sprite group."""
+        return self.__timer.sprite
 
 class StartScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, start_screen, players):
