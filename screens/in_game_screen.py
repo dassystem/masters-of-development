@@ -86,7 +86,17 @@ class InGameScreenPlayArea(object):
         self.__fonts = fonts
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
-        self.__score = pygame.sprite.GroupSingle(Score((0, 0), fonts["small"], sounds["score"]))
+        
+        score_pos = None
+        
+        if player.get_number() == 1:
+            score_pos = "left"
+        else:
+            score_pos = "right"
+            
+        self.__score = pygame.sprite.GroupSingle(Score(score_pos, fonts["big"], sounds["score"]))
+        
+        
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(player, fonts))
         self.__scroll_velocity = 8
         self.__level = 0
@@ -170,7 +180,7 @@ class InGameScreenPlayArea(object):
         self.__generate_blocks()
         
         self.__player.update()
-        self.__score.update()
+        self.__score.update(self.__surface)
         self.__debug_info.update()
 
         collideted_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
@@ -324,7 +334,7 @@ class Score(pygame.sprite.Sprite):
         super(Score, self).__init__()
         self.__font = font
         self.__sound = sound
-        self.rect = pygame.Rect(pos, (1, 1))
+        self.__pos = pos
         self.__score = 0
         self.__dirty = True
 
@@ -332,27 +342,27 @@ class Score(pygame.sprite.Sprite):
         self.__score = 0
         self.__dirty = True
         
-    def update(self):
+    def update(self, target_surface):
         """Updates the score display. Does nothing if score hasn't changed..
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
         if not self.__dirty:
             return
         
-        height = self.__font.get_height()
-        text_surfaces = []
+        #height = self.__font.get_height()
+        #text_surface = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
         
-        for txt in ("SCORE", "{0:d}".format(self.__score)):
-            text_surfaces.append(self.__font.render(txt, True, masters_of_development.MastersOfDevelopment.BLACK))
+        #width = max(txt_surface.get_width() for txt_surface in text_surfaces)
         
-        width = max(txt_surface.get_width() for txt_surface in text_surfaces)
+        self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
         
-        self.image = pygame.Surface((width, height * len(text_surfaces)), pygame.SRCALPHA)
+        #for y, txt_surface in enumerate(text_surfaces):
+        #    self.image.blit(txt_surface, (0, y * height))
         
-        for y, txt_surface in enumerate(text_surfaces):
-            self.image.blit(txt_surface, (0, y * height))
-        
-        self.rect = self.image.get_rect(topleft = self.rect.topleft)
+        if self.__pos == "left":
+            self.rect = self.image.get_rect(topleft = (0, 0))
+        else:
+            self.rect = self.image.get_rect(topright = (target_surface.get_width() - 1, 0))
         
         self.__dirty = False
     
