@@ -7,6 +7,7 @@ import player
 import screens.start_screen
 import screens.in_game_screen
 import screens.game_over_screen
+import screens.leaderboard_screen
 
 class MastersOfDevelopment(object):
     # colors
@@ -51,20 +52,27 @@ class MastersOfDevelopment(object):
 
         self.__init_joysticks()
         self.__init_players()
+        self.__init_cursors()
         
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__sounds, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
-                self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE)
+                self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE),
+            "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
+                self.__display, self.__players, self.__joysticks, self.__cursors, self.__fonts, MastersOfDevelopment.TARENT_RED,
+                MastersOfDevelopment.WHITE)
+
         }
         
         for item in self.__screen_dict.items():
             if item[0] == "start":
-                item[1].set_next_screen(self.__screen_dict["ingame"])
+                item[1].set_next_screen(self.__screen_dict["leaderboard"])
             elif item[0] == "ingame":
                 item[1].set_next_screen(self.__screen_dict["gameover"])
             elif item[0] == "gameover":
+                item[1].set_next_screen(self.__screen_dict["leaderboard"])
+            elif item[0] == "leaderboard":
                 item[1].set_next_screen(self.__screen_dict["start"])
         
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
@@ -110,6 +118,12 @@ class MastersOfDevelopment(object):
 
             self.__players.append(
                 self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__sounds))
+
+    def __init_cursors(self):
+        self.__cursors = []
+
+        for player in self.__players:
+            self.__cursors.append(screens.leaderboard_screen.Cursor())
 
     def __init_player(self, number, image_file_name, joystick, sounds):
         return player.Player(number, image_file_name, 1, joystick, sounds, self.__fonts, self.__fps)
