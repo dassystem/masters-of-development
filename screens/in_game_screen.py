@@ -88,6 +88,7 @@ class InGameScreenPlayArea(object):
     def __init__(self, surface, fonts, sounds, player):
         self.__surface = surface
         self.__fonts = fonts
+        self.__player_object = player
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
         
@@ -208,6 +209,14 @@ class InGameScreenPlayArea(object):
         font_rect = font_surface.get_rect()
         font_rect.x = self.__surface.get_rect().centerx - font_surface.get_width() // 2
         font_rect.y = self.__surface.get_rect().centery - font_surface.get_height() // 2
+
+        score_surface = self.__fonts["medium"].render("Your score is: " + str(self.__player_object.get_score()), True,
+                                                   (255, 0, 0))
+        score_rect = score_surface.get_rect()
+        score_rect.centerx = font_rect.centerx
+        score_rect.centery = font_rect.centery + 50
+
+        self.__surface.blit(score_surface, score_rect)
         
         self.__surface.blit(font_surface, font_rect)
     
