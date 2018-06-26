@@ -9,6 +9,7 @@ class LeaderboardScreen(BaseScreen):
     def __init__(self, surface, players, joysticks,  cursors,  fonts, font_color, background_color):
         super(LeaderboardScreen, self).__init__(surface, [LeaderboardScreenJoystickEventHandler(self, players , cursors, joysticks)])
         self.__players = players
+        self.__fonts = fonts
         self.__font = fonts["medium"]
         self.__font_color = font_color
         self.__background_color = background_color
@@ -80,6 +81,16 @@ class LeaderboardScreen(BaseScreen):
         name = ''.join(cursor.get_name())
         enter_name = self.__font.render("Your name: " + name, True, self.__font_color)
         player_area.blit(enter_name, (start_rec.x - 100, start_rec.y -100))
+
+        hint = self.__fonts["small"].render("Use ← to delete a character ", True, self.__font_color)
+        hint_rect = Utils.center_with_offset(hint, player_area, 0, -150)
+
+        hint_2 = self.__fonts["small"].render("or → to confirm your name", True, self.__font_color)
+        hint_rect2 = hint_rect.copy()
+        hint_rect2.y += hint_rect.height
+
+        player_area.blit(hint,hint_rect)
+        player_area.blit(hint_2, hint_rect2)
 
         #sets the horizontal and vertical limit where the cursor can move to select letters
         cursor.set_horizontal_limit(x_start, x_end)
