@@ -1,6 +1,6 @@
 import pygame
 from screens.base import BaseScreen, BaseScreenEventHandler
-import utils
+from utils import Utils, db_connector
 
 LETTER_GAP = 30
 NAMEN = []
@@ -12,7 +12,7 @@ class LeaderboardScreen(BaseScreen):
         self.__font = fonts["medium"]
         self.__font_color = font_color
         self.__background_color = background_color
-        self.screens = utils.Utils.split_screen(self._surface)
+        self.screens = Utils.split_screen(self._surface)
         self.__cursors = cursors
         self.init_cursor()
         super()._add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors))
@@ -21,7 +21,7 @@ class LeaderboardScreen(BaseScreen):
         for index , screen in enumerate(self.screens):
             #a little trick to position the cursor where a letter would be
             text = self.__font.render("A", True, self.__font_color)
-            rect_text = utils.Utils.center(text, screen)
+            rect_text = Utils.center(text, screen)
             self.__cursors[index].set_width(rect_text.width)
             self.__cursors[index].set_x(rect_text.x - 100)
             self.__cursors[index].set_y(rect_text.y + LETTER_GAP / 1.5)
@@ -57,7 +57,7 @@ class LeaderboardScreen(BaseScreen):
                     xoffset = 0
 
                 text = self.__font.render(letter.symbol, True, self.__font_color)
-                rect_text = utils.Utils.center_with_offset(text, player_area, 100, 0)
+                rect_text = Utils.center_with_offset(text, player_area, 100, 0)
                 if index == 0:
                     x_start = rect_text.x
                     y_start = rect_text.y
@@ -96,7 +96,7 @@ class CoordLetter():
 
 
 class Cursor():
-    def __init__(self):
+    def __init__(self, player):
         self.image = pygame.Surface((10, 3))
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = 0, y = 0)
@@ -108,9 +108,19 @@ class Cursor():
         self.__name = []
         self.__namelimit = 6
         self.__active = True
+        self.__player = player
 
     def __save(self):
+        if self.__active == False:
+            return
+
         self.__active = False
+        db = db_connector.DbConnector('assets/leaderboard.db')
+        db.connect()
+        player_info = (''.join(self.__name), self.__player.get_score())
+        db.execute_with_paremeter('Insert into player (player_name, player_score) VALUES (?,?)', player_info)
+        db.commmit()
+        db.close_connection()
 
     def render(self, surface):
         if self.__active == False:
@@ -293,7 +303,7 @@ class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
         return round(event.value, 0)
 
     def __handle_button_down(self, event):
-        cursor = utils.Utils.get_cursor_from_joystick_event(event, self.__joysticks, self.__cursors)
+        cursor = Utils.get_cursor_from_joystick_event(event, self.__joysticks, self.__cursors)
 
         if cursor is None:
             return

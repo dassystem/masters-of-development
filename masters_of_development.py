@@ -124,7 +124,7 @@ class MastersOfDevelopment(object):
         self.__cursors = []
 
         for player in self.__players:
-            self.__cursors.append(screens.leaderboard_screen.Cursor())
+            self.__cursors.append(screens.leaderboard_screen.Cursor(player))
 
     def __init_player(self, number, image_file_name, joystick, sounds):
         return player.Player(number, image_file_name, 1, joystick, sounds, self.__fonts, self.__fps)
