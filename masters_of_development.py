@@ -67,7 +67,7 @@ class MastersOfDevelopment(object):
         
         for item in self.__screen_dict.items():
             if item[0] == "start":
-                item[1].set_next_screen(self.__screen_dict["leaderboard"])
+                item[1].set_next_screen(self.__screen_dict["ingame"])
             elif item[0] == "ingame":
                 item[1].set_next_screen(self.__screen_dict["gameover"])
             elif item[0] == "gameover":
@@ -93,6 +93,7 @@ class MastersOfDevelopment(object):
         self.__fonts = {}
         
         self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 36)
+        self.__fonts["medium"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 24)
         self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
         self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
 
