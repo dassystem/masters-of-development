@@ -52,7 +52,6 @@ class MastersOfDevelopment(object):
 
         self.__init_joysticks()
         self.__init_players()
-        self.__init_cursors()
         
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
@@ -60,7 +59,7 @@ class MastersOfDevelopment(object):
             "gameover": screens.game_over_screen.GameOverScreen(
                 self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE),
             "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
-                self.__display, self.__players, self.__joysticks, self.__cursors, self.__fonts, MastersOfDevelopment.TARENT_RED,
+                self.__display, self.__players, self.__joysticks, self.__fonts, MastersOfDevelopment.TARENT_RED,
                 MastersOfDevelopment.WHITE)
 
         }
@@ -119,12 +118,6 @@ class MastersOfDevelopment(object):
 
             self.__players.append(
                 self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__sounds))
-
-    def __init_cursors(self):
-        self.__cursors = []
-
-        for player in self.__players:
-            self.__cursors.append(screens.leaderboard_screen.Cursor(player))
 
     def __init_player(self, number, image_file_name, joystick, sounds):
         return player.Player(number, image_file_name, 1, joystick, sounds, self.__fonts, self.__fps)

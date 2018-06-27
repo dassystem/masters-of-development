@@ -6,33 +6,57 @@ LETTER_GAP = 30
 NAMEN = []
 
 class LeaderboardScreen(BaseScreen):
-    def __init__(self, surface, players, joysticks,  cursors,  fonts, font_color, background_color):
-        super(LeaderboardScreen, self).__init__(surface, [LeaderboardScreenJoystickEventHandler(self, players , cursors, joysticks)])
+    LEADERBOARD_SIZE = 5
+    
+    def __init__(self, surface, players, joysticks, fonts, font_color, background_color):
+        super(LeaderboardScreen, self).__init__(surface, [])
         self.__players = players
         self.__fonts = fonts
         self.__font = fonts["medium"]
         self.__font_color = font_color
         self.__background_color = background_color
         self.screens = Utils.split_screen(self._surface)
-        self.__cursors = cursors
-        self.init_cursor()
+        self.__db_connector = db_connector.DbConnector("assets/leaderboard.db")
+        self.__db_connector.connect()
+
+        self.__init_board()
+        
+        self.__init_cursors()
+        
+        super()._add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors, joysticks))
         super()._add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors))
 
-    def init_cursor(self):
-        for index , screen in enumerate(self.screens):
+    def __init_board(self):
+        c = self.__db_connector.get_cursor()
+        
+        self.__board = []
+                
+        for row in c.execute("SELECT id, name, score FROM leaderboard ORDER BY score DESC"):
+            self.__board.append(LeaderboardEntry(row[0], row[1], row[2]))
+            
+    def __init_cursors(self):
+        self.__cursors = []
+        
+        for index, screen in enumerate(self.screens):
             #a little trick to position the cursor where a letter would be
             text = self.__font.render("A", True, self.__font_color)
             rect_text = Utils.center(text, screen)
-            self.__cursors[index].set_width(rect_text.width)
-            self.__cursors[index].set_x(rect_text.x - 100)
-            self.__cursors[index].set_y(rect_text.y + LETTER_GAP / 1.5)
+
+            self.__cursors.append(
+                Cursor(
+                    self.__players[index],
+                    self.__db_connector,
+                    self.__board,
+                    rect_text.x - 100,
+                    round(rect_text.y + LETTER_GAP / 1.5),
+                    rect_text.width))
 
     def render(self):
-        if not self.__cursors[0].get_active_status() and not self.__cursors[1].get_active_status():
-            self.end_screen()
-
         if not self.is_active():
             return
+
+        if not self.__cursors[0].get_active_status() and not self.__cursors[1].get_active_status():
+            self.end_screen()
 
         self._surface.fill(self.__background_color)
 
@@ -99,19 +123,69 @@ class LeaderboardScreen(BaseScreen):
     def end_screen(self):
         self.set_active(False)
 
+    def set_active(self, active):
+        super().set_active(active)
+        
+        if self.is_active():
+            self.__reset()
 
-class CoordLetter():
+    def __reset(self):
+        lowest_score = None
+        
+        if len(self.__board) > 0:
+            lowest_score = self.__board[-1]
+        
+        new_entries = 0
+        
+        for i, player in enumerate(self.__players):
+            self.__cursors[i].reset()
+            self.__cursors[i].set_active(lowest_score is not None and player.get_score() > lowest_score.get_score())
+            
+            if self.__cursors[i].get_active_status():
+                new_entries += 1
+            
+        if new_entries > 0 and len(self.__board) >= LeaderboardScreen.LEADERBOARD_SIZE:
+            c = self.__db_connector.get_cursor()
+            c.execute("DELETE FROM leaderboard WHERE score = :id", {"id": lowest_score.get_id()})
+            self.__db_connector.commit()
+            
+            self.__board.remove(lowest_score)
+                 
+class LeaderboardEntry(object):
+    def __init__(self, identity, name, score):
+        self.__id = identity
+        self.__name = name
+        self.__score = score
+        
+    def get_id(self):
+        return self.__id
+    
+    def get_name(self):
+        return self.__name
+        
+    def get_score(self):
+        return self.__score
+
+class CoordLetter(object):
     def __init__(self, symbol, level):
         self.level = level
         self.symbol = symbol
 
-
-class Cursor():
-    def __init__(self, player):
+# TODO make Cursor a sprite
+class Cursor(object):
+    def __init__(self, player, db_connector, board, initial_x, initial_y, initial_width):
         self.image = pygame.Surface((10, 3))
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = 0, y = 0)
         self.symbol = ""
+        self.__initial_x = initial_x
+        self.__initial_y = initial_y
+        self.__initial_width = initial_width
+        
+        self.rect.x = initial_x
+        self.rect.y = initial_y
+        self.rect.width = initial_width
+        
         self.__x_start_limit = 0
         self.__x_end_limit = 0
         self.__y_end_limit = 0
@@ -120,18 +194,28 @@ class Cursor():
         self.__namelimit = 6
         self.__active = True
         self.__player = player
+        self.__db_connector = db_connector
+        self.__board = board
+
+    def reset(self):
+        self.rect = self.image.get_rect(x = 0, y = 0)
+        self.rect.x = self.__initial_x
+        self.rect.y = self.__initial_y
+        self.rect.width = self.__initial_width
+        self.symbol = ""
+        self.__name = []        
 
     def __save(self):
         if self.__active == False:
             return
 
         self.__active = False
-        db = db_connector.DbConnector('assets/leaderboard.db')
-        db.connect()
         player_info = (''.join(self.__name), self.__player.get_score())
-        db.execute_with_paremeter('Insert into player (player_name, player_score) VALUES (?,?)', player_info)
-        db.commmit()
-        db.close_connection()
+        
+        pk = self.__db_connector.execute_with_parameter("INSERT INTO leaderboard (name, score) VALUES (?,?)", player_info)
+        self.__db_connector.commit()
+        self.__board.append(LeaderboardEntry(pk, player_info[0], player_info[1]))
+        self.__board.sort(key = lambda entry: entry.get_score(), reverse = True)
 
     def render(self, surface):
         if self.__active == False:
@@ -162,12 +246,6 @@ class Cursor():
         if self.rect.y < self.__y_end_limit:
             self.rect.y += LETTER_GAP
 
-    def set_x(self, x):
-        self.rect.x = x
-
-    def set_y(self, y):
-        self.rect.y = y
-
     def set_vertical_limit(self, starty, endy):
         self.__y_start_limit = starty
         self.__y_end_limit = endy
@@ -175,9 +253,6 @@ class Cursor():
     def set_horizontal_limit(self, startx, endx):
         self.__x_start_limit = startx
         self.__x_end_limit = endx
-
-    def set_width(self, width):
-        self.rect.width = width
 
     def set_selected(self, symbol):
         if self.__active == False:
@@ -210,7 +285,9 @@ class Cursor():
 
     def get_active_status(self):
         return self.__active
-
+    
+    def set_active(self, active):
+        self.__active = active
 
 class LeaderboardScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, leaderboard_screen, cursor):
@@ -224,7 +301,6 @@ class LeaderboardScreenEventHandler(BaseScreenEventHandler):
         return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN
 
     def handle_event(self, event):
-
         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
             self.cursor[0].enter_letter()
 
@@ -251,7 +327,6 @@ class LeaderboardScreenEventHandler(BaseScreenEventHandler):
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_KP_ENTER:
             self.cursor[1].enter_letter()
-
 
 class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
     VERTICAL_AXIS = 1
@@ -320,10 +395,3 @@ class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
             return
 
         cursor.enter_letter()
-
-
-
-
-
-
-

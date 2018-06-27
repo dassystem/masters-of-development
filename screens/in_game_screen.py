@@ -111,6 +111,8 @@ class InGameScreenPlayArea(object):
         
            Resets the player and generates new blocks.
         """
+        self.__level = 0
+
         self.__player.sprite.reset()
         self.__blocks.empty()
         self.__generate_blocks()
@@ -119,7 +121,6 @@ class InGameScreenPlayArea(object):
         self.__player.sprite.set_on_block(self.__blocks.sprites()[0])
         self.__player.sprite.rect.centerx = (self.__surface.get_rect().centerx)
         
-        self.__level = 0
     
     def __generate_blocks(self):
         if len(self.__blocks) == 0:
