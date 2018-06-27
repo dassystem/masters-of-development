@@ -51,3 +51,6 @@ Press key `i` for some debug info.
 * https://freesound.org/people/goredon/sounds/424285/
 * https://freesound.org/people/jalastram/sounds/432776/
 
+=== Sounds
+* http://www.flashkit.com/soundfx/People/Talking/Player_o-NEOKOLOR-7551/index.php
+* http://www.flashkit.com/soundfx/People/Talking/Player_t-Neokolor-7552/index.php

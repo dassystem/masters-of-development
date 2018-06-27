@@ -46,6 +46,9 @@ class MastersOfDevelopment(object):
         self.__init_fonts()
         
         self.__sounds = {}
+                
+        self.__sounds["player1wins"] = pygame.mixer.Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg")
+        self.__sounds["player2wins"] = pygame.mixer.Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
         
         self.__clock = pygame.time.Clock()
         self.__fps = fps
@@ -57,7 +60,12 @@ class MastersOfDevelopment(object):
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__sounds, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
-                self.__display, self.__players, self.__fonts, MastersOfDevelopment.TARENT_RED, MastersOfDevelopment.WHITE),
+                self.__display,
+                self.__players,
+                self.__fonts,
+                MastersOfDevelopment.TARENT_RED,
+                MastersOfDevelopment.WHITE,
+                self.__sounds),
             "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
                 self.__display, self.__players, self.__joysticks, self.__fonts, MastersOfDevelopment.TARENT_RED,
                 MastersOfDevelopment.WHITE)
