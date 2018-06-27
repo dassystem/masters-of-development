@@ -14,21 +14,21 @@ Start the game through calling `./masters_of_development.py`.
 
 ==== width
 
-Pass the desired screen width as first argument. Default is 800.
+Pass the desired screen width as first argument. Default is 1280.
 
 ==== height
 
-Pass the desired screen height as second argument. Default is 600.
+Pass the desired screen height as second argument. Default is 720.
 
 ==== fullscreen
 
-Pass as only or third argument `fullscreen` for fullscreen mode.
+Pass as only or third argument `fullscreen` for fullscreen mode. Default is not fullscreen.
 
 == The Game
 
 === Background Music
 
-Switch the background music on/off throuh pressing `m`.
+Switch the background music on/off through pressing `m`. Cycle through different music with `b` (previous) and `n` (next).
 
 === In game
 
@@ -40,4 +40,14 @@ Press key `i` for some debug info.
 
 == Misc
 
+=== Font
 * http://www.fontspace.com/codeman38/press-start-2p[Press Start 2P font]
+
+=== Music
+* https://freesound.org/people/Mattc90/sounds/203532/
+* https://freesound.org/people/rhodesmas/sounds/321388/
+* https://freesound.org/people/sirplus/sounds/385822/
+* https://freesound.org/people/orginaljun/sounds/396960/
+* https://freesound.org/people/goredon/sounds/424285/
+* https://freesound.org/people/jalastram/sounds/432776/
+
