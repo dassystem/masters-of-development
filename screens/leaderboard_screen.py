@@ -1,6 +1,7 @@
 import pygame
 from screens.base import BaseScreen, BaseScreenEventHandler
-from utils import Utils, db_connector
+import utils.Utils
+import utils.db_connector
 
 LETTER_GAP = 30
 NAMEN = []
@@ -15,8 +16,8 @@ class LeaderboardScreen(BaseScreen):
         self.__font = fonts["medium"]
         self.__font_color = font_color
         self.__background_color = background_color
-        self.screens = Utils.split_screen(self._surface)
-        self.__db_connector = db_connector.DbConnector("assets/leaderboard.db")
+        self.screens = utils.Utils.split_screen(self._surface)
+        self.__db_connector = utils.db_connector.DbConnector("assets/leaderboard.db")
         self.__db_connector.connect()
 
         self.__init_board()
@@ -40,7 +41,7 @@ class LeaderboardScreen(BaseScreen):
         for index, screen in enumerate(self.screens):
             #a little trick to position the cursor where a letter would be
             text = self.__font.render("A", True, self.__font_color)
-            rect_text = Utils.center(text, screen)
+            rect_text = utils.Utils.center(text, screen)
 
             self.__cursors.append(
                 Cursor(
@@ -82,7 +83,7 @@ class LeaderboardScreen(BaseScreen):
                     xoffset = 0
 
                 text = self.__font.render(letter.symbol, True, self.__font_color)
-                rect_text = Utils.center_with_offset(text, player_area, 100, 0)
+                rect_text = utils.Utils.center_with_offset(text, player_area, 100, 0)
                 if index == 0:
                     x_start = rect_text.x
                     y_start = rect_text.y
@@ -107,7 +108,7 @@ class LeaderboardScreen(BaseScreen):
         player_area.blit(enter_name, (start_rec.x - 100, start_rec.y -100))
 
         hint = self.__fonts["small"].render("Use ← to delete a character ", True, self.__font_color)
-        hint_rect = Utils.center_with_offset(hint, player_area, 0, -150)
+        hint_rect = utils.Utils.center_with_offset(hint, player_area, 0, -150)
 
         hint_2 = self.__fonts["small"].render("or → to confirm your name", True, self.__font_color)
         hint_rect2 = hint_rect.copy()
@@ -139,7 +140,7 @@ class LeaderboardScreen(BaseScreen):
         
         for i, player in enumerate(self.__players):
             self.__cursors[i].reset()
-            self.__cursors[i].set_active(lowest_score is not None and player.get_score() > lowest_score.get_score())
+            self.__cursors[i].set_active(lowest_score is None or player.get_score() > lowest_score.get_score())
             
             if self.__cursors[i].get_active_status():
                 new_entries += 1
@@ -389,7 +390,7 @@ class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
         return round(event.value, 0)
 
     def __handle_button_down(self, event):
-        cursor = Utils.get_cursor_from_joystick_event(event, self.__joysticks, self.__cursors)
+        cursor = utils.Utils.get_cursor_from_joystick_event(event, self.__joysticks, self.__cursors)
 
         if cursor is None:
             return
