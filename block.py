@@ -16,13 +16,18 @@ class Block(pygame.sprite.Sprite):
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = x, y = y)
         self.__level = level
+        self.__item = None
     
     def get_level(self):
         """Gets the level of this block. Used to calculate the score when a player reaches a higher block"""
         return self.__level
 
+    def add_item(self, item):
+        self.__item = item
+
     def update(self, scroll_velocity, surface_height):
-        """Updates the block for moving down while scrolling the play area.
+        """Updates the block for moving down while scrolling the play area. Kills itself if moving out of surface.
+           
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
         self.rect.y += scroll_velocity
@@ -30,3 +35,12 @@ class Block(pygame.sprite.Sprite):
         # delete blocks offscreen
         if self.rect.top >= surface_height:
             self.kill()
+                
+    def kill(self):
+        """Kills any score item.
+           See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.kill
+        """
+        if self.__item is not None:
+            self.__item.kill()
+            
+        super().kill()
