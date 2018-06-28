@@ -93,6 +93,7 @@ class InGameScreenPlayArea(object):
         self.__player_object = player
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
+        self.__score_items = pygame.sprite.Group()
         
         score_pos = None
         
@@ -117,12 +118,12 @@ class InGameScreenPlayArea(object):
 
         self.__player.sprite.reset()
         self.__blocks.empty()
+        self.__score_items.empty()
         self.__generate_blocks()
         self.__score.sprite.reset()
         
         self.__player.sprite.set_on_block(self.__blocks.sprites()[0])
         self.__player.sprite.rect.centerx = (self.__surface.get_rect().centerx)
-        
     
     def __generate_blocks(self):
         if len(self.__blocks) == 0:
@@ -159,7 +160,10 @@ class InGameScreenPlayArea(object):
                 new_block.rect.right += xgaps
 
             self.__blocks.add(new_block)
-
+            
+            if random.randint(0, 10) == 1:
+                self.__score_items.add(ScoreItem(new_block))
+            
     def __generate_base_block(self):
         baseBlock = Block(
             0,
@@ -191,16 +195,23 @@ class InGameScreenPlayArea(object):
         self.__score.update(self.__surface)
         self.__debug_info.update()
 
-        collideted_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
+        collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
        
-        if len(collideted_blocks) > 0:
-            uplevel = self.get_player().set_on_block(collideted_blocks[0])
+        if len(collided_blocks) > 0:
+            uplevel = self.get_player().set_on_block(collided_blocks[0])
             
             if uplevel > 0:
-                self.__score.sprite.add_platform_score(uplevel)
-                self.get_player().set_score(self.__score.sprite.get_score())
+                self.__get_score().add_platform_score(uplevel)
+                self.get_player().set_score(self.__get_score().get_score())
         
+        collided_score_items = pygame.sprite.spritecollide(self.get_player(), self.__score_items, True)
+        
+        for score_item in collided_score_items:
+            self.__get_score().add_score(score_item.get_score())
+            self.get_player().set_score(self.__get_score().get_score())
+
         self.__blocks.draw(self.__surface)
+        self.__score_items.draw(self.__surface)
         self.__player.draw(self.__surface)
         self.__score.draw(self.__surface)
         
@@ -230,9 +241,13 @@ class InGameScreenPlayArea(object):
             player_rect.y += self.__scroll_velocity
             
             self.__blocks.update(self.__scroll_velocity, self.__surface.get_height())
-
+            self.__score_items.update()
+            
     def get_player(self):
         return self.__player.sprite
+    
+    def __get_score(self):
+        return self.__score.sprite
     
     def get_surface(self):
         return self.__surface
@@ -387,6 +402,58 @@ class Score(pygame.sprite.Sprite):
     def get_score(self):
         """Gets the current score (number)."""
         return self.__score
+
+class ScoreItem(pygame.sprite.Sprite):
+    """A sprite representing a collectable extra score item."""
+    
+    def __init__(self, block, base_score = 100):
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(ScoreItem, self).__init__()
+        
+        self.__block = block
+
+        r = random.randint(0, 70)
+        
+        if r <= 10:
+            self.image = pygame.image.load("assets/images/gem1.png")
+        elif r <= 20:
+            self.image = pygame.image.load("assets/images/gem2.png")
+        elif r <= 30:
+            self.image = pygame.image.load("assets/images/gem3.png")
+        elif r <= 40:
+            self.image = pygame.image.load("assets/images/gem4.png")
+        elif r <= 50:
+            self.image = pygame.image.load("assets/images/gem5.png")
+        elif r <= 60:
+            self.image = pygame.image.load("assets/images/gem6.png")
+        elif r <= 70:
+            self.image = pygame.image.load("assets/images/gem7.png")
+
+        self.__score = (r // 10 + 1) * base_score
+        
+        self.rect = self.image.get_rect()
+        
+        r = random.randint(0, 3)
+        
+        if r == 1:
+            self.rect.bottomleft = self.__block.rect.topleft
+        elif r == 2:
+            self.rect.midbottom = self.__block.rect.midtop
+        else:
+            self.rect.bottomright = self.__block.rect.topright
+            
+        self.__block.add_item(self)
+    
+    def get_score(self):
+        return self.__score
+    
+    def update(self):
+        """Updates the extra score item display.
+           See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
+        """
+        
+        # score items scroll with their block, get killed by their block
+        self.rect = self.image.get_rect(bottom = self.__block.rect.top, x = self.rect.x)
 
 class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, play_areas):
