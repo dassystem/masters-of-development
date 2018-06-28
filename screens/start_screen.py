@@ -1,7 +1,7 @@
 import pygame
 import masters_of_development
 from utils import Utils
-from utils.timer import Timer
+import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
@@ -22,7 +22,8 @@ class StartScreen(BaseScreen):
         
         self.__players = players
         
-        timer = Timer(
+        timer = utils.timer.SpriteTimer(
+            "start",
             seconds,
             {"center": surface.get_rect().center},
             fonts["big"],
@@ -37,7 +38,7 @@ class StartScreen(BaseScreen):
         if self.all_players_ready():
             self.__start_sound.play()
             self.__get_timer().start()
-            self._add_event_handler(self.__get_timer().get_event_handler())
+            self.add_event_handler(self.__get_timer().get_event_handler())
   
     def all_players_ready(self):
         all_players_ready = True
@@ -54,7 +55,7 @@ class StartScreen(BaseScreen):
         super().set_active(active)
         
         if not self.is_active():
-            self._remove_event_handler(self.__get_timer().get_event_handler())
+            self.remove_event_handler(self.__get_timer().get_event_handler())
     
     def render(self):
         if not self.is_active():
@@ -129,11 +130,11 @@ class StartScreenEventHandler(BaseScreenEventHandler):
         if not super().can_handle(event):
             return False
         
-        return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN or event.type == Timer.ELASPED_EVENT
+        return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN or event.type == utils.timer.ELAPSED_EVENT
 
     def handle_event(self, event):
         if self.get_screen().all_players_ready():
-            if event.type == Timer.ELASPED_EVENT:
+            if event.type == utils.timer.ELAPSED_EVENT:
                 self.get_screen().set_active(False)
         else:
             if event.type == pygame.KEYDOWN:

@@ -24,8 +24,8 @@ class LeaderboardScreen(BaseScreen):
         
         self.__init_cursors()
         
-        super()._add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors, joysticks))
-        super()._add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors))
+        super().add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors, joysticks))
+        super().add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors))
 
     def __init_board(self):
         c = self.__db_connector.get_cursor()

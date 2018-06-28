@@ -59,12 +59,6 @@ class GlobalEventHandler(GlobalBaseEventHandler):
         return event_handlers
 
     def handle_event(self, event):
-        handler = None
-
-        for h in self.__get_event_handlers():
-            if h.can_handle(event):
-                handler = h
-                break
-
-        if handler is not None:
-            handler.handle_event(event)
+        for handler in self.__get_event_handlers():
+            if handler.can_handle(event):
+                handler.handle_event(event)
