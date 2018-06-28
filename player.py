@@ -41,6 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.__highest_block_level = 0
         self.__level = 0
         self.__score = 0
+        self.__power_ups = {}
     
     def update(self):
         """Updates the player state. Does nothing if player is dead.
@@ -175,14 +176,17 @@ class Player(pygame.sprite.Sprite):
             self.__falling = False
             self.__jumping = True
             self.__velocity = 6
+            
+            power_ups = self.__power_ups.get("jump_height")
+            
+            go_up = block.Block.BLOCK_HEIGHT * 3
+            
+            if power_ups is not None:
+                if len(power_ups) > 0:
+                    go_up = go_up * 2
+                    
             # go up 3 block heights
-            self.rect.y = self.rect.y - block.Block.BLOCK_HEIGHT * 3
-    
-    def double_jump_height(self):
-        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT * 2
-    
-    def normalize_jump_height(self):
-        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT
+            self.rect.y = self.rect.y - go_up
     
     def set_surface_rect(self, surface_rect):
         """Sets the rect of the play area surface. Needed for calculations of player state.
@@ -236,3 +240,19 @@ class Player(pygame.sprite.Sprite):
     def set_score(self, score):
         """Sets the current player score (number)."""
         self.__score = score
+
+    def add_power_up(self, power_up):
+        same_name = None
+        
+        if power_up.get_name() in self.__power_ups:
+            same_name = self.__power_ups[power_up.get_name()]
+        else:
+            same_name = []
+            self.__power_ups[power_up.get_name()] = same_name
+            
+        same_name.append(power_up)
+    
+    def remove_power_up(self, power_up):
+        same_name = self.__power_ups[power_up.get_name()]
+           
+        same_name.remove(power_up)

@@ -7,7 +7,7 @@ from block import Block
 import utils.timer
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 100):
+    def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 20):
         super(InGameScreen, self).__init__(
             surface,
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
@@ -33,7 +33,7 @@ class InGameScreen(BaseScreen):
              
         self.__timer = pygame.sprite.GroupSingle(timer)
         
-        super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__timer))
+        super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__get_timer()))
 
     def __init_play_areas(self, fonts, sounds):
         split_screen = Utils.split_screen(self._surface)
@@ -170,7 +170,7 @@ class InGameScreenPlayArea(object):
             if r == 1:
                 self.__score_items.add(Coin(new_block))
             elif r == 2:
-                self.__power_ups.add(Powerup(new_block, self))
+                self.__power_ups.add(Powerup("jump_height", new_block, self))
             
     def __generate_base_block(self):
         baseBlock = Block(
@@ -476,19 +476,23 @@ class Coin(Item):
         return self.__score
 
 class Powerup(Item):
-    def __init__(self, block, play_area, active_seconds = 5):
+    def __init__(self, name, block, play_area, active_seconds = 5):
         self.image = pygame.image.load("assets/images/squirrel.png").convert_alpha()
+        self.__name = name
         self.__play_area = play_area
         self.__active_seconds = active_seconds
 
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Powerup, self).__init__(block)
 
+    def get_name(self):
+        return self.__name
+
     def get_timer(self):
         return self.__timer
 
     def activate(self):
-        self.__play_area.get_player().double_jump_height()
+        self.__play_area.get_player().add_power_up(self)
         
         # set timer...
         self.__timer = utils.timer.Timer("powerup", self.__active_seconds)
@@ -503,7 +507,7 @@ class Powerup(Item):
         self.__timer.start()
         
     def deactivate(self):
-        self.__play_area.get_player().normalize_jump_height()
+        self.__play_area.get_player().remove_power_up(self)
         self.__timer.stop()
         self.__timer = None
         
