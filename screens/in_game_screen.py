@@ -7,7 +7,7 @@ from block import Block
 import utils.timer
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 20):
+    def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 100):
         super(InGameScreen, self).__init__(
             surface,
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
@@ -94,7 +94,6 @@ class InGameScreenPlayArea(object):
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
-        self.__player_object = player
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
         self.__score_items = pygame.sprite.Group()
@@ -210,14 +209,14 @@ class InGameScreenPlayArea(object):
             uplevel = self.get_player().set_on_block(collided_blocks[0])
             
             if uplevel > 0:
-                self.__get_score().add_platform_score(uplevel)
-                self.get_player().set_score(self.__get_score().get_score())
+                self.get_score().add_platform_score(uplevel)
+                self.get_player().set_score(self.get_score().get_score())
         
         collided_score_items = pygame.sprite.spritecollide(self.get_player(), self.__score_items, True)
         
         for score_item in collided_score_items:
-            self.__get_score().add_score(score_item.get_score())
-            self.get_player().set_score(self.__get_score().get_score())
+            self.get_score().add_score(score_item.get_score())
+            self.get_player().set_score(self.get_score().get_score())
 
         collided_power_ups = pygame.sprite.spritecollide(self.get_player(), self.__power_ups, True)
 
@@ -239,7 +238,7 @@ class InGameScreenPlayArea(object):
         font_rect.x = self.__surface.get_rect().centerx - font_surface.get_width() // 2
         font_rect.y = self.__surface.get_rect().centery - font_surface.get_height() // 2
 
-        score_surface = self.__fonts["medium"].render("Your score is: " + str(self.__player_object.get_score()), True,
+        score_surface = self.__fonts["medium"].render("Your score is: " + str(self.get_player().get_score()), True,
                                                    (255, 0, 0))
         score_rect = score_surface.get_rect()
         score_rect.centerx = font_rect.centerx
@@ -262,7 +261,7 @@ class InGameScreenPlayArea(object):
     def get_player(self):
         return self.__player.sprite
     
-    def __get_score(self):
+    def get_score(self):
         return self.__score.sprite
     
     def get_screen(self):
@@ -344,7 +343,13 @@ class DebugInfo(pygame.sprite.Sprite):
                 height = debug_surface.get_height()
         
         self.image = pygame.Surface((max_width, height * len(debug_surfaces)))
-        self.rect = self.image.get_rect()
+        self.image.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
+        self.rect = self.image.get_rect(top = self.__play_area.get_score().rect.bottom)
+        
+        if self.__play_area.get_player().get_number() == 1:
+            self.rect.left = 0
+        else:
+            self.rect.right = self.__play_area.get_surface().get_width() - 1
         
         for i, debug_surface in enumerate(debug_surfaces):
             self.image.blit(debug_surface, (0, i * height))

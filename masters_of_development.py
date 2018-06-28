@@ -66,7 +66,6 @@ class MastersOfDevelopment(object):
             "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
                 self.__display, self.__players, self.__joysticks, self.__fonts, MastersOfDevelopment.TARENT_RED,
                 MastersOfDevelopment.WHITE)
-
         }
         
         for item in self.__screen_dict.items():
