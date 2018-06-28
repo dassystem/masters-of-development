@@ -27,6 +27,7 @@ class InGameScreen(BaseScreen):
             {"centerx": self._surface.get_rect().centerx},
             fonts["big"],
             masters_of_development.MastersOfDevelopment.TARENT_RED,
+            sounds,
             masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR,
             10,
             "{0:d}s")

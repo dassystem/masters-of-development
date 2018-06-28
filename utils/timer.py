@@ -43,7 +43,7 @@ class Timer(object):
 class SpriteTimer(pygame.sprite.Sprite, Timer):
     """A sprite representing a timer."""
     
-    def __init__(self, name, initial_seconds, pos_dict, font, font_color, background_color = None, blink_at = 0, format_string = "{0:d}"):
+    def __init__(self, name, initial_seconds, pos_dict, font, font_color, sounds, background_color = None, blink_at = 0, format_string = "{0:d}"):
         Timer.__init__(self, name, initial_seconds)
         
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -55,6 +55,7 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
         self.__background_color = background_color
         self.__blink_at = blink_at
         self.__format_string = format_string
+        self.__sounds = sounds
 
         self.__dirty = True
 
@@ -80,12 +81,20 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
         
         self.__dirty = False
 
+    def start(self):
+        Timer.start(self)
+        if self._seconds_left <= 10:
+            self.__sounds[str(self._seconds_left)].play()
+
     def countdown(self):
         if not self._started:
             return
         
         self.__dirty = True
         Timer.countdown(self)
+        
+        if self._seconds_left <= 10 and self._seconds_left > 0:
+            self.__sounds[str(self._seconds_left)].play()
 
 class TimerCountdownEventHandler(object):
     def __init__(self, timer):

@@ -5,7 +5,7 @@ import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, fonts, players, seconds = 5):
+    def __init__(self, surface, fonts, sounds, players, seconds = 5):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self, players)], True)
 
         self.__fonts = fonts;
@@ -27,7 +27,8 @@ class StartScreen(BaseScreen):
             seconds,
             {"center": surface.get_rect().center},
             fonts["big"],
-            masters_of_development.MastersOfDevelopment.BLACK)
+            masters_of_development.MastersOfDevelopment.BLACK,
+            sounds)
         
         self.__timer = pygame.sprite.GroupSingle(timer)
         self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")

@@ -45,11 +45,7 @@ class MastersOfDevelopment(object):
         self.switch_music()
         
         self.__init_fonts()
-        
-        self.__sounds = {}
-                
-        self.__sounds["player1wins"] = pygame.mixer.Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg")
-        self.__sounds["player2wins"] = pygame.mixer.Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
+        self.__init_sounds()
         
         self.__clock = pygame.time.Clock()
         self.__fps = fps
@@ -58,7 +54,7 @@ class MastersOfDevelopment(object):
         self.__init_players()
         
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__players),
+            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__sounds, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
                 self.__display,
@@ -104,6 +100,15 @@ class MastersOfDevelopment(object):
         self.__fonts["medium"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 24)
         self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
         self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
+
+    def __init_sounds(self):
+        self.__sounds = {}
+                
+        self.__sounds["player1wins"] = pygame.mixer.Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg")
+        self.__sounds["player2wins"] = pygame.mixer.Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
+        
+        for i in range(1, 11):
+            self.__sounds[str(i)] = pygame.mixer.Sound("assets/sounds/82986__tim-kahn__countdown-{0:02d}.ogg".format(i))
 
     def __init_joysticks(self):
         self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
