@@ -105,7 +105,7 @@ class InGameScreenPlayArea(object):
         self.__score = pygame.sprite.GroupSingle(Score(score_pos, fonts["big"], sounds["score"]))
         
         
-        self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(player, fonts))
+        self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
         self.__level = 0
         
@@ -267,7 +267,7 @@ class DebugInfo(pygame.sprite.Sprite):
     def __init__(self, play_area, fonts):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(DebugInfo, self).__init__()
-        self._play_area = play_area
+        self.__play_area = play_area
         self.__visible = False
 
         self.__font = fonts["micro"]
@@ -297,7 +297,7 @@ class DebugInfo(pygame.sprite.Sprite):
         debug_surfaces.append(self.__render_debug_info(debug_info))
 
         debug_info = "speed: {0:d} velocity: {1:d}".format(
-            self.player.get_speed(), self.player.get_velocity())
+            player.get_speed(), player.get_velocity())
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
         
@@ -306,7 +306,7 @@ class DebugInfo(pygame.sprite.Sprite):
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
         
-        joystick = self.player.get_joystick()
+        joystick = player.get_joystick()
         
         if joystick != None:
             debug_info = "joystick: {0:s} {1:s}".format(
@@ -324,7 +324,8 @@ class DebugInfo(pygame.sprite.Sprite):
             if height == 0:
                 height = debug_surface.get_height()
         
-        self.image = pygame.Surface(max_width, height * len(debug_surfaces))
+        self.image = pygame.Surface((max_width, height * len(debug_surfaces)))
+        self.rect = self.image.get_rect()
         
         for i, debug_surface in enumerate(debug_surfaces):
             self.image.blit(debug_surface, (0, i * height))
@@ -415,32 +416,33 @@ class ScoreItem(pygame.sprite.Sprite):
         r = random.randint(0, 70)
         
         if r <= 10:
-            self.image = pygame.image.load("assets/images/gem1.png")
+            self.image = pygame.image.load("assets/images/gem1.png").convert_alpha()
         elif r <= 20:
-            self.image = pygame.image.load("assets/images/gem2.png")
+            self.image = pygame.image.load("assets/images/gem2.png").convert_alpha()
         elif r <= 30:
-            self.image = pygame.image.load("assets/images/gem3.png")
+            self.image = pygame.image.load("assets/images/gem3.png").convert_alpha()
         elif r <= 40:
-            self.image = pygame.image.load("assets/images/gem4.png")
+            self.image = pygame.image.load("assets/images/gem4.png").convert_alpha()
         elif r <= 50:
-            self.image = pygame.image.load("assets/images/gem5.png")
+            self.image = pygame.image.load("assets/images/gem5.png").convert_alpha()
         elif r <= 60:
-            self.image = pygame.image.load("assets/images/gem6.png")
+            self.image = pygame.image.load("assets/images/gem6.png").convert_alpha()
         elif r <= 70:
-            self.image = pygame.image.load("assets/images/gem7.png")
+            self.image = pygame.image.load("assets/images/gem7.png").convert_alpha()
 
         self.__score = (r // 10 + 1) * base_score
         
         self.rect = self.image.get_rect()
+        self.rect.bottom = self.__block.rect.top
         
         r = random.randint(0, 3)
         
         if r == 1:
-            self.rect.bottomleft = self.__block.rect.topleft
+            self.rect.left = self.__block.rect.left
         elif r == 2:
             self.rect.midbottom = self.__block.rect.midtop
         else:
-            self.rect.bottomright = self.__block.rect.topright
+            self.rect.right = self.__block.rect.right
             
         self.__block.add_item(self)
     
