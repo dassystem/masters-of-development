@@ -11,10 +11,10 @@ class BaseScreen(object):
     def get_event_handlers(self):
         return self.__event_handlers
     
-    def _add_event_handler(self, event_handler):
+    def add_event_handler(self, event_handler):
         self.__event_handlers.append(event_handler)
     
-    def _remove_event_handler(self, event_handler):
+    def remove_event_handler(self, event_handler):
         self.__event_handlers.remove(event_handler)
     
     def is_active(self):

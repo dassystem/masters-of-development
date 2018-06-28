@@ -8,6 +8,7 @@ import screens.start_screen
 import screens.in_game_screen
 import screens.game_over_screen
 import screens.leaderboard_screen
+import utils.timer
 
 class MastersOfDevelopment(object):
     # colors
@@ -173,6 +174,8 @@ class MastersOfDevelopment(object):
     def run(self):
         """The mainloop
         """
+
+        pygame.time.set_timer(utils.timer.COUNTDOWN_EVENT, 1000)
 
         while self.__running:
             for screen in self.__screen_dict.values():

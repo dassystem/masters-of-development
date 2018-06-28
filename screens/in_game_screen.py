@@ -4,14 +4,13 @@ import pygame
 import random
 import masters_of_development
 from block import Block
-from utils.timer import Timer
+import utils.timer
 
 class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 100):
         super(InGameScreen, self).__init__(
             surface,
-            [InGameScreenJoystickEventHandler(self, players, joysticks),
-             InGameScreenTimerElapsedEventHandler(self)])
+            [InGameScreenJoystickEventHandler(self, players, joysticks)])
         
         self.__fonts = fonts
         
@@ -20,9 +19,10 @@ class InGameScreen(BaseScreen):
         self.__play_areas = []
         self.__init_play_areas(fonts, sounds)
         
-        super()._add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
+        super().add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
         
-        timer = Timer(
+        timer = utils.timer.SpriteTimer(
+            "ingame",
             seconds,
             {"centerx": self._surface.get_rect().centerx},
             fonts["big"],
@@ -32,6 +32,8 @@ class InGameScreen(BaseScreen):
             "{0:d}s")
              
         self.__timer = pygame.sprite.GroupSingle(timer)
+        
+        super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__timer))
 
     def __init_play_areas(self, fonts, sounds):
         split_screen = Utils.split_screen(self._surface)
@@ -39,7 +41,7 @@ class InGameScreen(BaseScreen):
         for i, surface in enumerate(split_screen):
             # pass a copy of the surface rect to the player so that the player can't mess up with the surface
             self.__players[i].set_surface_rect(surface.get_rect().copy())
-            self.__play_areas.append(InGameScreenPlayArea(surface, fonts, sounds, self.__players[i]))
+            self.__play_areas.append(InGameScreenPlayArea(self, surface, fonts, sounds, self.__players[i]))
 
     def render(self):
         if not self.is_active():
@@ -68,14 +70,14 @@ class InGameScreen(BaseScreen):
         super().set_active(active)
         
         if self.is_active():
-            self._add_event_handler(self.__get_timer().get_event_handler())
+            self.add_event_handler(self.__get_timer().get_event_handler())
             self.__get_timer().start()
             
             for play_area in self.__play_areas:
                 play_area.reset()
         else:
             self.__get_timer().stop()
-            self._remove_event_handler(self.__get_timer().get_event_handler())
+            self.remove_event_handler(self.__get_timer().get_event_handler())
 
     def get_player_surfaces(self):
         return self.__player_surfaces
@@ -87,13 +89,15 @@ class InGameScreen(BaseScreen):
 class InGameScreenPlayArea(object):
     """A area where a player is playing."""
     
-    def __init__(self, surface, fonts, sounds, player):
+    def __init__(self, screen, surface, fonts, sounds, player):
+        self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
         self.__player_object = player
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
         self.__score_items = pygame.sprite.Group()
+        self.__power_ups = pygame.sprite.Group()
         
         score_pos = None
         
@@ -103,7 +107,6 @@ class InGameScreenPlayArea(object):
             score_pos = "right"
             
         self.__score = pygame.sprite.GroupSingle(Score(score_pos, fonts["big"], sounds["score"]))
-        
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
@@ -119,6 +122,7 @@ class InGameScreenPlayArea(object):
         self.__player.sprite.reset()
         self.__blocks.empty()
         self.__score_items.empty()
+        self.__power_ups.empty()
         self.__generate_blocks()
         self.__score.sprite.reset()
         
@@ -161,8 +165,12 @@ class InGameScreenPlayArea(object):
 
             self.__blocks.add(new_block)
             
-            if random.randint(0, 10) == 1:
-                self.__score_items.add(ScoreItem(new_block))
+            r = random.randint(0, 10)
+            
+            if r == 1:
+                self.__score_items.add(Coin(new_block))
+            elif r == 2:
+                self.__power_ups.add(Powerup(new_block, self))
             
     def __generate_base_block(self):
         baseBlock = Block(
@@ -210,8 +218,14 @@ class InGameScreenPlayArea(object):
             self.__get_score().add_score(score_item.get_score())
             self.get_player().set_score(self.__get_score().get_score())
 
+        collided_power_ups = pygame.sprite.spritecollide(self.get_player(), self.__power_ups, True)
+
+        for power_up in collided_power_ups:
+            power_up.activate()
+
         self.__blocks.draw(self.__surface)
         self.__score_items.draw(self.__surface)
+        self.__power_ups.draw(self.__surface)
         self.__player.draw(self.__surface)
         self.__score.draw(self.__surface)
         
@@ -242,12 +256,16 @@ class InGameScreenPlayArea(object):
             
             self.__blocks.update(self.__scroll_velocity, self.__surface.get_height())
             self.__score_items.update()
+            self.__power_ups.update()
             
     def get_player(self):
         return self.__player.sprite
     
     def __get_score(self):
         return self.__score.sprite
+    
+    def get_screen(self):
+        return self.__screen
     
     def get_surface(self):
         return self.__surface
@@ -291,8 +309,8 @@ class DebugInfo(pygame.sprite.Sprite):
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
                       
-        debug_info = "falling: {0:s} jumping: {1:s}".format(
-            str(player.is_falling()), str(player.is_jumping()))
+        debug_info = "falling: {0:s} jumping: {1:s} jump_height: {2:2d}".format(
+            str(player.is_falling()), str(player.is_jumping()), player.get_jump_height())
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
 
@@ -404,15 +422,34 @@ class Score(pygame.sprite.Sprite):
         """Gets the current score (number)."""
         return self.__score
 
-class ScoreItem(pygame.sprite.Sprite):
+class Item(pygame.sprite.Sprite):
+    def __init__(self, block):
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(Item, self).__init__()
+        self.__block = block
+        
+        self.rect = self.image.get_rect()
+        self.rect.bottom = self.__block.rect.top
+        
+        r = random.randint(0, 3)
+        
+        if r == 1:
+            self.rect.left = self.__block.rect.left
+        elif r == 2:
+            self.rect.midbottom = self.__block.rect.midtop
+        else:
+            self.rect.right = self.__block.rect.right
+        
+        self.__block.add_item(self)
+        
+    def update(self):
+        # items scroll with their block, get killed by their block
+        self.rect = self.image.get_rect(bottom = self.__block.rect.top, x = self.rect.x)
+
+class Coin(Item):
     """A sprite representing a collectable extra score item."""
     
     def __init__(self, block, base_score = 100):
-        # IMPORTANT: call the parent class (Sprite) constructor
-        super(ScoreItem, self).__init__()
-        
-        self.__block = block
-
         r = random.randint(0, 70)
         
         if r <= 10:
@@ -431,31 +468,63 @@ class ScoreItem(pygame.sprite.Sprite):
             self.image = pygame.image.load("assets/images/gem7.png").convert_alpha()
 
         self.__score = (r // 10 + 1) * base_score
-        
-        self.rect = self.image.get_rect()
-        self.rect.bottom = self.__block.rect.top
-        
-        r = random.randint(0, 3)
-        
-        if r == 1:
-            self.rect.left = self.__block.rect.left
-        elif r == 2:
-            self.rect.midbottom = self.__block.rect.midtop
-        else:
-            self.rect.right = self.__block.rect.right
-            
-        self.__block.add_item(self)
+
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(Coin, self).__init__(block)
     
     def get_score(self):
         return self.__score
-    
-    def update(self):
-        """Updates the extra score item display.
-           See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
-        """
+
+class Powerup(Item):
+    def __init__(self, block, play_area, active_seconds = 5):
+        self.image = pygame.image.load("assets/images/squirrel.png").convert_alpha()
+        self.__play_area = play_area
+        self.__active_seconds = active_seconds
+
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(Powerup, self).__init__(block)
+
+    def get_timer(self):
+        return self.__timer
+
+    def activate(self):
+        self.__play_area.get_player().double_jump_height()
         
-        # score items scroll with their block, get killed by their block
-        self.rect = self.image.get_rect(bottom = self.__block.rect.top, x = self.rect.x)
+        # set timer...
+        self.__timer = utils.timer.Timer("powerup", self.__active_seconds)
+        
+        self.__event_handlers = []
+        self.__event_handlers.append(self.__timer.get_event_handler())
+        self.__event_handlers.append(PowerupTimerElapsedEventHandler(self.__play_area.get_screen(), self))
+        
+        for event_handler in self.__event_handlers:
+            self.__play_area.get_screen().add_event_handler(event_handler)
+        
+        self.__timer.start()
+        
+    def deactivate(self):
+        self.__play_area.get_player().normalize_jump_height()
+        self.__timer.stop()
+        self.__timer = None
+        
+        for event_handler in self.__event_handlers:
+            self.__play_area.get_screen().remove_event_handler(event_handler)
+        
+        self.__event_handlers = []
+
+class PowerupTimerElapsedEventHandler(BaseScreenEventHandler):
+    def __init__(self, in_game_screen, power_up):
+        super(PowerupTimerElapsedEventHandler, self).__init__(in_game_screen)
+        self.__power_up = power_up
+        
+    def can_handle(self, event):
+        if not super().can_handle(event):
+            return False
+        
+        return event.type == utils.timer.ELAPSED_EVENT and event.timer == self.__power_up.get_timer()
+    
+    def handle_event(self, event):
+        self.__power_up.deactivate()
 
 class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, play_areas):
@@ -469,9 +538,6 @@ class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
         return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
 
     def handle_event(self, event):
-        if not self.can_handle(event):
-            return
-        
         if event.type == pygame.KEYDOWN:
             self.__handle_keydown_event(event)
         elif event.type == pygame.KEYUP:
@@ -521,9 +587,6 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         return event.type == pygame.JOYAXISMOTION or event.type == pygame.JOYBUTTONDOWN
 
     def handle_event(self, event):
-        if not self.can_handle(event):
-            return
-        
         if event.type == pygame.JOYAXISMOTION:
             self.__handle_axis_motion(event)
         elif event.type == pygame.JOYBUTTONDOWN:
@@ -569,18 +632,15 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         player.jump()
 
 class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
-    def __init__(self, in_game_screen):
+    def __init__(self, in_game_screen, timer):
         super(InGameScreenTimerElapsedEventHandler, self).__init__(in_game_screen)
+        self.__timer = timer
 
     def can_handle(self, event):
         if not super().can_handle(event):
             return False
 
-        return event.type == Timer.ELASPED_EVENT
+        return event.type == utils.timer.ELAPSED_EVENT and event.timer == self.__timer
 
     def handle_event(self, event):
-        if not self.can_handle(event):
-            return
-
-        if event.type == Timer.ELASPED_EVENT:
-            self.get_screen().set_active(False)
+        self.get_screen().set_active(False)

@@ -4,6 +4,7 @@ import block
 class Player(pygame.sprite.Sprite):
     """A sprite representing a player."""
     SPEED_TO_FPS_RATIO = 1 / 8
+    NORMAL_JUMP_HEIGHT = 10
     
     def __init__(self, number, image_file_name, gravity, joystick, sounds, fonts, fps):
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -33,7 +34,8 @@ class Player(pygame.sprite.Sprite):
         self.__jumping = False
         self.__on_block = None
         self.__speed = round(Player.SPEED_TO_FPS_RATIO * self.__fps)
-        self.__jump_height = 15
+        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT
+        self.__jump_height = self.__initial_jump_height
         self.__move = None
         self.__ready = False
         self.__highest_block_level = 0
@@ -53,7 +55,7 @@ class Player(pygame.sprite.Sprite):
             self.__jump_height = self.__jump_height - 2
                     
             if self.__jump_height <= 0:
-                self.__jump_height = 10
+                self.__jump_height = self.__initial_jump_height
                 self.__jumping = False
                 self.__falling = True
                 self.__velocity = 6
@@ -175,7 +177,13 @@ class Player(pygame.sprite.Sprite):
             self.__velocity = 6
             # go up 3 block heights
             self.rect.y = self.rect.y - block.Block.BLOCK_HEIGHT * 3
-           
+    
+    def double_jump_height(self):
+        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT * 2
+    
+    def normalize_jump_height(self):
+        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT
+    
     def set_surface_rect(self, surface_rect):
         """Sets the rect of the play area surface. Needed for calculations of player state.
            Player MUST NOT update the play area surface!
@@ -193,6 +201,9 @@ class Player(pygame.sprite.Sprite):
     def is_jumping(self):
         """Checks if player is jumping."""
         return self.__jumping
+
+    def get_jump_height(self):
+        return self.__jump_height
 
     def get_speed(self):
         """Gets the current player speed (left or right direction)."""
