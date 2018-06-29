@@ -131,26 +131,37 @@ class LeaderboardScreen(BaseScreen):
             self.__reset()
 
     def __reset(self):
-        lowest_score = None
-        
-        if len(self.__board) > 0:
-            lowest_score = self.__board[-1]
-        
-        new_entries = 0
-        
-        for i, player in enumerate(self.__players):
+        for i in range(len(self.__players)):
             self.__cursors[i].reset()
-            self.__cursors[i].set_active(lowest_score is None or player.get_score() > lowest_score.get_score())
+            self.__cursors[i].set_active(False)
+        
+        if len(self.__board) + len(self.__players) <= LeaderboardScreen.LEADERBOARD_SIZE:
+            for i in range(len(self.__players)):
+                self.__cursors[i].set_active(True)
+        else:
+            new_scores = self.__players.copy()
+            new_scores.sort(key = lambda player: player.get_score(), reverse = True)
             
-            if self.__cursors[i].get_active_status():
-                new_entries += 1
+            new_entries = 0
             
-        if new_entries > 0 and len(self.__board) >= LeaderboardScreen.LEADERBOARD_SIZE:
-            c = self.__db_connector.get_cursor()
-            c.execute("DELETE FROM leaderboard WHERE score = :id", {"id": lowest_score.get_id()})
-            self.__db_connector.commit()
-            
-            self.__board.remove(lowest_score)
+            for new_score in new_scores:
+                if len(self.__board) + new_entries < LeaderboardScreen.LEADERBOARD_SIZE:
+                    self.__cursors[new_scores[0].get_number() - 1].set_active(True)
+                    new_entries += 1
+                    continue
+                else:
+                    for entry in self.__board.copy():
+                        if entry.get_score() < new_score.get_score():
+                            self.__cursors[new_scores[0].get_number() - 1].set_active(True)
+                            new_entries += 1
+                            
+                            if len(self.__board) + new_entries > LeaderboardScreen.LEADERBOARD_SIZE:
+                                last_entry = self.__board.pop()
+                                c = self.__db_connector.get_cursor()
+                                c.execute("DELETE FROM leaderboard WHERE id = :id", {"id": last_entry.get_id()})
+                                self.__db_connector.commit()
+                                
+                            break
                  
 class LeaderboardEntry(object):
     def __init__(self, identity, name, score):
@@ -213,8 +224,9 @@ class Cursor(object):
         self.__active = False
         player_info = (''.join(self.__name), self.__player.get_score())
         
-        pk = self.__db_connector.execute_with_parameter("INSERT INTO leaderboard (name, score) VALUES (?,?)", player_info)
+        self.__db_connector.execute_with_parameter("INSERT INTO leaderboard (name, score) VALUES (?,?)", player_info)
         self.__db_connector.commit()
+        pk = self.__db_connector.get_cursor().lastrowid
         self.__board.append(LeaderboardEntry(pk, player_info[0], player_info[1]))
         self.__board.sort(key = lambda entry: entry.get_score(), reverse = True)
 
