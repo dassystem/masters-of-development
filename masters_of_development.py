@@ -46,6 +46,7 @@ class MastersOfDevelopment(object):
         
         self.__init_fonts()
         self.__init_sounds()
+        self.__init_images()
         
         self.__clock = pygame.time.Clock()
         self.__fps = fps
@@ -55,7 +56,8 @@ class MastersOfDevelopment(object):
         
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__players),
-            "ingame": screens.in_game_screen.InGameScreen(self.__display, self.__fonts, self.__sounds, self.__players, self.__joysticks),
+            "ingame": screens.in_game_screen.InGameScreen(
+                self.__display, self.__fonts, self.__sounds, self.__images, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
                 self.__display,
                 self.__players,
@@ -102,12 +104,28 @@ class MastersOfDevelopment(object):
 
     def __init_sounds(self):
         self.__sounds = {}
+        
+        self.__sounds["start_game"] = pygame.mixer.Sound("assets/sounds/start_game.wav")
+        
+        self.__sounds["jump"] = pygame.mixer.Sound("assets/sounds/jump.wav")
+        self.__sounds["score"] = pygame.mixer.Sound("assets/sounds/glass.ogg")
                 
         self.__sounds["player1wins"] = pygame.mixer.Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg")
         self.__sounds["player2wins"] = pygame.mixer.Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
         
         for i in range(1, 11):
             self.__sounds[str(i)] = pygame.mixer.Sound("assets/sounds/82986__tim-kahn__countdown-{0:02d}.ogg".format(i))
+
+    def __init_images(self):
+        self.__images = {}
+        
+        for i in range(1, 3):
+            self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()
+        
+        for i in range(1, 8):
+            self.__images["gem{0:d}".format(i)] = pygame.image.load("assets/images/gem{0:d}.png".format(i)).convert_alpha()
+            
+        self.__images["power_up_jump_height"] = pygame.image.load("assets/images/squirrel.png").convert_alpha()
 
     def __init_joysticks(self):
         self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
@@ -118,9 +136,6 @@ class MastersOfDevelopment(object):
     def __init_players(self):
         self.__players = []
         
-        self.__sounds['jump'] = pygame.mixer.Sound("assets/sounds/jump.wav")
-        self.__sounds['score'] = pygame.mixer.Sound("assets/sounds/glass.ogg")
-        
         joystick_count = len(self.__joysticks)
 
         for i in range(0, 2):
@@ -130,10 +145,10 @@ class MastersOfDevelopment(object):
                 joystick = self.__joysticks[i]
 
             self.__players.append(
-                self.__init_player(i + 1, "assets/images/dev" + str(i + 1) + ".png", joystick, self.__sounds))
+                self.__init_player(i + 1, self.__images, joystick, self.__sounds))
 
-    def __init_player(self, number, image_file_name, joystick, sounds):
-        return player.Player(number, image_file_name, 1, joystick, sounds, self.__fonts, self.__fps)
+    def __init_player(self, number, images, joystick, sounds):
+        return player.Player(number, images, 1, joystick, sounds, self.__fonts, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music

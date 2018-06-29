@@ -7,7 +7,7 @@ from block import Block
 import utils.timer
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, players, joysticks, seconds = 100):
+    def __init__(self, surface, fonts, sounds, images, players, joysticks, seconds = 100):
         super(InGameScreen, self).__init__(
             surface,
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
@@ -17,7 +17,7 @@ class InGameScreen(BaseScreen):
         self.__players = players
         
         self.__play_areas = []
-        self.__init_play_areas(fonts, sounds)
+        self.__init_play_areas(fonts, sounds, images)
         
         super().add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
         
@@ -36,13 +36,13 @@ class InGameScreen(BaseScreen):
         
         super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__get_timer()))
 
-    def __init_play_areas(self, fonts, sounds):
+    def __init_play_areas(self, fonts, sounds, images):
         split_screen = Utils.split_screen(self._surface)
         
         for i, surface in enumerate(split_screen):
             # pass a copy of the surface rect to the player so that the player can't mess up with the surface
             self.__players[i].set_surface_rect(surface.get_rect().copy())
-            self.__play_areas.append(InGameScreenPlayArea(self, surface, fonts, sounds, self.__players[i]))
+            self.__play_areas.append(InGameScreenPlayArea(self, surface, fonts, sounds, images, self.__players[i]))
 
     def render(self):
         if not self.is_active():
@@ -90,10 +90,11 @@ class InGameScreen(BaseScreen):
 class InGameScreenPlayArea(object):
     """A area where a player is playing."""
     
-    def __init__(self, screen, surface, fonts, sounds, player):
+    def __init__(self, screen, surface, fonts, sounds, images, player):
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
+        self.__images = images
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
         self.__score_items = pygame.sprite.Group()
@@ -168,9 +169,9 @@ class InGameScreenPlayArea(object):
             r = random.randint(0, 10)
             
             if r == 1:
-                self.__score_items.add(Coin(new_block))
+                self.__score_items.add(Coin(self.__images, new_block))
             elif r == 2:
-                self.__power_ups.add(Powerup("jump_height", new_block, self))
+                self.__power_ups.add(Powerup("jump_height", self.__images, new_block, self))
             
     def __generate_base_block(self):
         baseBlock = Block(
@@ -455,23 +456,23 @@ class Item(pygame.sprite.Sprite):
 class Coin(Item):
     """A sprite representing a collectable extra score item."""
     
-    def __init__(self, block, base_score = 100):
+    def __init__(self, images, block, base_score = 100):
         r = random.randint(0, 70)
         
         if r <= 10:
-            self.image = pygame.image.load("assets/images/gem1.png").convert_alpha()
+            self.image = images["gem1"]
         elif r <= 20:
-            self.image = pygame.image.load("assets/images/gem2.png").convert_alpha()
+            self.image = images["gem2"]
         elif r <= 30:
-            self.image = pygame.image.load("assets/images/gem3.png").convert_alpha()
+            self.image = images["gem3"]
         elif r <= 40:
-            self.image = pygame.image.load("assets/images/gem4.png").convert_alpha()
+            self.image = images["gem4"]
         elif r <= 50:
-            self.image = pygame.image.load("assets/images/gem5.png").convert_alpha()
+            self.image = images["gem5"]
         elif r <= 60:
-            self.image = pygame.image.load("assets/images/gem6.png").convert_alpha()
+            self.image = images["gem6"]
         elif r <= 70:
-            self.image = pygame.image.load("assets/images/gem7.png").convert_alpha()
+            self.image = images["gem7"]
 
         self.__score = (r // 10 + 1) * base_score
 
@@ -482,8 +483,8 @@ class Coin(Item):
         return self.__score
 
 class Powerup(Item):
-    def __init__(self, name, block, play_area, active_seconds = 5):
-        self.image = pygame.image.load("assets/images/squirrel.png").convert_alpha()
+    def __init__(self, name, images, block, play_area, active_seconds = 5):
+        self.image = images["power_up_jump_height"]
         self.__name = name
         self.__play_area = play_area
         self.__active_seconds = active_seconds
@@ -500,7 +501,6 @@ class Powerup(Item):
     def activate(self):
         self.__play_area.get_player().add_power_up(self)
         
-        # set timer...
         self.__timer = utils.timer.Timer("powerup", self.__active_seconds)
         
         self.__event_handlers = []

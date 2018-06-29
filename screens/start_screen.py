@@ -31,7 +31,7 @@ class StartScreen(BaseScreen):
             sounds)
         
         self.__timer = pygame.sprite.GroupSingle(timer)
-        self.__start_sound = pygame.mixer.Sound("assets/sounds/start_game.wav")
+        self.__start_sound = sounds["start_game"]
   
     def set_player_ready(self, player_number):
         self.__players[player_number].set_ready(True)

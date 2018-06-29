@@ -6,14 +6,14 @@ class Player(pygame.sprite.Sprite):
     SPEED_TO_FPS_RATIO = 1 / 8
     NORMAL_JUMP_HEIGHT = 10
     
-    def __init__(self, number, image_file_name, gravity, joystick, sounds, fonts, fps):
+    def __init__(self, number, images, gravity, joystick, sounds, fonts, fps):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Player, self).__init__()
         
         self.__number = number
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
-        self.image = pygame.image.load(image_file_name).convert_alpha()
+        self.image = images["player{0:d}".format(self.__number)]
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect()
