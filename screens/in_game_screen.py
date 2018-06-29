@@ -97,8 +97,7 @@ class InGameScreenPlayArea(object):
         self.__images = images
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
-        self.__score_items = pygame.sprite.Group()
-        self.__power_ups = pygame.sprite.Group()
+        self.__block_items = pygame.sprite.Group()
         
         score_pos = None
         
@@ -122,8 +121,7 @@ class InGameScreenPlayArea(object):
 
         self.__player.sprite.reset()
         self.__blocks.empty()
-        self.__score_items.empty()
-        self.__power_ups.empty()
+        self.__block_items.empty()
         self.__generate_blocks()
         self.__score.sprite.reset()
         
@@ -169,9 +167,14 @@ class InGameScreenPlayArea(object):
             r = random.randint(0, 10)
             
             if r == 1:
-                self.__score_items.add(Coin(self.__images, new_block))
+                coin = Coin(self.__images, new_block)
+                self.__block_items.add(coin)
             elif r == 2:
-                self.__power_ups.add(Powerup("jump_height", self.__images, new_block, self))
+                power_up = Powerup("jump_height", self.__images, new_block, self)
+                self.__block_items.add(power_up)
+            elif r == 3:
+                bug = Bug(self.__images, new_block)
+                self.__block_items.add(bug)
             
     def __generate_base_block(self):
         baseBlock = Block(
@@ -204,35 +207,29 @@ class InGameScreenPlayArea(object):
         self.__score.update(self.__surface)
         self.__debug_info.update()
 
-        collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
-       
-        if len(collided_blocks) > 0:
-            uplevel = self.get_player().set_on_block(collided_blocks[0])
-            
-            if uplevel > 0:
-                self.get_score().add_platform_score(uplevel)
-                self.get_player().set_score(self.get_score().get_score())
-        
-        collided_score_items = pygame.sprite.spritecollide(self.get_player(), self.__score_items, True)
-        
-        for score_item in collided_score_items:
-            self.get_score().add_score(score_item.get_score())
-            self.get_player().set_score(self.get_score().get_score())
-
-        collided_power_ups = pygame.sprite.spritecollide(self.get_player(), self.__power_ups, True)
-
-        for power_up in collided_power_ups:
-            power_up.activate()
+        self.__detect_block_collision()
+        self.__detect_block_item_collision()
 
         self.__blocks.draw(self.__surface)
-        self.__score_items.draw(self.__surface)
-        self.__power_ups.draw(self.__surface)
+        self.__block_items.draw(self.__surface)
         self.__player.draw(self.__surface)
         self.__score.draw(self.__surface)
         
         if self.__debug_info.sprite.is_visible():
             self.__debug_info.draw(self.__surface)
+
+    def __detect_block_collision(self):
+        collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
+       
+        for block in collided_blocks:
+            block.on_collide(self.get_player(), self.get_score())
+       
+    def __detect_block_item_collision(self):
+        collided_items = pygame.sprite.spritecollide(self.get_player(), self.__block_items, True)
         
+        for collided_item in collided_items:
+            collided_item.on_collide(self.get_player(), self.get_score())
+
     def __render_game_over(self):
         font_surface = self.__fonts["big"].render("GAME OVER", True, (255, 0, 0))
         font_rect = font_surface.get_rect()
@@ -256,8 +253,7 @@ class InGameScreenPlayArea(object):
             player_rect.y += self.__scroll_velocity
             
             self.__blocks.update(self.__scroll_velocity, self.__surface.get_height())
-            self.__score_items.update()
-            self.__power_ups.update()
+            self.__block_items.update()
             
     def get_player(self):
         return self.__player.sprite
@@ -453,6 +449,9 @@ class Item(pygame.sprite.Sprite):
         # items scroll with their block, get killed by their block
         self.rect = self.image.get_rect(bottom = self.__block.rect.top, x = self.rect.x)
 
+    def on_collide(self, player, score):
+        pass
+
 class Coin(Item):
     """A sprite representing a collectable extra score item."""
     
@@ -481,6 +480,10 @@ class Coin(Item):
     
     def get_score(self):
         return self.__score
+    
+    def on_collide(self, player, score):
+        score.add_score(self.get_score())
+        player.set_score(score.get_score())
 
 class Powerup(Item):
     def __init__(self, name, images, block, play_area, active_seconds = 5):
@@ -498,8 +501,8 @@ class Powerup(Item):
     def get_timer(self):
         return self.__timer
 
-    def activate(self):
-        self.__play_area.get_player().add_power_up(self)
+    def on_collide(self, player, score):
+        player.add_power_up(self)
         
         self.__timer = utils.timer.Timer("powerup", self.__active_seconds)
         
@@ -522,6 +525,20 @@ class Powerup(Item):
         
         self.__event_handlers = []
 
+class Bug(Item):
+    def __init__(self, images, block, base_score = -100):
+        self.image = images["bug"]
+        self.__score = (random.randint(0, 70) // 10 + 1) * base_score
+        
+        super(Bug, self).__init__(block)
+
+    def get_score(self):
+        return self.__score
+
+    def on_collide(self, player, score):
+        score.add_score(self.get_score())
+        player.set_score(score.get_score())
+        
 class PowerupTimerElapsedEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, power_up):
         super(PowerupTimerElapsedEventHandler, self).__init__(in_game_screen)

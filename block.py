@@ -44,3 +44,10 @@ class Block(pygame.sprite.Sprite):
             self.__item.kill()
             
         super().kill()
+        
+    def on_collide(self, player, score):
+        uplevel = player.set_on_block(self)
+            
+        if uplevel > 0:
+            score.add_platform_score(uplevel)
+            player.set_score(score.get_score())
