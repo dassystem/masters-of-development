@@ -170,11 +170,14 @@ class InGameScreenPlayArea(object):
                 coin = Coin(self.__images, new_block)
                 self.__block_items.add(coin)
             elif r == 2:
-                power_up = Powerup("jump_height", self.__images, new_block, self)
+                power_up = PowerUpJump(self.__images, new_block, self)
                 self.__block_items.add(power_up)
             elif r == 3:
                 bug = Bug(self.__images, new_block)
                 self.__block_items.add(bug)
+            elif r == 4:
+                power_up = PowerUpBugResistant(self.__images, new_block, self)
+                self.__block_items.add(power_up)
             
     def __generate_base_block(self):
         baseBlock = Block(
@@ -485,15 +488,14 @@ class Coin(Item):
         score.add_score(self.get_score())
         player.set_score(score.get_score())
 
-class Powerup(Item):
-    def __init__(self, name, images, block, play_area, active_seconds = 5):
-        self.image = images["power_up_jump_height"]
+class PowerUp(Item):
+    def __init__(self, name, block, play_area, active_seconds = 5):
         self.__name = name
         self.__play_area = play_area
         self.__active_seconds = active_seconds
 
         # IMPORTANT: call the parent class (Sprite) constructor
-        super(Powerup, self).__init__(block)
+        super(PowerUp, self).__init__(block)
 
     def get_name(self):
         return self.__name
@@ -525,6 +527,16 @@ class Powerup(Item):
         
         self.__event_handlers = []
 
+class PowerUpJump(PowerUp):
+    def __init__(self, images, block, play_area):
+        self.image = images["power_up_jump_height"]
+        super(PowerUpJump, self).__init__("power_up_jump", block, play_area)
+
+class PowerUpBugResistant(PowerUp):
+    def __init__(self, images, block, play_area):
+        self.image = images["power_up_bug_resistant"]
+        super(PowerUpBugResistant, self).__init__("power_up_bug_resistant", block, play_area)
+
 class Bug(Item):
     def __init__(self, images, block, base_score = -100):
         self.image = images["bug"]
@@ -536,6 +548,14 @@ class Bug(Item):
         return self.__score
 
     def on_collide(self, player, score):
+        power_ups = player.get_power_ups()
+        
+        if "power_up_bug_resistant" in power_ups:
+            bug_resistant = power_ups["power_up_bug_resistant"]
+            
+            if len(bug_resistant) > 0:
+                return
+        
         score.add_score(self.get_score())
         player.set_score(score.get_score())
         

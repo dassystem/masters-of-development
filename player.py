@@ -256,3 +256,6 @@ class Player(pygame.sprite.Sprite):
         same_name = self.__power_ups[power_up.get_name()]
            
         same_name.remove(power_up)
+
+    def get_power_ups(self):
+        return self.__power_ups

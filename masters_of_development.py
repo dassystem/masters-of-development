@@ -127,6 +127,7 @@ class MastersOfDevelopment(object):
             
         self.__images["power_up_jump_height"] = pygame.image.load("assets/images/squirrel.png").convert_alpha()
         self.__images["bug"] = pygame.image.load("assets/images/inkspillspot.png").convert_alpha()
+        self.__images["power_up_bug_resistant"] = pygame.image.load("assets/images/gameicon.png").convert_alpha()
 
     def __init_joysticks(self):
         self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
