@@ -5,20 +5,12 @@ import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, players, seconds = 5):
+    def __init__(self, surface, fonts, sounds, images, players, seconds = 5):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self, players)], True)
 
         self.__fonts = fonts;
 
-        self.__text_title_1 = fonts["big"].render("Masters", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
-        self.__text_title_2 = fonts["big"].render("of" , True, masters_of_development.MastersOfDevelopment.TARENT_RED)
-        self.__text_title_3 = fonts["big"].render("Development", True, masters_of_development.MastersOfDevelopment.TARENT_RED)
-        
-        self.__text_player_1 = fonts["small"].render("PLAYER 1", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
-        self.__text_player_2 = fonts["small"].render("PLAYER 2", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
-
-        self.__text_start = fonts["small"].render("START", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
-        self.__text_ready = fonts["small"].render("READY", True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
+        self.__images = images
         
         self.__players = players
         
@@ -62,55 +54,47 @@ class StartScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.fill(masters_of_development.MastersOfDevelopment.WHITE)
-        
-        x = self._surface.get_width() // 4
-        y = self._surface.get_height() // 4
-        
-        rect_title_2 = self.__text_title_2.get_rect(center = (x * 2, y))
-        self._surface.blit(self.__text_title_2, rect_title_2)
-        
-        rect_title_1 = self.__text_title_1.get_rect(center = (rect_title_2.centerx, rect_title_2.centery - self.__text_title_1.get_height()))
-        self._surface.blit(self.__text_title_1, rect_title_1)
-        
-        rect_title_3 = self.__text_title_3.get_rect(center = (rect_title_2.centerx, rect_title_2.centery + self.__text_title_3.get_height()))
-        self._surface.blit(self.__text_title_3, rect_title_3)
-
-        rect_player_1 = self.__text_player_1.get_rect(center = (x, y * 3 - self.__text_player_1.get_height()))
-        self._surface.blit(self.__text_player_1, rect_player_1)
-
-        rect_player_2 = self.__text_player_2.get_rect(center = (x * 3, y * 3 - self.__text_player_2.get_height()))
-        self._surface.blit(self.__text_player_2, rect_player_2)
-        
-        text = None
-        rect = None
-        
-        if self.__players[0].is_ready():
-            text = self.__text_ready
-            rect = text.get_rect(
-                center = (rect_player_1.centerx, rect_player_1.centery + text.get_height()))
-        else:
-            text = self.__text_start
-            rect = text.get_rect(
-                center = (rect_player_1.centerx, rect_player_1.centery + text.get_height()))
-        
-        self._surface.blit(text, rect)
-        
-        if self.__players[1].is_ready():
-            text = self.__text_ready
-            rect = text.get_rect(
-                center = (rect_player_2.centerx, rect_player_2.centery + text.get_height()))
-        else:
-            text = self.__text_start
-            rect = text.get_rect(
-                center = (rect_player_2.centerx, rect_player_2.centery + text.get_height()))
-        
-        self._surface.blit(text, rect)
-        
         if self.__get_timer().is_started():
             self.render_countdown();
+        else:
+            self._surface.blit(self.__images["start_screen_bg"], (0, 0))
+            
+            rect_player_1 = self.__images["start_screen_player_1"].get_rect(topleft = (450, 740))
+            self._surface.blit(self.__images["start_screen_player_1"], rect_player_1)
+    
+            rect_player_2 = self.__images["start_screen_player_2"].get_rect(topleft = (1185, 740))
+            self._surface.blit(self.__images["start_screen_player_1"], rect_player_2)
+    
+            image = None
+            rect = None
+            
+            if self.__players[0].is_ready():
+                image = self.__images["start_screen_start_pushed"]
+                # TODO: use fix position
+                rect = image.get_rect(
+                    center = (rect_player_1.centerx, rect_player_1.centery + image.get_height()))
+            else:
+                image = self.__images["start_screen_start_normal"]
+                # TODO: use fix positon
+                rect = image.get_rect(
+                    center = (rect_player_1.centerx, rect_player_1.centery + image.get_height()))
+            
+            self._surface.blit(image, rect)
+            
+            if self.__players[1].is_ready():
+                image = self.__images["start_screen_start_pushed"]
+                rect = image.get_rect(
+                    center = (rect_player_2.centerx, rect_player_2.centery + image.get_height()))
+            else:
+                image = self.__images["start_screen_start_normal"]
+                rect = image.get_rect(
+                    center = (rect_player_2.centerx, rect_player_2.centery + image.get_height()))
+            
+            self._surface.blit(image, rect)
 
     def render_countdown(self):
+        self._surface.blit(self.__images["start_screen_countdown_bg"], (0, 0))
+        
         self.__timer.update()
         self.__timer.draw(self._surface)
 

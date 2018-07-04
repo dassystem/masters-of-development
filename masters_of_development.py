@@ -55,7 +55,7 @@ class MastersOfDevelopment(object):
         self.__init_players()
         
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__players),
+            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__images, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(
                 self.__display, self.__fonts, self.__sounds, self.__images, self.__players, self.__joysticks),
             "gameover": screens.game_over_screen.GameOverScreen(
@@ -118,6 +118,13 @@ class MastersOfDevelopment(object):
 
     def __init_images(self):
         self.__images = {}
+        
+        self.__images["start_screen_bg"] = pygame.image.load("assets/images/start_screen_bg.png").convert_alpha()
+        self.__images["start_screen_player_1"] = pygame.image.load("assets/images/player_1.png").convert_alpha()
+        self.__images["start_screen_player_2"] = pygame.image.load("assets/images/player_2.png").convert_alpha()
+        self.__images["start_screen_start_normal"] = pygame.image.load("assets/images/start_button_normal.png").convert_alpha()
+        self.__images["start_screen_start_pushed"] = pygame.image.load("assets/images/start_button_pushed.png").convert_alpha()
+        self.__images["start_screen_countdown_bg"] = pygame.image.load("assets/images/countdown_screen_bg.png").convert_alpha()
         
         for i in range(1, 3):
             self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()
@@ -211,9 +218,9 @@ class MastersOfDevelopment(object):
         pygame.quit()
     
 if __name__ == "__main__":
-    width = 1280 #1980
-    height = 720 #1024
-    flags = 0
+    width = 1980
+    height = 1024
+    flags = 0 #pygame.NOFRAME
     
     for i, arg in enumerate(sys.argv):
         if arg == "fullscreen":
