@@ -63,32 +63,27 @@ class StartScreen(BaseScreen):
             self._surface.blit(self.__images["start_screen_player_1"], rect_player_1)
     
             rect_player_2 = self.__images["start_screen_player_2"].get_rect(topleft = (1185, 740))
-            self._surface.blit(self.__images["start_screen_player_1"], rect_player_2)
+            self._surface.blit(self.__images["start_screen_player_2"], rect_player_2)
     
             image = None
             rect = None
             
             if self.__players[0].is_ready():
                 image = self.__images["start_screen_start_pushed"]
-                # TODO: use fix position
-                rect = image.get_rect(
-                    center = (rect_player_1.centerx, rect_player_1.centery + image.get_height()))
+
             else:
                 image = self.__images["start_screen_start_normal"]
-                # TODO: use fix positon
-                rect = image.get_rect(
-                    center = (rect_player_1.centerx, rect_player_1.centery + image.get_height()))
+
+            rect = image.get_rect(topleft = (450, 860))
             
             self._surface.blit(image, rect)
             
             if self.__players[1].is_ready():
                 image = self.__images["start_screen_start_pushed"]
-                rect = image.get_rect(
-                    center = (rect_player_2.centerx, rect_player_2.centery + image.get_height()))
             else:
                 image = self.__images["start_screen_start_normal"]
-                rect = image.get_rect(
-                    center = (rect_player_2.centerx, rect_player_2.centery + image.get_height()))
+            
+            rect = image.get_rect(topleft = (1185, 860))
             
             self._surface.blit(image, rect)
 

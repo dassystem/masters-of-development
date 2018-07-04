@@ -218,8 +218,8 @@ class MastersOfDevelopment(object):
         pygame.quit()
     
 if __name__ == "__main__":
-    width = 1980
-    height = 1024
+    width = 1920
+    height = 1080
     flags = 0 #pygame.NOFRAME
     
     for i, arg in enumerate(sys.argv):
