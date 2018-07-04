@@ -44,6 +44,9 @@ Press key `i` for some debug info.
 * http://www.fontspace.com/codeman38/press-start-2p[Press Start 2P font]
 
 === Music
+* https://freesound.org/people/NenadSimic/sounds/171185/
+* https://freesound.org/people/dingo1/sounds/174589/
+* https://freesound.org/people/sakebeats/sounds/176354/
 * https://freesound.org/people/Mattc90/sounds/203532/
 * https://freesound.org/people/rhodesmas/sounds/321388/
 * https://freesound.org/people/sirplus/sounds/385822/
