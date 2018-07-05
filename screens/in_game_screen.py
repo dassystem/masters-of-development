@@ -5,6 +5,7 @@ import random
 import masters_of_development
 from block import Block
 import utils.timer
+import numpy as np
 
 class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, joysticks, seconds = 100):
@@ -40,10 +41,10 @@ class InGameScreen(BaseScreen):
 
     def __init_play_areas(self, fonts, sounds, images):
         split_screen = []
-        player_1_rect = images["in_game_screen_play_area_1_bg"].get_rect(topleft = (55, 85))
+        player_1_rect = images["in_game_screen_play_area_bg"].get_rect(topleft = (55, 85))
         split_screen.append(self._surface.subsurface(player_1_rect))
         
-        player_2_rect = images["in_game_screen_play_area_2_bg"].get_rect(topleft = (1015, 85))
+        player_2_rect = images["in_game_screen_play_area_bg"].get_rect(topleft = (1015, 85))
         split_screen.append(self._surface.subsurface(player_2_rect))
         
         for i, subsurface in enumerate(split_screen):
@@ -120,6 +121,8 @@ class InGameScreenPlayArea(object):
         self.__blocks = pygame.sprite.Group()
         self.__block_items = pygame.sprite.Group()
         
+        self.__text = self.__fonts["big"].render(
+            "PLAYER {0:d}: ".format(self.get_player().get_number()), True, masters_of_development.MastersOfDevelopment.GREEN)
         self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
@@ -216,7 +219,7 @@ class InGameScreenPlayArea(object):
             self.__render_game_over()
             return
         
-        background = self.__images["in_game_screen_play_area_{0:d}_bg".format(self.get_player().get_number())]
+        background = self.__images["in_game_screen_play_area_bg"]
         self.__surface.blit(background, (0, 0))
         
         self.__scroll_screen()
@@ -224,6 +227,9 @@ class InGameScreenPlayArea(object):
         self.__generate_blocks()
         
         self.__player.update()
+        
+        self.__surface.blit(self.__text, self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5)))
+        
         self.__score.update(self.__surface)
         self.__debug_info.update()
 
@@ -409,8 +415,8 @@ class Score(pygame.sprite.Sprite):
             return
         
         self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.WHITE)
-        
-        self.rect = self.image.get_rect(topleft = (target_surface.get_width() // 2 + 50, 5))
+
+        self.rect = self.image.get_rect(topleft = (target_surface.get_width() // 2, 5))
         
         self.__dirty = False
     
