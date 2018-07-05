@@ -13,6 +13,7 @@ class InGameScreen(BaseScreen):
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
         
         self.__fonts = fonts
+        self.__images = images
         
         self.__players = players
         
@@ -24,34 +25,50 @@ class InGameScreen(BaseScreen):
         timer = utils.timer.FontSpriteTimer(
             "ingame",
             seconds,
-            {"centerx": self._surface.get_rect().centerx},
+            {"center": (960, 77)},
             fonts["big"],
-            masters_of_development.MastersOfDevelopment.TARENT_RED,
+            masters_of_development.MastersOfDevelopment.GREEN,
+            masters_of_development.MastersOfDevelopment.RED,
             sounds,
-            masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR,
-            10,
-            "{0:d}s")
+            10)
              
         self.__timer = pygame.sprite.GroupSingle(timer)
         
         super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__get_timer()))
 
+        self.__init_redraw_areas()
+
     def __init_play_areas(self, fonts, sounds, images):
-        split_screen = Utils.split_screen(self._surface)
+        split_screen = []
+        player_1_rect = images["in_game_screen_play_area_1_bg"].get_rect(topleft = (55, 85))
+        split_screen.append(self._surface.subsurface(player_1_rect))
         
-        for i, surface in enumerate(split_screen):
+        player_2_rect = images["in_game_screen_play_area_2_bg"].get_rect(topleft = (1015, 85))
+        split_screen.append(self._surface.subsurface(player_2_rect))
+        
+        for i, subsurface in enumerate(split_screen):
             # pass a copy of the surface rect to the player so that the player can't mess up with the surface
-            self.__players[i].set_surface_rect(surface.get_rect().copy())
-            self.__play_areas.append(InGameScreenPlayArea(self, surface, fonts, sounds, images, self.__players[i]))
+            self.__players[i].set_surface_rect(subsurface.get_rect().copy())
+            self.__play_areas.append(InGameScreenPlayArea(self, subsurface, fonts, sounds, images, self.__players[i]))
+    
+    def __init_redraw_areas(self):
+        self.__redraw_areas = {}
+
+        self.__redraw_areas["timer_1"] = (self.__images["in_game_screen_bg"].subsurface((870, 85, 35, 40)), (870, 85))        
+        self.__redraw_areas["timer_2"] = (self.__images["in_game_screen_bg"].subsurface((1015, 85, 35, 40)), (1015, 85)) 
+        self.__redraw_areas["head_1"] = (self.__images["in_game_screen_bg"].subsurface((400, 795, 155, 25)), (400, 795))
+        self.__redraw_areas["head_2"] = (self.__images["in_game_screen_bg"].subsurface((1360, 800, 120, 20)), (1360, 800))
 
     def render(self):
         if not self.is_active():
             return
         
-        self._surface.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
+        self._surface.blit(self.__images["in_game_screen_bg"], (0, 0))
 
         for play_area in self.__play_areas:
             play_area.update()
+        
+        self.__redraw()
             
         all_dead = True
 
@@ -62,6 +79,10 @@ class InGameScreen(BaseScreen):
             self.set_active(False)
             
         self.__render_timer()
+
+    def __redraw(self):
+        for redraw_area in self.__redraw_areas.values():
+            self._surface.blit(redraw_area[0], redraw_area[1])
 
     def __render_timer(self):
         self.__timer.update()
@@ -99,14 +120,7 @@ class InGameScreenPlayArea(object):
         self.__blocks = pygame.sprite.Group()
         self.__block_items = pygame.sprite.Group()
         
-        score_pos = None
-        
-        if player.get_number() == 1:
-            score_pos = "left"
-        else:
-            score_pos = "right"
-            
-        self.__score = pygame.sprite.GroupSingle(Score(score_pos, fonts["big"], sounds["score"]))
+        self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
@@ -201,6 +215,9 @@ class InGameScreenPlayArea(object):
         if self.get_player().is_dead():
             self.__render_game_over()
             return
+        
+        background = self.__images["in_game_screen_play_area_{0:d}_bg".format(self.get_player().get_number())]
+        self.__surface.blit(background, (0, 0))
         
         self.__scroll_screen()
         # generate new blocks after scrolling if necessary
@@ -385,12 +402,11 @@ class Score(pygame.sprite.Sprite):
     """A sprite representing the score display."""
     PLATFORM_LEVEL_SCORE = 100
     
-    def __init__(self, pos, font, sound):
+    def __init__(self, font, sound):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Score, self).__init__()
         self.__font = font
         self.__sound = sound
-        self.__pos = pos
         self.__score = 0
         self.__dirty = True
 
@@ -405,12 +421,9 @@ class Score(pygame.sprite.Sprite):
         if not self.__dirty:
             return
         
-        self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.TARENT_GREY)
+        self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.WHITE)
         
-        if self.__pos == "left":
-            self.rect = self.image.get_rect(topleft = (0, 0))
-        else:
-            self.rect = self.image.get_rect(topright = (target_surface.get_width() - 1, 0))
+        self.rect = self.image.get_rect(topleft = (target_surface.get_width() // 2 + 50, 5))
         
         self.__dirty = False
     

@@ -92,21 +92,20 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
 class FontSpriteTimer(SpriteTimer):
     """A sprite representing a timer."""
     
-    def __init__(self, name, initial_seconds, pos_dict, font, font_color, sounds, background_color = None, blink_at = 0, format_string = "{0:d}"):
+    def __init__(self, name, initial_seconds, pos_dict, font, font_color_1, font_color_2, sounds, change_font_color_at = 0, format_string = "{0:d}"):
         super(FontSpriteTimer, self).__init__(name, initial_seconds, pos_dict, sounds)
         
         self.__font = font
-        self.__font_color = font_color
-        self.__background_color = background_color
-        self.__blink_at = blink_at
+        self.__font_color_1 = font_color_1
+        self.__font_color_2 = font_color_2
+        self.__change_font_color_at = change_font_color_at
         self.__format_string = format_string
 
     def _update_image(self):
-        color = self.__font_color
+        color = self.__font_color_1
         
-        if self.__blink_at > 0 and self._seconds_left <= self.__blink_at:
-            if self._seconds_left % 2 == 0:
-                color = self.__background_color
+        if self.__change_font_color_at > 0 and self._seconds_left <= self.__change_font_color_at:
+            color = self.__font_color_2
         
         return self.__font.render(self.__format_string.format(self._seconds_left), True , color)
 
@@ -130,13 +129,11 @@ class ImageSpriteTimer(SpriteTimer):
         self._seconds_left -= 1
         
         if self._seconds_left <= -1:
-            print("stopping")
             self.stop()
             pygame.event.post(pygame.event.Event(ELAPSED_EVENT, {"timer": self}))
 
     def _update_image(self):
         key = "countdown_{0:d}".format(self._seconds_left)
-        print("key " + key)
         return self.__images[key]
         
 class TimerCountdownEventHandler(object):

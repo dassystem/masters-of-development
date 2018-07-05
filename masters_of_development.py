@@ -17,6 +17,8 @@ class MastersOfDevelopment(object):
     WHITE = pygame.Color(255, 255, 255)
     BLACK = pygame.Color(0, 0, 0)
     BACKGROUND_COLOR = WHITE
+    GREEN = pygame.Color(93, 252, 172)
+    RED = pygame.Color(255, 0, 0)
     
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):
@@ -97,7 +99,7 @@ class MastersOfDevelopment(object):
     def __init_fonts(self):
         self.__fonts = {}
         
-        self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 36)
+        self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 29)
         self.__fonts["medium"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 24)
         self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
         self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
@@ -130,6 +132,10 @@ class MastersOfDevelopment(object):
         self.__images["start_screen_countdown_2"] = pygame.image.load("assets/images/countdown_2.png").convert_alpha()
         self.__images["start_screen_countdown_1"] = pygame.image.load("assets/images/countdown_1.png").convert_alpha()
         self.__images["start_screen_countdown_go"] = pygame.image.load("assets/images/countdown_lets_code.png").convert_alpha()
+        
+        self.__images["in_game_screen_bg"] = pygame.image.load("assets/images/game_screen_frame.png").convert_alpha()
+        self.__images["in_game_screen_play_area_1_bg"] = pygame.image.load("assets/images/inscreen_game_bg_player_1.png").convert_alpha()
+        self.__images["in_game_screen_play_area_2_bg"] = pygame.image.load("assets/images/inscreen_game_bg_player_2.png").convert_alpha()
         
         for i in range(1, 3):
             self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()
