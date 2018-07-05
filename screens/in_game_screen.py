@@ -251,20 +251,7 @@ class InGameScreenPlayArea(object):
             collided_item.on_collide(self.get_player(), self.get_score())
 
     def __render_game_over(self):
-        font_surface = self.__fonts["big"].render("GAME OVER", True, (255, 0, 0))
-        font_rect = font_surface.get_rect()
-        font_rect.x = self.__surface.get_rect().centerx - font_surface.get_width() // 2
-        font_rect.y = self.__surface.get_rect().centery - font_surface.get_height() // 2
-
-        score_surface = self.__fonts["medium"].render("Your score is: " + str(self.get_player().get_score()), True,
-                                                   (255, 0, 0))
-        score_rect = score_surface.get_rect()
-        score_rect.centerx = font_rect.centerx
-        score_rect.centery = font_rect.centery + 50
-
-        self.__surface.blit(score_surface, score_rect)
-        
-        self.__surface.blit(font_surface, font_rect)
+        self.__surface.blit(self.__images["in_game_screen_game_over_bg"], (0, 0))
     
     def __scroll_screen(self):
         player_rect = self.__player.sprite.rect
