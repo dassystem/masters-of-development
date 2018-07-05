@@ -177,7 +177,7 @@ class Player(pygame.sprite.Sprite):
             self.__jumping = True
             self.__velocity = 6
             
-            power_ups = self.__power_ups.get("jump_height")
+            power_ups = self.__power_ups.get("power_up_jump")
             
             go_up = block.Block.BLOCK_HEIGHT * 3
             
