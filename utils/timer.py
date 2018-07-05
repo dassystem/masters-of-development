@@ -42,60 +42,103 @@ class Timer(object):
 
 class SpriteTimer(pygame.sprite.Sprite, Timer):
     """A sprite representing a timer."""
-    
-    def __init__(self, name, initial_seconds, pos_dict, font, font_color, sounds, background_color = None, blink_at = 0, format_string = "{0:d}"):
+
+    def __init__(self, name, initial_seconds, pos_dict, sounds):
         Timer.__init__(self, name, initial_seconds)
         
         # IMPORTANT: call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
         
-        self.__pos_dict = pos_dict
-        self.__font = font
-        self.__font_color = font_color
-        self.__background_color = background_color
-        self.__blink_at = blink_at
-        self.__format_string = format_string
-        self.__sounds = sounds
+        self._pos_dict = pos_dict
+        self._sounds = sounds
 
-        self.__dirty = True
+        self._dirty = True
 
     def update(self):
         """Updates the timer in order to be drawn to a surface later on.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
-        if not self.__dirty:
+        if not self._dirty:
             return
         
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = self._update_image()
+        
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        # ** unpacks the dictionary to keyword arguments
+        self.rect = self.image.get_rect(**self._pos_dict)
+        
+        self._dirty = False
+
+    def _update_image(self):
+        pass
+
+    def start(self):
+        Timer.start(self)
+        
+        if self._seconds_left <= 10:
+            self._sounds[str(self._seconds_left)].play()
+
+    def countdown(self):
+        if not self._started:
+            return
+        
+        self._dirty = True
+        Timer.countdown(self)
+        
+        if self._seconds_left <= 10 and self._seconds_left > 0:
+            self._sounds[str(self._seconds_left)].play()
+
+class FontSpriteTimer(SpriteTimer):
+    """A sprite representing a timer."""
+    
+    def __init__(self, name, initial_seconds, pos_dict, font, font_color, sounds, background_color = None, blink_at = 0, format_string = "{0:d}"):
+        super(FontSpriteTimer, self).__init__(name, initial_seconds, pos_dict, sounds)
+        
+        self.__font = font
+        self.__font_color = font_color
+        self.__background_color = background_color
+        self.__blink_at = blink_at
+        self.__format_string = format_string
+
+    def _update_image(self):
         color = self.__font_color
         
         if self.__blink_at > 0 and self._seconds_left <= self.__blink_at:
             if self._seconds_left % 2 == 0:
                 color = self.__background_color
         
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
-        self.image = self.__font.render(self.__format_string.format(self._seconds_left), True , color)
-        
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        # ** unpacks the dictionary to keyword arguments
-        self.rect = self.image.get_rect(**self.__pos_dict)
-        
-        self.__dirty = False
+        return self.__font.render(self.__format_string.format(self._seconds_left), True , color)
 
-    def start(self):
-        Timer.start(self)
-        if self._seconds_left <= 10:
-            self.__sounds[str(self._seconds_left)].play()
+class ImageSpriteTimer(SpriteTimer):
+    """A sprite representing a timer."""
+    
+    def __init__(self, name, initial_seconds, pos_dict, sounds, images):
+        super(ImageSpriteTimer, self).__init__(name, initial_seconds, pos_dict, sounds)
+        
+        self.__images = images
 
     def countdown(self):
         if not self._started:
             return
         
-        self.__dirty = True
-        Timer.countdown(self)
+        self._dirty = True
         
         if self._seconds_left <= 10 and self._seconds_left > 0:
-            self.__sounds[str(self._seconds_left)].play()
+            self._sounds[str(self._seconds_left)].play()
+        
+        self._seconds_left -= 1
+        
+        if self._seconds_left <= -1:
+            print("stopping")
+            self.stop()
+            pygame.event.post(pygame.event.Event(ELAPSED_EVENT, {"timer": self}))
 
+    def _update_image(self):
+        key = "countdown_{0:d}".format(self._seconds_left)
+        print("key " + key)
+        return self.__images[key]
+        
 class TimerCountdownEventHandler(object):
     def __init__(self, timer):
         self.__timer = timer

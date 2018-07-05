@@ -1,11 +1,10 @@
 import pygame
-import masters_of_development
 from utils import Utils
 import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, seconds = 5):
+    def __init__(self, surface, fonts, sounds, images, players, seconds = 3):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self, players)], True)
 
         self.__fonts = fonts;
@@ -14,13 +13,19 @@ class StartScreen(BaseScreen):
         
         self.__players = players
         
-        timer = utils.timer.SpriteTimer(
+        timer_images = {}
+        
+        timer_images["countdown_0"] = images["start_screen_countdown_go"]
+
+        for i in range(1, 4):
+            timer_images["countdown_{0:d}".format(i)] = images["start_screen_countdown_{0:d}".format(i)]
+        
+        timer = utils.timer.ImageSpriteTimer(
             "start",
             seconds,
             {"center": surface.get_rect().center},
-            fonts["big"],
-            masters_of_development.MastersOfDevelopment.BLACK,
-            sounds)
+            sounds,
+            timer_images)
         
         self.__timer = pygame.sprite.GroupSingle(timer)
         self.__start_sound = sounds["start_game"]

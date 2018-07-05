@@ -124,7 +124,12 @@ class MastersOfDevelopment(object):
         self.__images["start_screen_player_2"] = pygame.image.load("assets/images/player_2.png").convert_alpha()
         self.__images["start_screen_start_normal"] = pygame.image.load("assets/images/start_button_normal.png").convert_alpha()
         self.__images["start_screen_start_pushed"] = pygame.image.load("assets/images/start_button_pushed.png").convert_alpha()
+        
         self.__images["start_screen_countdown_bg"] = pygame.image.load("assets/images/countdown_screen_bg.png").convert_alpha()
+        self.__images["start_screen_countdown_3"] = pygame.image.load("assets/images/countdown_3.png").convert_alpha()
+        self.__images["start_screen_countdown_2"] = pygame.image.load("assets/images/countdown_2.png").convert_alpha()
+        self.__images["start_screen_countdown_1"] = pygame.image.load("assets/images/countdown_1.png").convert_alpha()
+        self.__images["start_screen_countdown_go"] = pygame.image.load("assets/images/countdown_lets_code.png").convert_alpha()
         
         for i in range(1, 3):
             self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()

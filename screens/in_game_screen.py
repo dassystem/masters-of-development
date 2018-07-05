@@ -21,7 +21,7 @@ class InGameScreen(BaseScreen):
         
         super().add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
         
-        timer = utils.timer.SpriteTimer(
+        timer = utils.timer.FontSpriteTimer(
             "ingame",
             seconds,
             {"centerx": self._surface.get_rect().centerx},
