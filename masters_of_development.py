@@ -6,7 +6,6 @@ import handlers.global_event_handler
 import player
 import screens.start_screen
 import screens.in_game_screen
-import screens.game_over_screen
 import screens.leaderboard_screen
 import utils.timer
 
@@ -60,13 +59,6 @@ class MastersOfDevelopment(object):
             "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__images, self.__players),
             "ingame": screens.in_game_screen.InGameScreen(
                 self.__display, self.__fonts, self.__sounds, self.__images, self.__players, self.__joysticks),
-            "gameover": screens.game_over_screen.GameOverScreen(
-                self.__display,
-                self.__players,
-                self.__fonts,
-                MastersOfDevelopment.TARENT_RED,
-                MastersOfDevelopment.WHITE,
-                self.__sounds),
             "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
                 self.__display, self.__players, self.__joysticks, self.__fonts, MastersOfDevelopment.TARENT_RED,
                 MastersOfDevelopment.WHITE)
@@ -76,8 +68,6 @@ class MastersOfDevelopment(object):
             if item[0] == "start":
                 item[1].set_next_screen(self.__screen_dict["ingame"])
             elif item[0] == "ingame":
-                item[1].set_next_screen(self.__screen_dict["gameover"])
-            elif item[0] == "gameover":
                 item[1].set_next_screen(self.__screen_dict["leaderboard"])
             elif item[0] == "leaderboard":
                 item[1].set_next_screen(self.__screen_dict["start"])
@@ -136,6 +126,8 @@ class MastersOfDevelopment(object):
         self.__images["in_game_screen_bg"] = pygame.image.load("assets/images/game_screen_frame.png").convert_alpha()
         self.__images["in_game_screen_play_area_bg"] = pygame.image.load("assets/images/inscreen_game_player_bg.png").convert_alpha()
         self.__images["in_game_screen_game_over_bg"] = pygame.image.load("assets/images/inscreen_game_over.png").convert_alpha()
+        self.__images["in_game_screen_win_bg"] = pygame.image.load("assets/images/inscreen_you_win.png").convert_alpha()
+        self.__images["in_game_screen_loose_bg"] = pygame.image.load("assets/images/inscreen_you_lose.png").convert_alpha()
         
         for i in range(1, 3):
             self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()

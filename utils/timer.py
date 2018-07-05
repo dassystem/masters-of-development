@@ -75,6 +75,7 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
 
     def start(self):
         Timer.start(self)
+        self._dirty = True
         
         if self._seconds_left <= 10:
             self._sounds[str(self._seconds_left)].play()

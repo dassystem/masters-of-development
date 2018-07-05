@@ -35,7 +35,7 @@ class InGameScreen(BaseScreen):
              
         self.__timer = pygame.sprite.GroupSingle(timer)
         
-        super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.__get_timer()))
+        super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.get_timer()))
 
         self.__init_redraw_areas()
 
@@ -76,14 +76,22 @@ class InGameScreen(BaseScreen):
         for player in self.__players:
             all_dead = all_dead and player.is_dead()
             
-        if all_dead:
-            self.set_active(False)
+        if self.all_dead() and self.get_timer().is_started():
+            self.get_timer().stop()
             
         self.__render_timer()
 
     def __redraw(self):
         for redraw_area in self.__redraw_areas.values():
             self._surface.blit(redraw_area[0], redraw_area[1])
+
+    def all_dead(self):
+        all_dead = True
+
+        for player in self.__players:
+            all_dead = all_dead and player.is_dead()
+        
+        return all_dead
 
     def __render_timer(self):
         self.__timer.update()
@@ -93,19 +101,22 @@ class InGameScreen(BaseScreen):
         super().set_active(active)
         
         if self.is_active():
-            self.add_event_handler(self.__get_timer().get_event_handler())
-            self.__get_timer().start()
+            self.add_event_handler(self.get_timer().get_event_handler())
+            self.get_timer().start()
             
             for play_area in self.__play_areas:
                 play_area.reset()
         else:
-            self.__get_timer().stop()
-            self.remove_event_handler(self.__get_timer().get_event_handler())
+            self.get_timer().stop()
+            self.remove_event_handler(self.get_timer().get_event_handler())
 
     def get_player_surfaces(self):
         return self.__player_surfaces
 
-    def __get_timer(self):
+    def get_players(self):
+        return self.__players
+
+    def get_timer(self):
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
     
@@ -116,6 +127,7 @@ class InGameScreenPlayArea(object):
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
+        self.__sounds = sounds
         self.__images = images
         self.__player = pygame.sprite.GroupSingle(player)
         self.__blocks = pygame.sprite.Group()
@@ -144,6 +156,8 @@ class InGameScreenPlayArea(object):
         
         self.__player.sprite.set_on_block(self.__blocks.sprites()[0])
         self.__player.sprite.rect.centerx = (self.__surface.get_rect().centerx)
+        
+        self.__ending_sound_played = False
     
     def __generate_blocks(self):
         if len(self.__blocks) == 0:
@@ -257,7 +271,42 @@ class InGameScreenPlayArea(object):
             collided_item.on_collide(self.get_player(), self.get_score())
 
     def __render_game_over(self):
-        self.__surface.blit(self.__images["in_game_screen_game_over_bg"], (0, 0))
+        bg = None
+        text = None
+        
+        if self.get_screen().all_dead():
+            other_player = None
+            score_color = None
+            
+            if self.get_player().get_number() == 1:
+                other_player = self.get_screen().get_players()[1]
+            else:
+                other_player = self.get_screen().get_players()[0]
+            
+            if self.get_player().get_score() > other_player.get_score():
+                bg = self.__images["in_game_screen_win_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                
+                if not self.__ending_sound_played:
+                    self.__sounds["player{0:d}wins".format(self.get_player().get_number())].play()
+                    self.__ending_sound_played = True
+            elif self.get_player().get_score() < other_player.get_score():
+                bg = self.__images["in_game_screen_loose_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.RED
+            else:
+                # draw
+                bg = self.__images["in_game_screen_win_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                self.__ending_sound_played = True
+                
+            text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
+        else:
+            bg = self.__images["in_game_screen_game_over_bg"]
+            
+        self.__surface.blit(bg, (0, 0))
+    
+        if text is not None:
+            self.__surface.blit(text, text.get_rect(center = (426, 604)))
     
     def __scroll_screen(self):
         player_rect = self.__player.sprite.rect
@@ -612,6 +661,9 @@ class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
         elif event.key == pygame.K_i:
             for play_area in self.__play_areas:
                 play_area.switch_debug()
+        elif event.key == pygame.K_RETURN:
+            if self.get_screen().all_dead() or not self.get_screen().get_timer().is_started():
+                self.get_screen().set_active(False)
 
     def __handle_keyup_event(self, event):
         if event.key == pygame.K_a or event.key == pygame.K_d:
@@ -677,12 +729,15 @@ class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
         return round(event.value, 0)
 
     def __handle_button_down(self, event):
-        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
-
-        if player is None:
-            return
-
-        player.jump()
+        if self.get_screen().all_dead() or not self.get_screen().get_timer().is_started():
+            self.get_screen().set_active(False)
+        else:
+            player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
+    
+            if player is None:
+                return
+    
+            player.jump()
 
 class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, timer):
@@ -696,4 +751,5 @@ class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
         return event.type == utils.timer.ELAPSED_EVENT and event.timer == self.__timer
 
     def handle_event(self, event):
-        self.get_screen().set_active(False)
+        for player in self.get_screen().get_players():
+            player.set_dead()

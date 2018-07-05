@@ -229,6 +229,9 @@ class Player(pygame.sprite.Sprite):
         """Checks if the player is dead (game over for him, sorry)."""
         return self.__dead
     
+    def set_dead(self):
+        self.__dead = True
+    
     def get_number(self):
         """Gets the player numer (1 or 2)."""
         return self.__number
