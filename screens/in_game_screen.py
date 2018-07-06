@@ -5,7 +5,6 @@ import random
 import masters_of_development
 from block import Block
 import utils.timer
-import numpy as np
 
 class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, joysticks, seconds = 100):

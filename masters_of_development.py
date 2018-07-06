@@ -128,9 +128,8 @@ class MastersOfDevelopment(object):
         self.__images["in_game_screen_game_over_bg"] = pygame.image.load("assets/images/inscreen_game_over.png").convert_alpha()
         self.__images["in_game_screen_win_bg"] = pygame.image.load("assets/images/inscreen_you_win.png").convert_alpha()
         self.__images["in_game_screen_loose_bg"] = pygame.image.load("assets/images/inscreen_you_lose.png").convert_alpha()
-        
-        for i in range(1, 3):
-            self.__images["player{0:d}".format(i)] = pygame.image.load("assets/images/dev{0:d}.png".format(i)).convert_alpha()
+        self.__images["in_game_screen_player"] = pygame.image.load("assets/images/game_figure.png").convert_alpha()
+        self.__images["in_game_screen_player_jumping"] = pygame.image.load("assets/images/game_figure_jump.png").convert_alpha()        
         
         for i in range(1, 8):
             self.__images["gem{0:d}".format(i)] = pygame.image.load("assets/images/gem{0:d}.png".format(i)).convert_alpha()

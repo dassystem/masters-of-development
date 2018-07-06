@@ -11,14 +11,8 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         
         self.__number = number
-        
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
-        self.image = images["player{0:d}".format(self.__number)]
-        
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        self.rect = self.image.get_rect()
+        self.__images = images
 
-        self.__level = 0
         self.__fps = fps
         self.__gravity = gravity
         self.__joystick = joystick
@@ -42,6 +36,11 @@ class Player(pygame.sprite.Sprite):
         self.__level = 0
         self.__score = 0
         self.__power_ups = {}
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = self.__images["in_game_screen_player"]
+        
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        self.rect = self.image.get_rect()
     
     def update(self):
         """Updates the player state. Does nothing if player is dead.
@@ -60,6 +59,8 @@ class Player(pygame.sprite.Sprite):
                 self.__jumping = False
                 self.__falling = True
                 self.__velocity = 6
+                self.image = self.__images["in_game_screen_player"]
+                self.rect = self.image.get_rect(topleft = self.rect.topleft)
 
         if self.__on_block is not None:
             self.__check_still_on_block()
@@ -171,7 +172,11 @@ class Player(pygame.sprite.Sprite):
        
         # jump only possible if standing on a block
         if self.__on_block is not None:
+            self.image = self.__images["in_game_screen_player_jumping"]
+            self.rect = self.image.get_rect(topleft = self.rect.topleft)
+            
             self.__sounds["jump"].play()
+            
             self.__on_block = None
             self.__falling = False
             self.__jumping = True
@@ -184,7 +189,7 @@ class Player(pygame.sprite.Sprite):
             if power_ups is not None:
                 if len(power_ups) > 0:
                     go_up = go_up * 2
-                    
+            
             # go up 3 block heights
             self.rect.y = self.rect.y - go_up
     
