@@ -13,6 +13,7 @@ class InGameScreen(BaseScreen):
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
         
         self.__fonts = fonts
+        self.__sounds = sounds
         self.__images = images
         
         self.__players = players
@@ -47,8 +48,6 @@ class InGameScreen(BaseScreen):
         split_screen.append(self._surface.subsurface(player_2_rect))
         
         for i, subsurface in enumerate(split_screen):
-            # pass a copy of the surface rect to the player so that the player can't mess up with the surface
-            self.__players[i].set_surface_rect(subsurface.get_rect().copy())
             self.__play_areas.append(InGameScreenPlayArea(self, subsurface, fonts, sounds, images, self.__players[i]))
     
     def __init_redraw_areas(self):
@@ -105,9 +104,19 @@ class InGameScreen(BaseScreen):
             
             for play_area in self.__play_areas:
                 play_area.reset()
+                
+            self.__ending_sound_played = False
         else:
             self.get_timer().stop()
             self.remove_event_handler(self.get_timer().get_event_handler())
+
+    def play_ending_sound(self, player):
+        if not self.__ending_sound_played:
+            self.__sounds["player{0:d}wins".format(player.get_number())].play()
+            self.__ending_sound_played = True
+
+    def set_ending_sound_played(self):
+        self.__ending_sound_played = True
 
     def get_player_surfaces(self):
         return self.__player_surfaces
@@ -128,36 +137,151 @@ class InGameScreenPlayArea(object):
         self.__fonts = fonts
         self.__sounds = sounds
         self.__images = images
-        self.__player = pygame.sprite.GroupSingle(player)
-        self.__blocks = pygame.sprite.Group()
-        self.__block_items = pygame.sprite.Group()
+
+        block_rect = surface.get_rect(topleft = (65, 35), width = surface.get_width() - 65, height = surface.get_height() - 35)
+        block_surface = surface.subsurface(block_rect)
+        self.__block_area = InGameBlockArea(self, block_surface, images, sounds, player)
         
         self.__text = self.__fonts["big"].render(
-            "PLAYER {0:d}: ".format(self.get_player().get_number()), True, masters_of_development.MastersOfDevelopment.GREEN)
+            "PLAYER {0:d}: ".format(player.get_number()), True, masters_of_development.MastersOfDevelopment.GREEN)
         self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
-        self.__level = 0
         
     def reset(self):
         """Resets the state of the play area so that it can be (re-) used for a new game.
         
            Resets the player and generates new blocks.
         """
-        self.__level = 0
+        self.__block_area.reset()
+        self.__score.sprite.reset()
+    
+    def switch_debug(self):
+        """Switches the debug information on/off."""
+        self.__debug_info.sprite.switch_visibility()
+      
+    def update(self):
+        """Updates all sprites and draws them on the play area. Scrolls if necessary.
+           see also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
+        """
+        
+        if self.get_player().is_dead():
+            self.__render_game_over()
+            return
+        
+        background = self.__images["in_game_screen_play_area_bg"]
+        self.__surface.blit(background, (0, 0))
+        
+        self.__block_area.update()
+        
+        # TODO line numbers
+        
+        self.__surface.blit(self.__text, self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5)))
+        
+        self.__score.update(self.__surface)
+        self.__debug_info.update()
 
-        self.__player.sprite.reset()
+        self.__score.draw(self.__surface)
+        
+        if self.__debug_info.sprite.is_visible():
+            self.__debug_info.draw(self.__surface)
+
+    def __render_game_over(self):
+        bg = None
+        text = None
+        
+        if self.get_screen().all_dead():
+            other_player = None
+            score_color = None
+            
+            if self.get_player().get_number() == 1:
+                other_player = self.get_screen().get_players()[1]
+            else:
+                other_player = self.get_screen().get_players()[0]
+            
+            if self.get_player().get_score() > other_player.get_score():
+                bg = self.__images["in_game_screen_win_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                self.__screen.play_ending_sound(self.get_player())
+            elif self.get_player().get_score() < other_player.get_score():
+                bg = self.__images["in_game_screen_loose_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.RED
+                self.__screen.play_ending_sound(other_player)
+            else:
+                # draw
+                bg = self.__images["in_game_screen_win_bg"]
+                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                self.__screen.set_ending_sound_played()
+                
+            text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
+        else:
+            bg = self.__images["in_game_screen_game_over_bg"]
+            
+        self.__surface.blit(bg, (0, 0))
+    
+        if text is not None:
+            self.__surface.blit(text, text.get_rect(center = (426, 604)))
+    
+    def get_player(self):
+        return self.__block_area.get_player()
+    
+    def get_scroll_velocity(self):
+        return self.__scroll_velocity
+    
+    def get_score(self):
+        return self.__score.sprite
+    
+    def get_screen(self):
+        return self.__screen
+    
+    def get_surface(self):
+        return self.__surface
+
+class InGameBlockArea(object):
+    def __init__(self, play_area, surface, images, sounds, player):
+        self.__play_area = play_area
+        self.__surface = surface
+        self.__images = images
+        self.__sounds = sounds
+        
+        self.__player = pygame.sprite.GroupSingle(player)
+        self.__blocks = pygame.sprite.Group()
+        self.__block_items = pygame.sprite.Group()
+        
+        self.__level = 0
+    
+        # pass a copy of the surface rect to the player so that the player can't mess up with the surface
+        player.set_surface_rect(surface.get_rect().copy())
+    
+    def reset(self):
+        self.__level = 0
+        
+        self.get_player().reset()
         self.__blocks.empty()
         self.__block_items.empty()
         self.__generate_blocks()
-        self.__score.sprite.reset()
         
-        self.__player.sprite.set_on_block(self.__blocks.sprites()[0])
-        self.__player.sprite.rect.centerx = (self.__surface.get_rect().centerx)
+        self.get_player().set_on_block(self.__blocks.sprites()[0])
+        self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
+
+    def update(self):
+        self.__surface.fill(pygame.Color(38, 38, 38))
         
-        self.__ending_sound_played = False
-    
+        self.__scroll_screen()
+        
+        # generate new blocks after scrolling if necessary
+        self.__generate_blocks()
+        
+        self.__player.update()
+        
+        self.__detect_block_collision()
+        self.__detect_block_item_collision()
+        
+        self.__blocks.draw(self.__surface)
+        self.__block_items.draw(self.__surface)
+        self.__player.draw(self.__surface)                
+
     def __generate_blocks(self):
         if len(self.__blocks) == 0:
             self.__generate_base_block()
@@ -180,11 +304,13 @@ class InGameScreenPlayArea(object):
             else:
                 random_x_position -=  xgaps
 
-            new_block = Block(self.__level,
-                      random_x_position,
-                      random_y_position,
-                      block_width,
-                      Block.BLOCK_HEIGHT)
+            new_block = Block(
+                self.__level,
+                random_x_position,
+                random_y_position,
+                block_width,
+                Block.BLOCK_HEIGHT)
+            
             # make sure that the block is not out of screen bounds
             while new_block.rect.right > self.__surface.get_rect().right:
                 new_block.rect.right -= xgaps
@@ -217,116 +343,36 @@ class InGameScreenPlayArea(object):
             self.__surface.get_width(), Block.BLOCK_HEIGHT
         )
         
-        self.__blocks.add(baseBlock) 
-    
-    def switch_debug(self):
-        """Switches the debug information on/off."""
-        self.__debug_info.sprite.switch_visibility()
-      
-    def update(self):
-        """Updates all sprites and draws them on the play area. Scrolls if necessary.
-           see also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
-        """
+        self.__blocks.add(baseBlock)
+                
+    def __scroll_screen(self):
+        player_rect = self.__player.sprite.rect
         
-        if self.get_player().is_dead():
-            self.__render_game_over()
-            return
-        
-        background = self.__images["in_game_screen_play_area_bg"]
-        self.__surface.blit(background, (0, 0))
-        
-        self.__scroll_screen()
-        # generate new blocks after scrolling if necessary
-        self.__generate_blocks()
-        
-        self.__player.update()
-        
-        self.__surface.blit(self.__text, self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5)))
-        
-        self.__score.update(self.__surface)
-        self.__debug_info.update()
-
-        self.__detect_block_collision()
-        self.__detect_block_item_collision()
-
-        self.__blocks.draw(self.__surface)
-        self.__block_items.draw(self.__surface)
-        self.__player.draw(self.__surface)
-        self.__score.draw(self.__surface)
-        
-        if self.__debug_info.sprite.is_visible():
-            self.__debug_info.draw(self.__surface)
+        if player_rect.top <= self.__surface.get_height() // 2:
+            player_rect.y += self.__play_area.get_scroll_velocity()
+            
+            self.__blocks.update(self.__play_area.get_scroll_velocity(), self.__surface.get_height())
+            self.__block_items.update()
+            
+        # TODO add line numbers in play area 
 
     def __detect_block_collision(self):
         collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
        
         for block in collided_blocks:
-            block.on_collide(self.get_player(), self.get_score())
+            block.on_collide(self.get_player(), self.__play_area.get_score())
        
     def __detect_block_item_collision(self):
         collided_items = pygame.sprite.spritecollide(self.get_player(), self.__block_items, True)
         
         for collided_item in collided_items:
-            collided_item.on_collide(self.get_player(), self.get_score())
+            collided_item.on_collide(self.get_player(), self.__play_area.get_score())
 
-    def __render_game_over(self):
-        bg = None
-        text = None
-        
-        if self.get_screen().all_dead():
-            other_player = None
-            score_color = None
-            
-            if self.get_player().get_number() == 1:
-                other_player = self.get_screen().get_players()[1]
-            else:
-                other_player = self.get_screen().get_players()[0]
-            
-            if self.get_player().get_score() > other_player.get_score():
-                bg = self.__images["in_game_screen_win_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.GREEN
-                
-                if not self.__ending_sound_played:
-                    self.__sounds["player{0:d}wins".format(self.get_player().get_number())].play()
-                    self.__ending_sound_played = True
-            elif self.get_player().get_score() < other_player.get_score():
-                bg = self.__images["in_game_screen_loose_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.RED
-            else:
-                # draw
-                bg = self.__images["in_game_screen_win_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.GREEN
-                self.__ending_sound_played = True
-                
-            text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
-        else:
-            bg = self.__images["in_game_screen_game_over_bg"]
-            
-        self.__surface.blit(bg, (0, 0))
-    
-        if text is not None:
-            self.__surface.blit(text, text.get_rect(center = (426, 604)))
-    
-    def __scroll_screen(self):
-        player_rect = self.__player.sprite.rect
-        
-        if player_rect.top <= self.__surface.get_height() // 2:
-            player_rect.y += self.__scroll_velocity
-            
-            self.__blocks.update(self.__scroll_velocity, self.__surface.get_height())
-            self.__block_items.update()
-            
     def get_player(self):
         return self.__player.sprite
-    
-    def get_score(self):
-        return self.__score.sprite
-    
-    def get_screen(self):
-        return self.__screen
-    
-    def get_surface(self):
-        return self.__surface
+
+    def get_play_area(self):
+        return self.__play_area
 
 def detect_player_block_collide(player, block):
     if player.rect.colliderect(block.rect):
@@ -543,9 +589,9 @@ class Coin(Item):
         player.set_score(score.get_score())
 
 class PowerUp(Item):
-    def __init__(self, name, block, play_area, active_seconds = 5):
+    def __init__(self, name, block, block_area, active_seconds = 5):
         self.__name = name
-        self.__play_area = play_area
+        self.__block_area = block_area
         self.__active_seconds = active_seconds
 
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -564,32 +610,36 @@ class PowerUp(Item):
         
         self.__event_handlers = []
         self.__event_handlers.append(self.__timer.get_event_handler())
-        self.__event_handlers.append(PowerupTimerElapsedEventHandler(self.__play_area.get_screen(), self))
+        
+        screen = self.__block_area.get_play_area().get_screen()
+        
+        self.__event_handlers.append(
+            PowerupTimerElapsedEventHandler(screen, self))
         
         for event_handler in self.__event_handlers:
-            self.__play_area.get_screen().add_event_handler(event_handler)
+            screen.add_event_handler(event_handler)
         
         self.__timer.start()
         
     def deactivate(self):
-        self.__play_area.get_player().remove_power_up(self)
+        self.__block_area.get_play_area().get_player().remove_power_up(self)
         self.__timer.stop()
         self.__timer = None
         
         for event_handler in self.__event_handlers:
-            self.__play_area.get_screen().remove_event_handler(event_handler)
+            self.__block_area.get_play_area().get_screen().remove_event_handler(event_handler)
         
         self.__event_handlers = []
 
 class PowerUpJump(PowerUp):
-    def __init__(self, images, block, play_area):
+    def __init__(self, images, block, block_area):
         self.image = images["power_up_jump_height"]
-        super(PowerUpJump, self).__init__("power_up_jump", block, play_area)
+        super(PowerUpJump, self).__init__("power_up_jump", block, block_area)
 
 class PowerUpBugResistant(PowerUp):
-    def __init__(self, images, block, play_area):
+    def __init__(self, images, block, block_area):
         self.image = images["power_up_bug_resistant"]
-        super(PowerUpBugResistant, self).__init__("power_up_bug_resistant", block, play_area)
+        super(PowerUpBugResistant, self).__init__("power_up_bug_resistant", block, block_area)
 
 class Bug(Item):
     def __init__(self, images, block, base_score = -100):
