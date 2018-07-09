@@ -8,15 +8,29 @@ class Block(pygame.sprite.Sprite):
     BLOCK_WIDTH = 32
     BLOCK_HEIGHT = 32
     
+    KEYWORD_COLOR = MastersOfDevelopment.LIGHT_GRAY
+    #KEYWORD_COLOR = pygame.Color(81, 86, 88)
+    # Eclipse Photon Dark Theme Comment Color
+    #KEYWORD_COLOR = pygame.Color(88, 96, 92)
+    
     words = {
-        2: ["&&", "||", "if", "in", "+=", "-=", "*=", "or"],
-        3: ["abs", "and", "def", "END", "i++", "i--", "int", "for", "GET", "JMP", "LDA", "not", "sys", "REM", "RUN", "STA", "try", "val", "var"],
-        4: ["char", "elif", "else", "from", "GOTO", "into", "join", "main", "LOAD", "LIST","long", "PEEK", "POKE", "SAVE", "self", "THEN", "this", "True", "None", "null"],
-        5: ["begin", "break", "catch", "class", "False", "float", "GOSUB", "import", "INPUT", "print", "short", "super", "where", "while"],
-        6: ["double", "import", "random", "public", "select", "static", "string", "switch"],
-        7: ["boolean", "declare", "numeric", "private", "varchar"],
-        8: ["__name__", "continue", "varchar2", "volatile"],
-        9: ["exception", "interface", "protected", "transient"]
+        2: ["as", "if", "in", "is", "or"],
+        3: ["and", "def", "del", "for", "not"],
+        4: ["elif", "from", "pass", "None", "True", "try:", "with"],
+        5: ["a % 2", "del b", "break", "class", "else:", "False", "raise", "while", "yield"],
+        6: ["i += 1", "x == y", "s = \"\"", "len(d)", "import", "lambda", "return", "i = 42", "str(i)", "# TODO"],
+        7: ["finally", "next(g)", "d = {}", "l  = []", "type(x)", "# FIXME", "except:"],
+        8: ["continue", "nonlocal", "print(i)", "d.copy()", "d.clear()", "global a"],
+        9 : ["self.rect", "d.clear()", "if x < 0:", "f.__doc__"],
+        10: ["import sys", "print d[k]", "d.values()", "l2 = l1[:]", "f(*t, **d)", "@decorator", "f.__name__"],
+        11: ["for k in d:", "print s[-1]", "import math", "a, b = 0, 1"],
+        12: ["s.center(10)", "f.__module__", "@wraps(func)"],
+        13: ["import random", "t = (1, 2, 3)", "while i <= n:", "pygame.init()", "pygame.quit()"],
+        14: ["super().kill()", "def f(**args):"],
+        15: ["# We are hiring", "# www.tarent.de"],
+        16: ["lambda x: x + 42"],
+        17: ["self.rect.x += dx", "self.rect.y += dy", "math.cos(math.pi)"],
+        18: ["def __str__(self):", "s.format(\"0:d\", i)", "def f(): return 42", "f = 9 * c / 5 + 32"]
     }
     
     def __init__(self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
@@ -30,7 +44,7 @@ class Block(pygame.sprite.Sprite):
         letters = width // 25
         s = ""
         
-        if letters >= 2 and letters <= 9:
+        if letters in Block.words:
             s = random.choice(Block.words[letters])
         else:
             for i in range(0, letters):

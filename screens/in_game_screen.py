@@ -289,7 +289,7 @@ class LineNumber(pygame.sprite.Sprite):
         self.__fonts = fonts
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
-        self.image = fonts["big"].render(str(number), True, masters_of_development.MastersOfDevelopment.LIGHT_GRAY)
+        self.image = fonts["big"].render("{0:>3s}".format(str(number)), True, masters_of_development.MastersOfDevelopment.LIGHT_GRAY)
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = 0, y = y)
@@ -362,7 +362,7 @@ class InGameBlockArea(object):
             self.__level += 1
             ygaps = random.randrange(50, 100)
             xgaps = random.randrange(100, 150)
-            block_width = random.randrange(80, 160)
+            block_width = random.randrange(80, 400)
             last_block = self.__blocks.sprites()[-1]
 
             last_block_top = last_block.rect.top
