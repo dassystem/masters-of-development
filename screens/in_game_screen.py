@@ -131,6 +131,9 @@ class InGameScreen(BaseScreen):
 class InGameScreenPlayArea(object):
     """A area where a player is playing."""
     
+    LEFT_MARGIN = 65
+    TOP_MARGIN = 35
+    
     def __init__(self, screen, surface, fonts, sounds, images, player):
         self.__screen = screen
         self.__surface = surface
@@ -138,7 +141,10 @@ class InGameScreenPlayArea(object):
         self.__sounds = sounds
         self.__images = images
 
-        block_rect = surface.get_rect(topleft = (65, 35), width = surface.get_width() - 65, height = surface.get_height() - 35)
+        block_rect = surface.get_rect(
+            topleft = (InGameScreenPlayArea.LEFT_MARGIN, InGameScreenPlayArea.TOP_MARGIN),
+            width = surface.get_width() - InGameScreenPlayArea.LEFT_MARGIN,
+            height = surface.get_height() - InGameScreenPlayArea.TOP_MARGIN)
         block_surface = surface.subsurface(block_rect)
         self.__block_area = InGameBlockArea(self, block_surface, images, sounds, player)
         
@@ -148,6 +154,10 @@ class InGameScreenPlayArea(object):
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
+        self.__line_numbers = pygame.sprite.Group()
+        
+        # (735 - 35) / 32 = 22 
+        self.__max_line_numbers = round((surface.get_height() - InGameScreenPlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
         
     def reset(self):
         """Resets the state of the play area so that it can be (re-) used for a new game.
@@ -156,7 +166,30 @@ class InGameScreenPlayArea(object):
         """
         self.__block_area.reset()
         self.__score.sprite.reset()
+        self.__line_numbers.empty()
+        self.__generate_line_numbers()
     
+    def __generate_line_numbers(self):
+        new_lines = self.__max_line_numbers - len(self.__line_numbers)
+
+        if new_lines <= 0:
+            return
+        
+        highest_line_number = 0
+        
+        if self.__line_numbers:
+            highest_line_number = self.__line_numbers.sprites()[-1].get_number()
+        
+        dy = new_lines * Block.BLOCK_HEIGHT
+        
+        for i in range(highest_line_number + 1, highest_line_number + new_lines + 1):
+            new_line_number = LineNumber(i, dy, self.__fonts)
+            self.__line_numbers.add(new_line_number)
+            dy -= Block.BLOCK_HEIGHT
+
+    def scroll(self):
+        self.__line_numbers.update(self.__scroll_velocity, self.__surface.get_height())
+
     def switch_debug(self):
         """Switches the debug information on/off."""
         self.__debug_info.sprite.switch_visibility()
@@ -174,8 +207,8 @@ class InGameScreenPlayArea(object):
         self.__surface.blit(background, (0, 0))
         
         self.__block_area.update()
-        
-        # TODO line numbers
+        self.__generate_line_numbers()
+        self.__render_line_numbers()
         
         self.__surface.blit(self.__text, self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5)))
         
@@ -223,6 +256,15 @@ class InGameScreenPlayArea(object):
         if text is not None:
             self.__surface.blit(text, text.get_rect(center = (426, 604)))
     
+    def __render_line_numbers(self):
+        # clear line number area
+        pygame.draw.rect(
+            self.__surface,
+            masters_of_development.MastersOfDevelopment.DARK_GRAY,
+            pygame.Rect(0, InGameScreenPlayArea.TOP_MARGIN, InGameScreenPlayArea.LEFT_MARGIN, self.__surface.get_height()))
+        
+        self.__line_numbers.draw(self.__surface)
+
     def get_player(self):
         return self.__block_area.get_player()
     
@@ -237,6 +279,34 @@ class InGameScreenPlayArea(object):
     
     def get_surface(self):
         return self.__surface
+
+class LineNumber(pygame.sprite.Sprite):
+    def __init__(self, number, y, fonts):
+        # IMPORTANT: call the parent class (Sprite) constructor
+        super(LineNumber, self).__init__()
+        
+        self.__number = number
+        self.__fonts = fonts
+        
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = fonts["big"].render(str(number), True, masters_of_development.MastersOfDevelopment.LIGHT_GRAY)
+        
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        self.rect = self.image.get_rect(x = 0, y = y)
+        
+    def update(self, scroll_velocity, surface_height):
+        """Updates the line number for moving down while scrolling the play area. Kills itself if moving out of surface.
+           
+           See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
+        """
+        self.rect.y += scroll_velocity
+        
+        # delete line number offscreen
+        if self.rect.top >= surface_height:
+            self.kill()
+
+    def get_number(self):
+        return self.__number
 
 class InGameBlockArea(object):
     def __init__(self, play_area, surface, images, sounds, player):
@@ -353,9 +423,8 @@ class InGameBlockArea(object):
             
             self.__blocks.update(self.__play_area.get_scroll_velocity(), self.__surface.get_height())
             self.__block_items.update()
+            self.get_play_area().scroll()
             
-        # TODO add line numbers in play area 
-
     def __detect_block_collision(self):
         collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
        

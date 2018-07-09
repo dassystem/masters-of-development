@@ -18,6 +18,8 @@ class MastersOfDevelopment(object):
     BACKGROUND_COLOR = WHITE
     GREEN = pygame.Color(93, 252, 172)
     RED = pygame.Color(255, 0, 0)
+    LIGHT_GRAY = pygame.Color(131, 135, 135)
+    DARK_GRAY = pygame.Color(58, 58, 58)
     
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):
