@@ -1,17 +1,42 @@
 import pygame
+import string
+import random
+from masters_of_development import MastersOfDevelopment
 
 class Block(pygame.sprite.Sprite):
     """A sprite representing a block. Contains the block level."""
     BLOCK_WIDTH = 32
     BLOCK_HEIGHT = 32
     
-    def __init__(self, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
+    words = {
+        2: ["&&", "||", "if", "in", "+=", "-=", "*=", "or"],
+        3: ["abs", "and", "def", "END", "i++", "i--", "int", "for", "GET", "JMP", "LDA", "not", "sys", "REM", "RUN", "STA", "try", "val", "var"],
+        4: ["char", "elif", "else", "from", "GOTO", "into", "join", "main", "LOAD", "LIST","long", "PEEK", "POKE", "SAVE", "self", "THEN", "this", "True", "None", "null"],
+        5: ["begin", "break", "catch", "class", "False", "float", "GOSUB", "import", "INPUT", "print", "short", "super", "where", "while"],
+        6: ["double", "import", "random", "public", "select", "static", "string", "switch"],
+        7: ["boolean", "declare", "numeric", "private", "varchar"],
+        8: ["__name__", "continue", "varchar2", "volatile"],
+        9: ["exception", "interface", "protected", "transient"]
+    }
+    
+    def __init__(self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Block, self).__init__()
 
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
-        self.image = pygame.Surface((width, height))
-        self.image.fill(pygame.Color(255, 0, 0))
+        #self.image = pygame.Surface((width, height))
+        #self.image.fill(pygame.Color(255, 0, 0))
+        
+        letters = width // 25
+        s = ""
+        
+        if letters >= 2 and letters <= 9:
+            s = random.choice(Block.words[letters])
+        else:
+            for i in range(0, letters):
+                s += random.choice(string.ascii_letters)
+        
+        self.image = font.render(s, True, MastersOfDevelopment.LIGHT_GRAY)
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = x, y = y)

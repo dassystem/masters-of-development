@@ -3,7 +3,7 @@ from utils import Utils
 import pygame
 import random
 import masters_of_development
-from block import Block
+import block
 import utils.timer
 
 class InGameScreen(BaseScreen):
@@ -146,7 +146,7 @@ class InGameScreenPlayArea(object):
             width = surface.get_width() - InGameScreenPlayArea.LEFT_MARGIN,
             height = surface.get_height() - InGameScreenPlayArea.TOP_MARGIN)
         block_surface = surface.subsurface(block_rect)
-        self.__block_area = InGameBlockArea(self, block_surface, images, sounds, player)
+        self.__block_area = InGameBlockArea(self, block_surface, fonts, images, sounds, player)
         
         self.__text = self.__fonts["big"].render(
             "PLAYER {0:d}: ".format(player.get_number()), True, masters_of_development.MastersOfDevelopment.GREEN)
@@ -157,7 +157,7 @@ class InGameScreenPlayArea(object):
         self.__line_numbers = pygame.sprite.Group()
         
         # (735 - 35) / 32 = 22 
-        self.__max_line_numbers = round((surface.get_height() - InGameScreenPlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
+        self.__max_line_numbers = round((surface.get_height() - InGameScreenPlayArea.TOP_MARGIN) / block.Block.BLOCK_HEIGHT)
         
     def reset(self):
         """Resets the state of the play area so that it can be (re-) used for a new game.
@@ -180,12 +180,12 @@ class InGameScreenPlayArea(object):
         if self.__line_numbers:
             highest_line_number = self.__line_numbers.sprites()[-1].get_number()
         
-        dy = new_lines * Block.BLOCK_HEIGHT
+        dy = new_lines * block.Block.BLOCK_HEIGHT
         
         for i in range(highest_line_number + 1, highest_line_number + new_lines + 1):
             new_line_number = LineNumber(i, dy, self.__fonts)
             self.__line_numbers.add(new_line_number)
-            dy -= Block.BLOCK_HEIGHT
+            dy -= block.Block.BLOCK_HEIGHT
 
     def scroll(self):
         self.__line_numbers.update(self.__scroll_velocity, self.__surface.get_height())
@@ -309,9 +309,10 @@ class LineNumber(pygame.sprite.Sprite):
         return self.__number
 
 class InGameBlockArea(object):
-    def __init__(self, play_area, surface, images, sounds, player):
+    def __init__(self, play_area, surface, fonts, images, sounds, player):
         self.__play_area = play_area
         self.__surface = surface
+        self.__fonts = fonts
         self.__images = images
         self.__sounds = sounds
         
@@ -374,12 +375,13 @@ class InGameBlockArea(object):
             else:
                 random_x_position -=  xgaps
 
-            new_block = Block(
+            new_block = block.Block(
+                self.__fonts["big"],
                 self.__level,
                 random_x_position,
                 random_y_position,
                 block_width,
-                Block.BLOCK_HEIGHT)
+                block.Block.BLOCK_HEIGHT)
             
             # make sure that the block is not out of screen bounds
             while new_block.rect.right > self.__surface.get_rect().right:
@@ -406,11 +408,13 @@ class InGameBlockArea(object):
                 self.__block_items.add(power_up)
             
     def __generate_base_block(self):
-        baseBlock = Block(
+        #self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT)
+        baseBlock = block.Block(
+            self.__fonts["big"],
             0,
             self.__surface.get_rect().x,
-            self.__surface.get_height() - Block.BLOCK_HEIGHT,
-            self.__surface.get_width(), Block.BLOCK_HEIGHT
+            self.__surface.get_height() - block.Block.BLOCK_HEIGHT,
+            self.__surface.get_width(), block.Block.BLOCK_HEIGHT
         )
         
         self.__blocks.add(baseBlock)

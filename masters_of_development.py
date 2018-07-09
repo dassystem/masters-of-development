@@ -86,7 +86,7 @@ class MastersOfDevelopment(object):
         for screen in self.__screen_dict.values():
             if screen == next_screen:
                 next_screen.set_active(True)
-                break;
+                break
 
     def __init_fonts(self):
         self.__fonts = {}
