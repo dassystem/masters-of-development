@@ -378,11 +378,11 @@ class InGameBlockArea(object):
             prev_left = last_block.rect.left
             prev_right = last_block.rect.right
             
-            max_right = self.__surface.get_rect().right
+            max_right = self.__surface.get_width()
             
             possible_x = set()
             
-            if prev_left != 0 and prev_right <= max_right:
+            if not (prev_left == 0 and prev_right == max_right):
                 min_x_left = max(0, prev_left - max_gap - block_width)
                 max_x_left = min(max_right - block_width, prev_left + block.Block.BLOCK_WIDTH)
                 
@@ -396,8 +396,8 @@ class InGameBlockArea(object):
                 possible_x = possible_x_left.union(possible_x_right)
             else:
                 pass
-            #if len(possible_x) == 0:
-            #    possible_x = set(range(0, max_right - block_width + 1))
+            if len(possible_x) == 0:
+                possible_x = set(range(0, max_right - block_width + 1))
             
             random_x = random.choice(list(possible_x))
 
@@ -433,7 +433,6 @@ class InGameBlockArea(object):
                 self.__block_items.add(power_up)
             
     def __generate_base_block(self):
-        #self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT)
         baseBlock = block.Block(
             self.__fonts["big"],
             0, # level
@@ -442,9 +441,9 @@ class InGameBlockArea(object):
             self.__surface.get_width(), # width
             self.__surface.get_height() - 1 - block.Block.BLOCK_HEIGHT # height
         )
-        
-        if baseBlock.rect.right > self.__surface.get_width() - 1:
-            baseBlock.rect.right = self.__surface.get_width() - 1
+
+        baseBlock.rect.x = 0
+        baseBlock.rect.width = self.__surface.get_width()
         
         self.__blocks.add(baseBlock)
                 
