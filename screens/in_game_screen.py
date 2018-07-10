@@ -41,10 +41,10 @@ class InGameScreen(BaseScreen):
 
     def __init_play_areas(self, fonts, sounds, images):
         split_screen = []
-        player_1_rect = images["in_game_screen_play_area_bg"].get_rect(topleft = (55, 85))
+        player_1_rect = pygame.Rect(55, 85, 850, 735)
         split_screen.append(self._surface.subsurface(player_1_rect))
         
-        player_2_rect = images["in_game_screen_play_area_bg"].get_rect(topleft = (1015, 85))
+        player_2_rect = pygame.Rect(1015, 85, 850, 735)
         split_screen.append(self._surface.subsurface(player_2_rect))
         
         for i, subsurface in enumerate(split_screen):
@@ -131,7 +131,7 @@ class InGameScreen(BaseScreen):
 class InGameScreenPlayArea(object):
     """A area where a player is playing."""
     
-    LEFT_MARGIN = 65
+    LEFT_MARGIN = 85
     TOP_MARGIN = 35
     
     def __init__(self, screen, surface, fonts, sounds, images, player):
@@ -203,8 +203,16 @@ class InGameScreenPlayArea(object):
             self.__render_game_over()
             return
         
-        background = self.__images["in_game_screen_play_area_bg"]
-        self.__surface.blit(background, (0, 0))
+        pygame.draw.rect(
+            self.__surface,
+            masters_of_development.MastersOfDevelopment.DARK_GRAY,
+            pygame.Rect(0, 0, self.__surface.get_width(), InGameScreenPlayArea.TOP_MARGIN)
+        )
+        pygame.draw.rect(
+            self.__surface,
+            masters_of_development.MastersOfDevelopment.DARK_GRAY,
+            pygame.Rect(0, InGameScreenPlayArea.TOP_MARGIN, InGameScreenPlayArea.LEFT_MARGIN, self.__surface.get_height())
+        )
         
         self.__block_area.update()
         self.__generate_line_numbers()
@@ -250,19 +258,13 @@ class InGameScreenPlayArea(object):
             text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
         else:
             bg = self.__images["in_game_screen_game_over_bg"]
-            
+        
         self.__surface.blit(bg, (0, 0))
-    
+        
         if text is not None:
             self.__surface.blit(text, text.get_rect(center = (426, 604)))
     
     def __render_line_numbers(self):
-        # clear line number area
-        pygame.draw.rect(
-            self.__surface,
-            masters_of_development.MastersOfDevelopment.DARK_GRAY,
-            pygame.Rect(0, InGameScreenPlayArea.TOP_MARGIN, InGameScreenPlayArea.LEFT_MARGIN, self.__surface.get_height()))
-        
         self.__line_numbers.draw(self.__surface)
 
     def get_player(self):
@@ -292,7 +294,9 @@ class LineNumber(pygame.sprite.Sprite):
         self.image = fonts["big"].render("{0:>3s}".format(str(number)), True, masters_of_development.MastersOfDevelopment.LIGHT_GRAY)
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        self.rect = self.image.get_rect(x = 0, y = y)
+        self.rect = self.image.get_rect()
+        self.rect.right = InGameScreenPlayArea.LEFT_MARGIN
+        self.rect.y = y
         
     def update(self, scroll_velocity, surface_height):
         """Updates the line number for moving down while scrolling the play area. Kills itself if moving out of surface.
@@ -337,7 +341,7 @@ class InGameBlockArea(object):
         self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
 
     def update(self):
-        self.__surface.fill(pygame.Color(38, 38, 38))
+        self.__surface.fill(masters_of_development.MastersOfDevelopment.DARKER_GRAY)
         
         self.__scroll_screen()
         
@@ -390,7 +394,8 @@ class InGameBlockArea(object):
                 possible_x_right = set(range(min_x_right, max_x_right + 1))
                 
                 possible_x = possible_x_left.union(possible_x_right)
-                
+            else:
+                pass
             #if len(possible_x) == 0:
             #    possible_x = set(range(0, max_right - block_width + 1))
             

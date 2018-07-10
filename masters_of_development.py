@@ -20,6 +20,7 @@ class MastersOfDevelopment(object):
     RED = pygame.Color(255, 0, 0)
     LIGHT_GRAY = pygame.Color(131, 135, 135)
     DARK_GRAY = pygame.Color(58, 58, 58)
+    DARKER_GRAY = pygame.Color(38, 38, 38)
     
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):
@@ -126,7 +127,6 @@ class MastersOfDevelopment(object):
         self.__images["start_screen_countdown_go"] = pygame.image.load("assets/images/countdown_lets_code.png").convert_alpha()
         
         self.__images["in_game_screen_bg"] = pygame.image.load("assets/images/game_screen_frame.png").convert_alpha()
-        self.__images["in_game_screen_play_area_bg"] = pygame.image.load("assets/images/inscreen_game_player_bg.png").convert_alpha()
         self.__images["in_game_screen_game_over_bg"] = pygame.image.load("assets/images/inscreen_game_over.png").convert_alpha()
         self.__images["in_game_screen_win_bg"] = pygame.image.load("assets/images/inscreen_you_win.png").convert_alpha()
         self.__images["in_game_screen_loose_bg"] = pygame.image.load("assets/images/inscreen_you_lose.png").convert_alpha()
