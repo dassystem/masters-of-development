@@ -1,6 +1,7 @@
 import keyword
 import pygame
 import random
+import re
 import string
 from masters_of_development import MastersOfDevelopment
 
@@ -10,6 +11,8 @@ class Block(pygame.sprite.Sprite):
     BLOCK_HEIGHT = 32
     
     KEYWORD_COLOR = pygame.Color(204, 108, 29)
+    NAME_COLOR = pygame.Color(100, 220, 242)
+    FUNCTION_COLOR = pygame.Color(164, 231, 33)
     #KEYWORD_COLOR = pygame.Color(81, 86, 88)
     # Eclipse Photon Dark Theme Comment Color
     #KEYWORD_COLOR = pygame.Color(88, 96, 92)
@@ -34,7 +37,7 @@ class Block(pygame.sprite.Sprite):
         18: ["def __str__(self):", "s.format(\"0:d\", i)", "def f(): return 42", "f = 9 * c / 5 + 32"]
     }
     
-    operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">"]
+    operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"]
     
     def __init__(self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -87,7 +90,7 @@ class Block(pygame.sprite.Sprite):
         self.__item = None
         print("new block level {0}, image {1}, rect {2}, line {3}".format(self.__level, self.image, self.rect, self.__line))
 
-    def __inspect_line(self, line, separator, global_parts, x):
+    def __inspect_line(self, line, separator, global_parts, x, override_color = None):
         split = line.split(separator)
                 
         for i, s in enumerate(split):
@@ -99,24 +102,49 @@ class Block(pygame.sprite.Sprite):
                 x = self.__inspect_line(s, ".", global_parts, x)
                 continue
             else:
-                color = pygame.Color(100, 220, 242)
-            
-            part_image = self.__font.render(s, True, color)
-            part_rect = part_image.get_rect().copy()
-            part_rect.x += x 
-            global_parts.append((part_rect, part_image))
-            
-            x += part_image.get_width()
-
-            if len(split) > 0 and i < len(split):
-                separator_image = self.__font.render(separator, True, MastersOfDevelopment.WHITE)
-                separator_rect = separator_image.get_rect().copy()
-                separator_rect.x += x
-                global_parts.append((separator_rect, separator_image))
+                match = re.match(r"(.*?)([\(\[\{])(.*)([\)\]\}])", s)
+                
+                if match:
+                    override_color = None
+                    for j, group in enumerate(match.groups()):
+                        if j == 0:
+                            override_color = Block.FUNCTION_COLOR
+                        else:
+                            override_color = None
+                            
+                        x = self.__inspect_line(group, " ", global_parts, x, override_color)
+                        
+                    if len(split) > 1 and i < len(split):
+                        separator_part = self.__render_part(separator, MastersOfDevelopment.WHITE, x)
+                        global_parts.append(separator_part)
                
-                x += separator_image.get_width()
+                        x += separator_part[1].get_width()
+                    continue
+                elif override_color is not None:
+                    color = override_color
+                else:        
+                    color = Block.NAME_COLOR
+            
+            part = self.__render_part(s, color, x)
+            
+            global_parts.append(part)
+            
+            x += part[1].get_width()
+
+            if len(split) > 1 and i < len(split):
+                separator_part = self.__render_part(separator, MastersOfDevelopment.WHITE, x)
+                global_parts.append(separator_part)
+               
+                x += separator_part[1].get_width()
             
         return x
+
+    def __render_part(self, s, color, x):
+        part_image = self.__font.render(s, True, color)
+        part_rect = part_image.get_rect().copy()
+        part_rect.x += x
+        
+        return (part_rect, part_image)
 
     def get_level(self):
         """Gets the level of this block. Used to calculate the score when a player reaches a higher block"""
