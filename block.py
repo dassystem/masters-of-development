@@ -42,18 +42,19 @@ class Block(pygame.sprite.Sprite):
         #self.image.fill(pygame.Color(255, 0, 0))
         
         letters = width // 25
-        s = ""
+        self.__line = ""
         
         if letters in Block.words:
-            s = random.choice(Block.words[letters])
+            self.__line = random.choice(Block.words[letters])
         else:
             for i in range(0, letters):
-                s += random.choice(string.ascii_letters)
+                self.__line += random.choice(string.ascii_letters)
         
-        self.image = font.render(s, True, MastersOfDevelopment.LIGHT_GRAY)
+        self.image = font.render(self.__line, True, MastersOfDevelopment.LIGHT_GRAY)
         
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = x, y = y)
+        #pygame.draw.rect(self.image, MastersOfDevelopment.WHITE, pygame.Rect(0, 0, self.rect.width, self.rect.height), 1)
         self.__level = level
         self.__item = None
     

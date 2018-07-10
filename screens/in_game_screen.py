@@ -357,39 +357,59 @@ class InGameBlockArea(object):
         if len(self.__blocks) == 0:
             self.__generate_base_block()
         
+        max_gap = 2 * block.Block.BLOCK_WIDTH
+        
         # only generate as much new blocks as needed
         while len(self.__blocks) < 13:
             self.__level += 1
-            ygaps = random.randrange(50, 100)
-            xgaps = random.randrange(100, 150)
+            
+            ygaps = random.randint(2,3) * block.Block.BLOCK_HEIGHT
+                
             block_width = random.randrange(80, 400)
             last_block = self.__blocks.sprites()[-1]
 
             last_block_top = last_block.rect.top
-            random_y_position = last_block_top - ygaps
-            random_x_position = last_block.rect.centerx
-
-            # random if the platform spawns left or right to last one
-            if random.randint(0,1) == 1:
-                random_x_position += xgaps
-            else:
-                random_x_position -=  xgaps
+            random_y = last_block_top - ygaps
+            
+            prev_left = last_block.rect.left
+            prev_right = last_block.rect.right
+            
+            max_right = self.__surface.get_rect().right
+            
+            possible_x = set()
+            
+            if prev_left != 0 and prev_right <= max_right:
+                min_x_left = max(0, prev_left - max_gap - block_width)
+                max_x_left = min(max_right - block_width, prev_left + block.Block.BLOCK_WIDTH)
+                
+                possible_x_left = set(range(min_x_left, max_x_left + 1))
+                
+                min_x_right = min(max_right - block_width, prev_right - block.Block.BLOCK_WIDTH)
+                max_x_right = min(max_right - block_width, prev_right + max_gap)
+                
+                possible_x_right = set(range(min_x_right, max_x_right + 1))
+                
+                possible_x = possible_x_left.union(possible_x_right)
+                
+            #if len(possible_x) == 0:
+            #    possible_x = set(range(0, max_right - block_width + 1))
+            
+            random_x = random.choice(list(possible_x))
 
             new_block = block.Block(
                 self.__fonts["big"],
                 self.__level,
-                random_x_position,
-                random_y_position,
+                random_x,
+                random_y,
                 block_width,
                 block.Block.BLOCK_HEIGHT)
             
-            # make sure that the block is not out of screen bounds
-            while new_block.rect.right > self.__surface.get_rect().right:
-                new_block.rect.right -= xgaps
-
-            while new_block.rect.left < self.__surface.get_rect().left:
-                new_block.rect.right += xgaps
-
+            if new_block.rect.right > max_right:
+                new_block.rect.move_ip((new_block.rect.right - max_right) * -1, 0)
+            
+#            if last_block.rect.left - new_block.rect.right > 2 * block.Block.BLOCK_WIDTH:
+#                pass
+            
             self.__blocks.add(new_block)
             
             r = random.randint(0, 10)
@@ -411,11 +431,15 @@ class InGameBlockArea(object):
         #self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT)
         baseBlock = block.Block(
             self.__fonts["big"],
-            0,
-            self.__surface.get_rect().x,
-            self.__surface.get_height() - block.Block.BLOCK_HEIGHT,
-            self.__surface.get_width(), block.Block.BLOCK_HEIGHT
+            0, # level
+            0, # x
+            self.__surface.get_height() - 1 - block.Block.BLOCK_HEIGHT, # y
+            self.__surface.get_width(), # width
+            self.__surface.get_height() - 1 - block.Block.BLOCK_HEIGHT # height
         )
+        
+        if baseBlock.rect.right > self.__surface.get_width() - 1:
+            baseBlock.rect.right = self.__surface.get_width() - 1
         
         self.__blocks.add(baseBlock)
                 
