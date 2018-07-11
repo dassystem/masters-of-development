@@ -660,25 +660,10 @@ class Item(pygame.sprite.Sprite):
 class Coin(Item):
     """A sprite representing a collectable extra score item."""
     
-    def __init__(self, images, block, base_score = 100):
-        r = random.randint(0, 70)
-        
-        if r <= 10:
-            self.image = images["gem1"]
-        elif r <= 20:
-            self.image = images["gem2"]
-        elif r <= 30:
-            self.image = images["gem3"]
-        elif r <= 40:
-            self.image = images["gem4"]
-        elif r <= 50:
-            self.image = images["gem5"]
-        elif r <= 60:
-            self.image = images["gem6"]
-        elif r <= 70:
-            self.image = images["gem7"]
-
-        self.__score = (r // 10 + 1) * base_score
+    def __init__(self, images, block):
+        self.image = images["coin"]
+                
+        self.__score = 500
 
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Coin, self).__init__(block)
@@ -744,9 +729,9 @@ class PowerUpBugResistant(PowerUp):
         super(PowerUpBugResistant, self).__init__("power_up_bug_resistant", block, block_area)
 
 class Bug(Item):
-    def __init__(self, images, block, base_score = -100):
+    def __init__(self, images, block):
         self.image = images["bug"]
-        self.__score = (random.randint(0, 70) // 10 + 1) * base_score
+        self.__score = -500
         
         super(Bug, self).__init__(block)
 
