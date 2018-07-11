@@ -476,14 +476,15 @@ class InGameBlockArea(object):
         return self.__play_area
 
 def detect_player_block_collide(player, block):
-    if player.rect.colliderect(block.rect):
-        falled_on = player.is_falling() and player.rect.bottom >= block.rect.top and player.rect.bottom <= block.rect.centery
-        jumped_on = player.is_jumping() and player.rect.bottom == block.rect.top
-        
-        if falled_on or jumped_on:
-            return True
+    collided = False
     
-    return False
+    if player.rect.colliderect(block.rect):
+        if player.is_falling():
+            collided = player.rect.bottom >= block.rect.top
+        elif player.is_jumping():
+            collided = player.rect.bottom == block.rect.top
+    
+    return collided
 
 class DebugInfo(pygame.sprite.Sprite):
     """A sprite representing an area with some debug infos. Toggled by pressing i."""
