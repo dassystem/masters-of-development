@@ -88,7 +88,7 @@ class Block(pygame.sprite.Sprite):
         #pygame.draw.rect(self.image, MastersOfDevelopment.WHITE, pygame.Rect(0, 0, self.rect.width, self.rect.height), 1)
         self.__level = level
         self.__item = None
-        print("new block level {0}, image {1}, rect {2}, line {3}".format(self.__level, self.image, self.rect, self.__line))
+        #print("new block level {0}, image {1}, rect {2}, line {3}".format(self.__level, self.image, self.rect, self.__line))
 
     def __inspect_line(self, line, separator, global_parts, x, override_color = None):
         split = line.split(separator)
