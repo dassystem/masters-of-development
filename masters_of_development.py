@@ -133,9 +133,14 @@ class MastersOfDevelopment(object):
         self.__images["in_game_screen_player"] = pygame.image.load("assets/images/game_figure.png").convert_alpha()
         self.__images["in_game_screen_player_jumping"] = pygame.image.load("assets/images/game_figure_jump.png").convert_alpha()        
         
-        for i in range(1, 8):
-            self.__images["gem{0:d}".format(i)] = pygame.image.load("assets/images/gem{0:d}.png".format(i)).convert_alpha()
-            
+        self.__images["gem1"] = pygame.image.load("assets/images/git-32x32.png").convert_alpha()
+        self.__images["gem2"] = pygame.image.load("assets/images/babytux.png").convert_alpha()
+        self.__images["gem3"] = pygame.image.load("assets/images/Duke_(Java_mascot)_waving.svg.png").convert_alpha()
+        self.__images["gem4"] = pygame.image.load("assets/images/48px-Eclipse-SVG.svg.png").convert_alpha()
+        self.__images["gem5"] = pygame.image.load("assets/images/Python-logo-notext.png").convert_alpha()
+        self.__images["gem6"] = pygame.image.load("assets/images/20628127.png").convert_alpha()
+        self.__images["gem7"] = pygame.image.load("assets/images/nodejs.png").convert_alpha()
+           
         self.__images["power_up_jump_height"] = pygame.image.load("assets/images/squirrel.png").convert_alpha()
         self.__images["bug"] = pygame.image.load("assets/images/debug_exc@2x.png").convert_alpha()
         self.__images["power_up_bug_resistant"] = pygame.image.load("assets/images/gameicon.png").convert_alpha()

@@ -58,3 +58,8 @@ Press key `i` for some debug info.
 * http://www.flashkit.com/soundfx/People/Talking/Player_o-NEOKOLOR-7551/index.php
 * http://www.flashkit.com/soundfx/People/Talking/Player_t-Neokolor-7552/index.php
 * https://freesound.org/people/tim.kahn/sounds/82986/
+
+=== Images
+* https://en.wikipedia.org/wiki/File:Duke_(Java_mascot)_waving.svg
+* https://commons.wikimedia.org/wiki/File:Eclipse-SVG.svg
+* https://en.wikipedia.org/wiki/Cython#/media/File:Python-logo-notext.svg
