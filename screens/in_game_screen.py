@@ -218,7 +218,8 @@ class InGameScreenPlayArea(object):
         self.__generate_line_numbers()
         self.__render_line_numbers()
         
-        self.__surface.blit(self.__text, self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5)))
+        text_rect = self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5))
+        self.__surface.blit(self.__text, text_rect)
         
         self.__score.update(self.__surface)
         self.__debug_info.update()
@@ -227,6 +228,27 @@ class InGameScreenPlayArea(object):
         
         if self.__debug_info.sprite.is_visible():
             self.__debug_info.draw(self.__surface)
+        
+        power_ups = self.get_player().get_power_ups()
+            
+        if "power_up_bug_resistant" in power_ups:
+            same_power_ups = power_ups["power_up_bug_resistant"]
+            if len(same_power_ups) > 0:
+                print("found power up bug resistant")
+                self.__render_bug_resistant(same_power_ups[0], text_rect)
+        if "power_up_jump" in power_ups:
+            same_power_ups = power_ups["power_up_jump"]
+            if len(same_power_ups) > 0:
+                print("found power up double jump")
+                self.__render_double_jump(same_power_ups[0], text_rect)
+
+    def __render_bug_resistant(self, power_up, text_rect):
+        rect = text_rect.move((power_up.rect.width + 5) * -1, -4)
+        self.__surface.blit(power_up.image, rect)
+    
+    def __render_double_jump(self, power_up, text_rect):
+        rect = text_rect.move((power_up.rect.width + 5) * -2, -4)
+        self.__surface.blit(power_up.image, rect)
 
     def __render_game_over(self):
         bg = None
