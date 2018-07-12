@@ -29,6 +29,8 @@ class MastersOfDevelopment(object):
         """Initialie pygame, window, background, ...
         """
         
+        random.seed()
+        
         # less laggy sound
         pygame.mixer.pre_init(44100, -16, 2, 1024)
         pygame.init()
