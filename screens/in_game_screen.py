@@ -155,7 +155,7 @@ class InGameScreenPlayArea(object):
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
-        self.__line_numbers = pygame.sprite.Group()
+        self.__line_numbers = pygame.sprite.OrderedUpdates()
         
         # (735 - 35) / 32 = 22 
         self.__max_line_numbers = round((surface.get_height() - InGameScreenPlayArea.TOP_MARGIN) / block.Block.BLOCK_HEIGHT)
@@ -342,7 +342,7 @@ class InGameBlockArea(object):
         self.__sounds = sounds
         
         self.__player = pygame.sprite.GroupSingle(player)
-        self.__blocks = pygame.sprite.Group()
+        self.__blocks = pygame.sprite.OrderedUpdates()
         self.__block_items = pygame.sprite.Group()
         
         self.__level = 0
