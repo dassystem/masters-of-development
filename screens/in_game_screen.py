@@ -7,7 +7,7 @@ import block
 import utils.timer
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, joysticks, seconds = 100):
+    def __init__(self, surface, fonts, sounds, images, players, joysticks, leaderboard, seconds = 100):
         super(InGameScreen, self).__init__(
             surface,
             [InGameScreenJoystickEventHandler(self, players, joysticks)])
@@ -17,6 +17,7 @@ class InGameScreen(BaseScreen):
         self.__images = images
         
         self.__players = players
+        self.__leaderboard = leaderboard
         
         self.__play_areas = []
         self.__init_play_areas(fonts, sounds, images)
@@ -234,12 +235,10 @@ class InGameScreenPlayArea(object):
         if "power_up_bug_resistant" in power_ups:
             same_power_ups = power_ups["power_up_bug_resistant"]
             if len(same_power_ups) > 0:
-                print("found power up bug resistant")
                 self.__render_bug_resistant(same_power_ups[0], text_rect)
         if "power_up_jump" in power_ups:
             same_power_ups = power_ups["power_up_jump"]
             if len(same_power_ups) > 0:
-                print("found power up double jump")
                 self.__render_double_jump(same_power_ups[0], text_rect)
 
     def __render_bug_resistant(self, power_up, text_rect):
@@ -820,6 +819,7 @@ class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
             for play_area in self.__play_areas:
                 play_area.switch_debug()
         elif event.key == pygame.K_RETURN:
+            # TODO: Hier noch zusätzlich prüfen ob neuer Highscore vorliegt -Leaderboard globale Variable in MastersPfDevelopment?
             if self.get_screen().all_dead() or not self.get_screen().get_timer().is_started():
                 self.get_screen().set_active(False)
 

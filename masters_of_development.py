@@ -1,8 +1,10 @@
 import os
 import pygame
+import random
 import sys
 
 import handlers.global_event_handler
+import leaderboard
 import player
 import screens.start_screen
 import screens.in_game_screen
@@ -58,13 +60,31 @@ class MastersOfDevelopment(object):
         self.__init_joysticks()
         self.__init_players()
         
+        self.__leaderboard = leaderboard.Leaderboard()
+        
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(self.__display, self.__fonts, self.__sounds, self.__images, self.__players),
+            "start": screens.start_screen.StartScreen(
+                self.__display,
+                self.__fonts,
+                self.__sounds,
+                self.__images,
+                self.__players),
             "ingame": screens.in_game_screen.InGameScreen(
-                self.__display, self.__fonts, self.__sounds, self.__images, self.__players, self.__joysticks),
+                self.__display,
+                self.__fonts,
+                self.__sounds,
+                self.__images,
+                self.__players,
+                self.__joysticks,
+                self.__leaderboard),
             "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
-                self.__display, self.__players, self.__joysticks, self.__fonts, MastersOfDevelopment.TARENT_RED,
-                MastersOfDevelopment.WHITE)
+                self.__display,
+                self.__players,
+                self.__joysticks,
+                self.__fonts,
+                MastersOfDevelopment.TARENT_RED,
+                MastersOfDevelopment.WHITE,
+                self.__leaderboard)
         }
         
         for item in self.__screen_dict.items():
