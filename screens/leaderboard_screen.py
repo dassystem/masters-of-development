@@ -39,7 +39,7 @@ class LeaderboardScreen(BaseScreen):
                     round(rect_text.y + LETTER_GAP / 1.5),
                     rect_text.width))
 
-    def render(self):
+    def render(self, seconds):
         if not self.is_active():
             return
 

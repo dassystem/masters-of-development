@@ -11,6 +11,8 @@ import screens.in_game_screen
 import screens.leaderboard_screen
 import utils.timer
 
+PIXEL_PER_SECOND = 60
+
 class MastersOfDevelopment(object):
     # colors
     TARENT_RED = pygame.Color(204, 0, 0)
@@ -231,13 +233,15 @@ class MastersOfDevelopment(object):
         pygame.time.set_timer(utils.timer.COUNTDOWN_EVENT, 1000)
 
         while self.__running:
+            milliseconds = self.__clock.tick(self.__fps)
+            seconds = milliseconds / 1000
+            
             for screen in self.__screen_dict.values():
-                screen.render()
+                screen.render(seconds)
             
             for event in pygame.event.get():
                 self.__event_handler.handle_event(event)
             
-            self.__clock.tick(self.__fps)
             pygame.display.flip()
        
         pygame.quit()

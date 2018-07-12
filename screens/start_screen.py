@@ -55,7 +55,7 @@ class StartScreen(BaseScreen):
         if not self.is_active():
             self.remove_event_handler(self.__get_timer().get_event_handler())
     
-    def render(self):
+    def render(self, seconds):
         if not self.is_active():
             return
         

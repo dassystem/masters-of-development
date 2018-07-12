@@ -4,6 +4,7 @@ import random
 import re
 import string
 from masters_of_development import MastersOfDevelopment
+import masters_of_development
 
 class Block(pygame.sprite.Sprite):
     """A sprite representing a block. Contains the block level."""
@@ -153,12 +154,12 @@ class Block(pygame.sprite.Sprite):
     def add_item(self, item):
         self.__item = item
 
-    def update(self, scroll_velocity, surface_height):
+    def update(self, scroll_velocity, surface_height, seconds):
         """Updates the block for moving down while scrolling the play area. Kills itself if moving out of surface.
            
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
-        self.rect.y += scroll_velocity
+        self.rect.y += scroll_velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds)
         
         # delete blocks offscreen
         if self.rect.top >= surface_height:

@@ -32,7 +32,7 @@ class BaseScreen(object):
     def set_next_screen(self, next_screen):
         self.__next_screen = next_screen
     
-    def render(self):
+    def render(self, seconds):
         if not self.__active:
             return
 

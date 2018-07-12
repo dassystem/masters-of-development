@@ -1,10 +1,12 @@
 import pygame
 import block
+import masters_of_development
 
 class Player(pygame.sprite.Sprite):
     """A sprite representing a player."""
-    SPEED_TO_FPS_RATIO = 1 / 8
     NORMAL_JUMP_HEIGHT = 10
+    SPEED = 5
+    VELOCITY = 5
     
     def __init__(self, number, images, gravity, joystick, sounds, fonts, fps):
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -27,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.__falling = False
         self.__jumping = False
         self.__on_block = None
-        self.__speed = round(Player.SPEED_TO_FPS_RATIO * self.__fps)
+        self.__speed = Player.SPEED
         self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT
         self.__jump_height = self.__initial_jump_height
         self.__move = None
@@ -42,14 +44,14 @@ class Player(pygame.sprite.Sprite):
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect()
     
-    def update(self):
+    def update(self, seconds):
         """Updates the player state. Does nothing if player is dead.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
         if not self.__dead:
-            self.__update_alive()
+            self.__update_alive(seconds)
 
-    def __update_alive(self):
+    def __update_alive(self, seconds):
         """Updates the player state while he is stil alive."""
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
@@ -58,7 +60,7 @@ class Player(pygame.sprite.Sprite):
                 self.__jump_height = self.__initial_jump_height
                 self.__jumping = False
                 self.__falling = True
-                self.__velocity = 6
+                self.__velocity = Player.VELOCITY
                 self.image = self.__images["in_game_screen_player"]
                 self.rect = self.image.get_rect(topleft = self.rect.topleft)
 
@@ -66,55 +68,55 @@ class Player(pygame.sprite.Sprite):
             self.__check_still_on_block()
 
         if self.__falling:
-            self.__move_down()
+            self.__move_down(seconds)
         elif self.__jumping:
-            self.__move_up()
+            self.__move_up(seconds)
     
         if self.__move is not None:
             if self.__move == "left":
-                self.__move_left()
+                self.__move_left(seconds)
             elif self.__move == "right":
-                self.__move_right()
+                self.__move_right(seconds)
 
         self.__dead = self.__falling and self.rect.top > self.__surface_rect.bottom
 
-    def __move_down(self):
+    def __move_down(self, seconds):
         """Updates the player state to reflect a down move (aka falling)."""
-        self.rect.move_ip(0, self.__velocity)
+        self.rect.move_ip(0, self.__velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds))
         self.__velocity += self.__gravity
 
-    def __move_up(self):
+    def __move_up(self, seconds):
         """Updates the player state to reflect a up move (aka jumping)."""
-        self.rect.move_ip(0, self.__velocity * -1)
+        self.rect.move_ip(0, self.__velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds) * -1)
         self.__jump_height = self.__jump_height - 2
 
-    def __move_left(self):
+    def __move_left(self, seconds):
         """Updates the player state to reflect a move to the left.
            Stops movement if player is on the left edge of the play area.
         """        
-        if self.__check_left_edge():
-            self.rect.move_ip(self.__speed * -1, 0)
+        if self.__check_left_edge(seconds):
+            self.rect.move_ip(self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds) * -1, 0)
         else:
             # stop movement at the left edge
             self.stop()
 
-    def __check_left_edge(self):
+    def __check_left_edge(self, seconds):
         """Checks if the player is not beyond the left edge of the play area."""
-        return self.rect.x - self.__speed >= 0
+        return self.rect.x - self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds) >= 0
 
-    def __move_right(self):
+    def __move_right(self, seconds):
         """Updates the player state to reflect a move to the right.
            Stops movement if player is on the right edge of the play area.       
         """
-        if self.__check_right_edge():
-            self.rect.move_ip(self.__speed, 0)
+        if self.__check_right_edge(seconds):
+            self.rect.move_ip(self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds), 0)
         else:
             # stop movement at the right edge
             self.stop()
 
-    def __check_right_edge(self):
+    def __check_right_edge(self, seconds):
         """Checks is the player is not beyond the right edge of the play area."""
-        return self.rect.x <= self.__surface_rect.width - self.rect.width - self.__speed
+        return self.rect.x <= self.__surface_rect.width - self.rect.width - self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds)
 
     def __check_still_on_block(self):
         """Checks if the player is still on a block. If not player begins to fall."""
@@ -123,7 +125,7 @@ class Player(pygame.sprite.Sprite):
                 self.__on_block = None
                 self.__falling = True
                 self.__jumping = False
-                self.__velocity = 6
+                self.__velocity = Player.VELOCITY
 
     def set_on_block(self, block):
         """Sets the block on which the player is standing. Stops falling or jumping.

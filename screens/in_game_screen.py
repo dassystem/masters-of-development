@@ -59,14 +59,14 @@ class InGameScreen(BaseScreen):
         self.__redraw_areas["head_1"] = (self.__images["in_game_screen_bg"].subsurface((400, 795, 155, 25)), (400, 795))
         self.__redraw_areas["head_2"] = (self.__images["in_game_screen_bg"].subsurface((1360, 800, 120, 20)), (1360, 800))
 
-    def render(self):
+    def render(self, seconds):
         if not self.is_active():
             return
         
         self._surface.blit(self.__images["in_game_screen_bg"], (0, 0))
 
         for play_area in self.__play_areas:
-            play_area.update()
+            play_area.update(seconds)
         
         self.__redraw()
             
@@ -188,14 +188,14 @@ class InGameScreenPlayArea(object):
             self.__line_numbers.add(new_line_number)
             dy -= block.Block.BLOCK_HEIGHT
 
-    def scroll(self):
-        self.__line_numbers.update(self.__scroll_velocity, self.__surface.get_height())
+    def scroll(self, seconds):
+        self.__line_numbers.update(self.__scroll_velocity, self.__surface.get_height(), seconds)
 
     def switch_debug(self):
         """Switches the debug information on/off."""
         self.__debug_info.sprite.switch_visibility()
       
-    def update(self):
+    def update(self, seconds):
         """Updates all sprites and draws them on the play area. Scrolls if necessary.
            see also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
@@ -215,7 +215,7 @@ class InGameScreenPlayArea(object):
             pygame.Rect(0, InGameScreenPlayArea.TOP_MARGIN, InGameScreenPlayArea.LEFT_MARGIN, self.__surface.get_height())
         )
         
-        self.__block_area.update()
+        self.__block_area.update(seconds)
         self.__generate_line_numbers()
         self.__render_line_numbers()
         
@@ -223,7 +223,7 @@ class InGameScreenPlayArea(object):
         self.__surface.blit(self.__text, text_rect)
         
         self.__score.update(self.__surface)
-        self.__debug_info.update()
+        self.__debug_info.update(seconds)
 
         self.__score.draw(self.__surface)
         
@@ -319,12 +319,12 @@ class LineNumber(pygame.sprite.Sprite):
         self.rect.right = InGameScreenPlayArea.LEFT_MARGIN
         self.rect.y = y
         
-    def update(self, scroll_velocity, surface_height):
+    def update(self, scroll_velocity, surface_height, seconds):
         """Updates the line number for moving down while scrolling the play area. Kills itself if moving out of surface.
            
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
-        self.rect.y += scroll_velocity
+        self.rect.y += scroll_velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds)
         
         # delete line number offscreen
         if self.rect.top >= surface_height:
@@ -361,15 +361,15 @@ class InGameBlockArea(object):
         self.get_player().set_on_block(self.__blocks.sprites()[0])
         self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
 
-    def update(self):
+    def update(self, seconds):
         self.__surface.fill(masters_of_development.MastersOfDevelopment.DARKER_GRAY)
         
-        self.__scroll_screen()
+        self.__scroll_screen(seconds)
         
         # generate new blocks after scrolling if necessary
         self.__generate_blocks()
         
-        self.__player.update()
+        self.__player.update(seconds)
         
         self.__detect_block_collision()
         self.__detect_block_item_collision()
@@ -468,15 +468,15 @@ class InGameBlockArea(object):
         
         self.__blocks.add(baseBlock)
                 
-    def __scroll_screen(self):
+    def __scroll_screen(self, seconds):
         player_rect = self.__player.sprite.rect
         
         if player_rect.top <= self.__surface.get_height() // 2:
-            player_rect.y += self.__play_area.get_scroll_velocity()
+            player_rect.y += self.__play_area.get_scroll_velocity() * round(masters_of_development.PIXEL_PER_SECOND * seconds)
             
-            self.__blocks.update(self.__play_area.get_scroll_velocity(), self.__surface.get_height())
+            self.__blocks.update(self.__play_area.get_scroll_velocity(), self.__surface.get_height(), seconds)
             self.__block_items.update()
-            self.get_play_area().scroll()
+            self.get_play_area().scroll(seconds)
             
     def __detect_block_collision(self):
         collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
@@ -518,7 +518,7 @@ class DebugInfo(pygame.sprite.Sprite):
         self.__font = fonts["micro"]
         self.__color = pygame.Color(0, 255, 0)    
         
-    def update(self):
+    def update(self, seconds):
         """Updates the debug info. Does nothing if not visible.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
@@ -541,8 +541,8 @@ class DebugInfo(pygame.sprite.Sprite):
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
 
-        debug_info = "speed: {0:d} velocity: {1:d}".format(
-            player.get_speed(), player.get_velocity())
+        debug_info = "speed: {0:d} velocity: {1:d} seconds/frame: {2:f}".format(
+            player.get_speed(), player.get_velocity(), seconds)
         
         debug_surfaces.append(self.__render_debug_info(debug_info))
         
