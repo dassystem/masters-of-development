@@ -38,6 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.__level = 0
         self.__score = 0
         self.__power_ups = {}
+        self.__player_name = ""
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
         self.image = self.__images["in_game_screen_player"]
         
@@ -238,6 +239,12 @@ class Player(pygame.sprite.Sprite):
     
     def set_dead(self):
         self.__dead = True
+
+    def set_player_name(self, name):
+        self.__player_name = name
+
+    def get_player_name(self):
+        return self.__player_name
     
     def get_number(self):
         """Gets the player numer (1 or 2)."""
