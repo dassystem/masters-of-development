@@ -3,7 +3,6 @@ import pygame
 import random
 import re
 import string
-from masters_of_development import MastersOfDevelopment
 import masters_of_development
 
 class Block(pygame.sprite.Sprite):
@@ -59,14 +58,14 @@ class Block(pygame.sprite.Sprite):
             for i in range(0, letters):
                 self.__line += random.choice(string.ascii_letters)
         
-        color = MastersOfDevelopment.WHITE
+        color = masters_of_development.MastersOfDevelopment.WHITE
         split = True
         
         if self.__line.startswith("#"):
-            color = MastersOfDevelopment.LIGHT_GRAY
+            color = masters_of_development.MastersOfDevelopment.LIGHT_GRAY
             split = False
         elif self.__line.startswith("@"):
-            color = MastersOfDevelopment.LIGHT_GRAY
+            color = masters_of_development.MastersOfDevelopment.LIGHT_GRAY
             split = False
         elif self.__line in keyword.kwlist:
             color = Block.KEYWORD_COLOR
@@ -79,7 +78,7 @@ class Block(pygame.sprite.Sprite):
             
             self.__inspect_line(self.__line, " ", parts, 0)
 
-            self.image.fill(MastersOfDevelopment.DARKER_GRAY)
+            self.image.fill(masters_of_development.MastersOfDevelopment.DARKER_GRAY)
                 
             for part in parts:
                 self.image.blit(part[1], part[0])
@@ -98,7 +97,7 @@ class Block(pygame.sprite.Sprite):
             if s in keyword.kwlist:
                 color = Block.KEYWORD_COLOR
             elif s in Block.operators:
-                color = MastersOfDevelopment.WHITE
+                color = masters_of_development.MastersOfDevelopment.WHITE
             elif "." in s:
                 x = self.__inspect_line(s, ".", global_parts, x)
                 continue
@@ -116,7 +115,7 @@ class Block(pygame.sprite.Sprite):
                         x = self.__inspect_line(group, " ", global_parts, x, override_color)
                         
                     if len(split) > 1 and i < len(split):
-                        separator_part = self.__render_part(separator, MastersOfDevelopment.WHITE, x)
+                        separator_part = self.__render_part(separator, masters_of_development.MastersOfDevelopment.WHITE, x)
                         global_parts.append(separator_part)
                
                         x += separator_part[1].get_width()
@@ -133,7 +132,7 @@ class Block(pygame.sprite.Sprite):
             x += part[1].get_width()
 
             if len(split) > 1 and i < len(split):
-                separator_part = self.__render_part(separator, MastersOfDevelopment.WHITE, x)
+                separator_part = self.__render_part(separator, masters_of_development.MastersOfDevelopment.WHITE, x)
                 global_parts.append(separator_part)
                
                 x += separator_part[1].get_width()

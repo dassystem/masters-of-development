@@ -72,7 +72,8 @@ class MastersOfDevelopment(object):
                 self.__fonts,
                 self.__sounds,
                 self.__images,
-                self.__players),
+                self.__players,
+                self.__leaderboard),
             "ingame": screens.in_game_screen.InGameScreen(
                 self.__display,
                 self.__fonts,

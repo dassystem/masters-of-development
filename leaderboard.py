@@ -21,13 +21,13 @@ class Leaderboard(object):
         return len(self.__board)
     
     def get_entries(self):
-        return self.__board.copy()
+        return tuple(self.__board)
     
     def add_entry(self, player_info):
         if len(self.__board) >= MAX_ENTRIES:
             last_entry = self.__board[-1]
             
-            if last_entry.get_score() > player_info.get_score():
+            if last_entry.get_score() > player_info[1]:
                 return
 
             c = self.__db_connector.get_cursor()

@@ -2,16 +2,16 @@ import pygame
 from utils import Utils
 import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
+import masters_of_development
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, seconds = 3):
+    def __init__(self, surface, fonts, sounds, images, players, leaderboard, seconds = 3):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self, players)], True)
 
         self.__fonts = fonts;
-
         self.__images = images
-        
         self.__players = players
+        self.__leaderboard = leaderboard
         
         timer_images = {}
         
@@ -92,11 +92,19 @@ class StartScreen(BaseScreen):
             
             self._surface.blit(image, rect)
 
+            self.__render_leaderboard()
+
     def render_countdown(self):
         self._surface.blit(self.__images["start_screen_countdown_bg"], (0, 0))
         
         self.__timer.update()
         self.__timer.draw(self._surface)
+
+    def __render_leaderboard(self):
+        for i, entry in enumerate(self.__leaderboard.get_entries()):
+            text_surface = self.__fonts["medium"].render("{0:d}. {1:<6s} {2:>5s}".format(i + 1, entry.get_name(), str(entry.get_score())), True, masters_of_development.MastersOfDevelopment.WHITE)
+            text_rect = text_surface.get_rect(centerx = (self._surface.get_width() // 2), y = 771 + i * text_surface.get_height() + 5)
+            self._surface.blit(text_surface, text_rect)
 
     def __get_timer(self):
         """Get the timer out of the sprite group."""
