@@ -13,102 +13,43 @@ class LeaderboardScreen(BaseScreen):
         self.__font = fonts["medium"]
         self.__font_color = font_color
         self.__background_color = background_color
-        self.screens = utils.Utils.split_screen(self._surface)
+        self.__screens = utils.Utils.split_screen(self._surface)
         
         self.__leaderboard = leaderboard
         
-        self.__init_cursors()
+        self.__init_keyboards()
         
-        super().add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors.sprites(), joysticks))
-        super().add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors.sprites()))
-
-    def __init_cursors(self):
-        self.__cursors = pygame.sprite.OrderedUpdates()
+        cursors = []
         
-        for index, screen in enumerate(self.screens):
-            #a little trick to position the cursor where a letter would be
-            text = self.__font.render("A", True, self.__font_color)
-            rect_text = utils.Utils.center(text, screen)
+        for keyboard in self.__keyboards:
+            cursors.append(keyboard.get_cursor())
+        
+        super().add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , cursors, joysticks))
+        super().add_event_handler(LeaderboardScreenEventHandler(self, cursors))
 
-            rect_text.x += index * screen.get_width()
+    def __init_keyboards(self):
+        self.__keyboards = []
 
-            self.__cursors.add(
-                leaderboard.Cursor(
-                    self.__players[index],
-                    self.__leaderboard,
-                    rect_text.x - 100,
-                    round(rect_text.y + leaderboard.LETTER_GAP / 1.5),
-                    rect_text.width))
-
+        for i, screen in enumerate(self.__screens):
+            keyboard = leaderboard.Keyboard(screen, self.__players[i], self.__leaderboard, self.__fonts, self.__font_color)
+            self.__keyboards.append(keyboard)
+    
     def render(self, seconds):
         if not self.is_active():
             return
 
-        if not self.__cursors.sprites()[0].get_active_status() and not self.__cursors.sprites()[1].get_active_status():
-            self.end_screen()
-
         self._surface.fill(self.__background_color)
 
-        for index, screen in enumerate(self.screens):
-            self.render_keyboard(screen, self.__cursors.sprites()[index])
-            
-        self.__cursors.draw(self._surface)
+        active = False
 
-    def render_keyboard(self, player_area, cursor):
-        coords = [CoordLetter("A", 0), CoordLetter("B", 0), CoordLetter("C", 0), CoordLetter("D", 0), CoordLetter("E", 0), CoordLetter("F", 0), CoordLetter("G", 0),
-                  CoordLetter("H", 0),CoordLetter("I", 0), CoordLetter("J", 0), CoordLetter("K", 1), CoordLetter("L", 1), CoordLetter("M", 1), CoordLetter("N", 1),
-                  CoordLetter("O", 1), CoordLetter("P", 1), CoordLetter("Q", 1), CoordLetter("R", 1), CoordLetter("S", 1), CoordLetter("T", 1),
-                  CoordLetter("U", 2), CoordLetter("V", 2), CoordLetter("W", 2), CoordLetter("X", 2), CoordLetter("Y", 2), CoordLetter("Z", 2), CoordLetter(":", 2),
-                  CoordLetter(".", 2), CoordLetter("←", 2), CoordLetter("→", 2)]
+        for keyboard in self.__keyboards:
+            active = active or keyboard.is_active()
+        
+            if keyboard.is_active():
+                keyboard.render()
 
-        level = 0
-        xoffset = 0
-        x_start, x_end, y_start , y_end = 0, 0, 0, 0
-        start_rec = None
-
-        for index, letter in enumerate(coords):
-                if letter.level > level:
-                    level = letter.level
-                    xoffset = 0
-
-                text = self.__font.render(letter.symbol, True, self.__font_color)
-                rect_text = utils.Utils.center_with_offset(text, player_area, 100, 0)
-                if index == 0:
-                    x_start = rect_text.x
-                    y_start = rect_text.y
-                rect_text.move_ip(xoffset, letter.level * leaderboard.LETTER_GAP)
-
-                if index == len(coords)-1:
-                    x_end = rect_text.x
-                    y_end = rect_text.y
-
-                player_area.blit(text, rect_text)
-                xoffset += leaderboard.LETTER_GAP
-
-                if cursor.rect.colliderect(rect_text):
-                    cursor.set_selected(letter.symbol)
-
-                if index == 0:
-                    # start_rec is used to position the enter name field
-                    start_rec = rect_text
-
-        name = ''.join(cursor.get_name())
-        enter_name = self.__font.render("Your name: " + name, True, self.__font_color)
-        player_area.blit(enter_name, (start_rec.x - 100, start_rec.y -100))
-
-        hint = self.__fonts["small"].render("Use ← to delete a character ", True, self.__font_color)
-        hint_rect = utils.Utils.center_with_offset(hint, player_area, 0, -150)
-
-        hint_2 = self.__fonts["small"].render("or → to confirm your name", True, self.__font_color)
-        hint_rect2 = hint_rect.copy()
-        hint_rect2.y += hint_rect.height
-
-        player_area.blit(hint,hint_rect)
-        player_area.blit(hint_2, hint_rect2)
-
-        #sets the horizontal and vertical limit where the cursor can move to select letters
-        cursor.set_horizontal_limit(x_start, x_end)
-        cursor.set_vertical_limit(y_start, y_end )
+        if not active:
+            self.end_screen()
 
     def end_screen(self):
         self.set_active(False)
@@ -120,13 +61,12 @@ class LeaderboardScreen(BaseScreen):
             self.__reset()
 
     def __reset(self):
-        for i in range(len(self.__players)):
-            self.__cursors.sprites()[i].reset()
-            self.__cursors.sprites()[i].set_active(False)
-        
+        for keyboard in self.__keyboards:
+            keyboard.reset()
+       
         if self.__leaderboard.get_count() + len(self.__players) <= leaderboard.MAX_ENTRIES:
             for i in range(len(self.__players)):
-                self.__cursors.sprites()[i].set_active(True)
+                self.__keyboards[i].set_active(True)
         else:
             new_scores = self.__players.copy()
             new_scores.sort(key = lambda player: player.get_score(), reverse = True)
@@ -135,21 +75,16 @@ class LeaderboardScreen(BaseScreen):
             
             for new_score in new_scores:
                 if self.__leaderboard.get_count() + new_entries < leaderboard.MAX_ENTRIES:
-                    self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
+                    self.__keyboards[new_scores[0].get_number() - 1].set_active(True)
                     new_entries += 1
                     continue
                 else:
                     for entry in self.__leaderboard.get_entries():
                         if entry.get_score() < new_score.get_score():
-                            self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
+                            self.__keyboards[new_scores[0].get_number() - 1].set_active(True)
                             new_entries += 1
                                 
                             break
-                 
-class CoordLetter(object):
-    def __init__(self, symbol, level):
-        self.level = level
-        self.symbol = symbol
 
 class LeaderboardScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, leaderboard_screen, cursor):
