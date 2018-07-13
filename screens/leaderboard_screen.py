@@ -2,8 +2,10 @@ import pygame
 from screens.base import BaseScreen, BaseScreenEventHandler
 import utils.Utils
 import leaderboard
+import masters_of_development
 
 NAMEN = []
+TEXT_COLOR = pygame.Color(204, 0, 0)
 
 class LeaderboardScreen(BaseScreen):
     def __init__(self, surface, players, joysticks, fonts, font_color, background_color, leaderboard):
@@ -14,7 +16,6 @@ class LeaderboardScreen(BaseScreen):
         self.__font_color = font_color
         self.__background_color = background_color
         self.screens = utils.Utils.split_screen(self._surface)
-        
         self.__leaderboard = leaderboard
         
         self.__init_cursors()
@@ -44,14 +45,17 @@ class LeaderboardScreen(BaseScreen):
         if not self.is_active():
             return
 
-        if not self.__cursors.sprites()[0].get_active_status() and not self.__cursors.sprites()[1].get_active_status():
-            self.end_screen()
-
         self._surface.fill(self.__background_color)
+
+        # if both players entered name switch to the "highscore" board
+        if not self.__cursors.sprites()[0].get_active_status() and not self.__cursors.sprites()[1].get_active_status():
+            for index, screen in enumerate(self.screens):
+                self.render_leaderboard(screen, self.__players[index])
+            return
 
         for index, screen in enumerate(self.screens):
             self.render_keyboard(screen, self.__cursors.sprites()[index])
-            
+
         self.__cursors.draw(self._surface)
 
     def render_keyboard(self, player_area, cursor):
@@ -110,6 +114,85 @@ class LeaderboardScreen(BaseScreen):
         cursor.set_horizontal_limit(x_start, x_end)
         cursor.set_vertical_limit(y_start, y_end )
 
+    def render_leaderboard(self, player_area, player):
+
+        screen_height = player_area.get_rect().height
+        screen_width = player_area.get_rect().width
+
+        title = self.render_text("HIGH SCORES", "medium")
+        title_position = utils.Utils.center_with_offset(title, player_area, 0, screen_height / 2.5)
+        rank = self.render_text("RANK", "medium")
+
+        rank_position = utils.Utils.center_with_offset(rank, player_area, screen_width / 3, screen_height / 3.5)
+
+        score = self.render_text("SCORE", "medium")
+
+        column_gap = round(player_area.get_rect().width / 50)
+        score_postion = utils.Utils.center_with_offset(score, player_area, column_gap, screen_height / 3.5)
+        name = self.render_text("NAME", "medium")
+        name_postion = utils.Utils.center_with_offset(name, player_area, (column_gap - score_postion.x), screen_height / 3.5)
+
+        player_area.blit(title, title_position)
+        player_area.blit(rank, rank_position)
+        player_area.blit(score, score_postion)
+        player_area.blit(name, name_postion)
+
+        self.fill_leaderboard(player_area, rank_position.x, score_postion.x, name_postion.x, rank_position.y, player)
+
+    def fill_leaderboard(self, player_area, rankx, scorex, namex, height, player):
+        level = 0
+        for index, entry in enumerate(self.__leaderboard.get_entries()):
+            if index == leaderboard.MAX_ENTRIES:
+                break
+
+            highlight = False
+            number = index + 1
+            level = height + number * 50
+
+            #If the player is in the top leaderboard he gets highlighted
+            if (entry.get_name(), entry.get_score()) == (player.get_player_name(), player.get_score()):
+                highlight = True
+                color = masters_of_development.MastersOfDevelopment.YELLOW
+            else:
+                color = masters_of_development.MastersOfDevelopment.TARENT_RED
+
+            rank = self.render_text(str(number), "medium", color)
+            rank_pos = pygame.Rect(rankx + 30, level, rank.get_width(), rank.get_height())
+
+            score = self.render_text(str(entry.get_score()), "medium", color)
+            score_pos = pygame.Rect(scorex, level, rank.get_width(), rank.get_height())
+
+            name = self.render_text(entry.get_name(), "medium", color)
+            name_pos = pygame.Rect(namex - 30, level, name.get_width(), name.get_height())
+
+            if highlight == True:
+                pygame.draw.line(player_area, color, (rank_pos.x, rank_pos.bottom), (name_pos.right, rank_pos.bottom), 5)
+
+            player_area.blit(rank, rank_pos)
+            player_area.blit(score, score_pos)
+            player_area.blit(name, name_pos)
+
+        #fetch the current rank the player achieved
+        for index, entry in enumerate(self.__leaderboard.get_entries()):
+            rank = 0
+            if (entry.get_name(), entry.get_score()) == (player.get_player_name(), player.get_score()):
+                rank = index + 1
+                break
+
+        player_text = self.render_text("Your placement " + player.get_player_name() + ": ", "medium")
+        player_text_pos = utils.Utils.center_with_offset(player_text, player_area, 50, -100)
+        player_rank = self.render_text("Rank " + str(rank), "medium")
+        player_rank_pos = pygame.Rect(player_text_pos.x, player_text_pos.y + player_text_pos.height + 20, player_rank.get_width(), player_rank.get_height())
+        player_points = self.render_text(" with a score of " + str(player.get_score()), "medium")
+        player_points_pos = pygame.Rect(player_rank_pos.x + player_rank_pos.width, player_rank_pos.y, player_points.get_width(), player_points.get_height())
+
+        player_area.blit(player_text, player_text_pos)
+        player_area.blit(player_rank, player_rank_pos)
+        player_area.blit(player_points, player_points_pos)
+
+    def render_text(self, text, size, color=TEXT_COLOR):
+        return self.__fonts[size].render(text, True, color)
+
     def end_screen(self):
         self.set_active(False)
 
@@ -123,28 +206,10 @@ class LeaderboardScreen(BaseScreen):
         for i in range(len(self.__players)):
             self.__cursors.sprites()[i].reset()
             self.__cursors.sprites()[i].set_active(False)
-        
-        if self.__leaderboard.get_count() + len(self.__players) <= leaderboard.MAX_ENTRIES:
-            for i in range(len(self.__players)):
-                self.__cursors.sprites()[i].set_active(True)
-        else:
-            new_scores = self.__players.copy()
-            new_scores.sort(key = lambda player: player.get_score(), reverse = True)
-            
-            new_entries = 0
-            
-            for new_score in new_scores:
-                if self.__leaderboard.get_count() + new_entries < leaderboard.MAX_ENTRIES:
-                    self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
-                    new_entries += 1
-                    continue
-                else:
-                    for entry in self.__leaderboard.get_entries():
-                        if entry.get_score() < new_score.get_score():
-                            self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
-                            new_entries += 1
-                                
-                            break
+
+
+        for i in range(len(self.__players)):
+            self.__cursors.sprites()[i].set_active(True)
                  
 class CoordLetter(object):
     def __init__(self, symbol, level):
@@ -155,6 +220,7 @@ class LeaderboardScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, leaderboard_screen, cursor):
         super(LeaderboardScreenEventHandler, self).__init__(leaderboard_screen)
         self.cursor = cursor
+        self.screen = leaderboard_screen
 
     def can_handle(self, event):
         if not super().can_handle(event):
@@ -164,7 +230,12 @@ class LeaderboardScreenEventHandler(BaseScreenEventHandler):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+
+            if not self.cursor[0].get_active_status() and not self.cursor[1].get_active_status():
+                self.screen.set_active(False)
+
             self.cursor[0].enter_letter()
+
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
             self.cursor[0].delete_letter()
@@ -204,6 +275,7 @@ class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
         self.__players = players
         self.__cursors = cursors
         self.__joysticks = joysticks
+        self.__screen = leaderboard_screen
 
     def can_handle(self, event):
         if not super().can_handle(event):
@@ -256,4 +328,9 @@ class LeaderboardScreenJoystickEventHandler(BaseScreenEventHandler):
         if cursor is None:
             return
 
+
+        if not self.__cursors[0].get_active_status() and not self.__cursors[1].get_active_status():
+            self.__screen.set_active(False)
+
         cursor.enter_letter()
+
