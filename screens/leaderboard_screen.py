@@ -3,7 +3,6 @@ from screens.base import BaseScreen, BaseScreenEventHandler
 import utils.Utils
 import leaderboard
 
-LETTER_GAP = 30
 NAMEN = []
 
 class LeaderboardScreen(BaseScreen):
@@ -20,37 +19,40 @@ class LeaderboardScreen(BaseScreen):
         
         self.__init_cursors()
         
-        super().add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors, joysticks))
-        super().add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors))
+        super().add_event_handler(LeaderboardScreenJoystickEventHandler(self, players , self.__cursors.sprites(), joysticks))
+        super().add_event_handler(LeaderboardScreenEventHandler(self, self.__cursors.sprites()))
 
     def __init_cursors(self):
-        self.__cursors = []
+        self.__cursors = pygame.sprite.OrderedUpdates()
         
         for index, screen in enumerate(self.screens):
             #a little trick to position the cursor where a letter would be
             text = self.__font.render("A", True, self.__font_color)
             rect_text = utils.Utils.center(text, screen)
 
-            self.__cursors.append(
-                Cursor(
+            rect_text.x += index * screen.get_width()
+
+            self.__cursors.add(
+                leaderboard.Cursor(
                     self.__players[index],
                     self.__leaderboard,
                     rect_text.x - 100,
-                    round(rect_text.y + LETTER_GAP / 1.5),
+                    round(rect_text.y + leaderboard.LETTER_GAP / 1.5),
                     rect_text.width))
 
     def render(self, seconds):
         if not self.is_active():
             return
 
-        if not self.__cursors[0].get_active_status() and not self.__cursors[1].get_active_status():
+        if not self.__cursors.sprites()[0].get_active_status() and not self.__cursors.sprites()[1].get_active_status():
             self.end_screen()
 
         self._surface.fill(self.__background_color)
 
         for index, screen in enumerate(self.screens):
-            self.render_keyboard(screen, self.__cursors[index])
-            self.__cursors[index].render(screen)
+            self.render_keyboard(screen, self.__cursors.sprites()[index])
+            
+        self.__cursors.draw(self._surface)
 
     def render_keyboard(self, player_area, cursor):
         coords = [CoordLetter("A", 0), CoordLetter("B", 0), CoordLetter("C", 0), CoordLetter("D", 0), CoordLetter("E", 0), CoordLetter("F", 0), CoordLetter("G", 0),
@@ -74,14 +76,14 @@ class LeaderboardScreen(BaseScreen):
                 if index == 0:
                     x_start = rect_text.x
                     y_start = rect_text.y
-                rect_text.move_ip(xoffset, letter.level * LETTER_GAP)
+                rect_text.move_ip(xoffset, letter.level * leaderboard.LETTER_GAP)
 
                 if index == len(coords)-1:
                     x_end = rect_text.x
                     y_end = rect_text.y
 
                 player_area.blit(text, rect_text)
-                xoffset += LETTER_GAP
+                xoffset += leaderboard.LETTER_GAP
 
                 if cursor.rect.colliderect(rect_text):
                     cursor.set_selected(letter.symbol)
@@ -119,12 +121,12 @@ class LeaderboardScreen(BaseScreen):
 
     def __reset(self):
         for i in range(len(self.__players)):
-            self.__cursors[i].reset()
-            self.__cursors[i].set_active(False)
+            self.__cursors.sprites()[i].reset()
+            self.__cursors.sprites()[i].set_active(False)
         
         if self.__leaderboard.get_count() + len(self.__players) <= leaderboard.MAX_ENTRIES:
             for i in range(len(self.__players)):
-                self.__cursors[i].set_active(True)
+                self.__cursors.sprites()[i].set_active(True)
         else:
             new_scores = self.__players.copy()
             new_scores.sort(key = lambda player: player.get_score(), reverse = True)
@@ -133,13 +135,13 @@ class LeaderboardScreen(BaseScreen):
             
             for new_score in new_scores:
                 if self.__leaderboard.get_count() + new_entries < leaderboard.MAX_ENTRIES:
-                    self.__cursors[new_scores[0].get_number() - 1].set_active(True)
+                    self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
                     new_entries += 1
                     continue
                 else:
                     for entry in self.__leaderboard.get_entries():
                         if entry.get_score() < new_score.get_score():
-                            self.__cursors[new_scores[0].get_number() - 1].set_active(True)
+                            self.__cursors.sprites()[new_scores[0].get_number() - 1].set_active(True)
                             new_entries += 1
                                 
                             break
@@ -148,120 +150,6 @@ class CoordLetter(object):
     def __init__(self, symbol, level):
         self.level = level
         self.symbol = symbol
-
-# TODO make Cursor a sprite
-class Cursor(object):
-    def __init__(self, player, leaderboard, initial_x, initial_y, initial_width):
-        self.image = pygame.Surface((10, 3))
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        self.rect = self.image.get_rect(x = 0, y = 0)
-        self.symbol = ""
-        self.__initial_x = initial_x
-        self.__initial_y = initial_y
-        self.__initial_width = initial_width
-        
-        self.rect.x = initial_x
-        self.rect.y = initial_y
-        self.rect.width = initial_width
-        
-        self.__x_start_limit = 0
-        self.__x_end_limit = 0
-        self.__y_end_limit = 0
-        self.__y_start_limit = 0
-        self.__name = []
-        self.__namelimit = 6
-        self.__active = True
-        self.__player = player
-        self.__leaderboard = leaderboard
-
-    def reset(self):
-        self.rect = self.image.get_rect(x = 0, y = 0)
-        self.rect.x = self.__initial_x
-        self.rect.y = self.__initial_y
-        self.rect.width = self.__initial_width
-        self.symbol = ""
-        self.__name = []        
-
-    def __save(self):
-        if self.__active == False:
-            return
-
-        self.__active = False
-        player_info = (''.join(self.__name), self.__player.get_score())
-        
-        self.__leaderboard.add_entry(player_info)
-
-    def render(self, surface):
-        if self.__active == False:
-            return
-        pygame.draw.rect(surface, (0, 0, 0), self.rect)
-
-    def move_cursor_right(self):
-        if self.__active == False:
-            return
-        if self.rect.x < self.__x_end_limit:
-            self.rect.x += LETTER_GAP
-
-    def move_cursor_left(self):
-        if self.__active == False:
-            return
-        if self.rect.x > self.__x_start_limit:
-            self.rect.x -= LETTER_GAP
-
-    def move_cursor_up(self):
-        if self.__active == False:
-            return
-        if self.rect.y - LETTER_GAP > self.__y_start_limit:
-            self.rect.y -= LETTER_GAP
-
-    def move_cursor_down(self):
-        if self.__active == False:
-            return
-        if self.rect.y < self.__y_end_limit:
-            self.rect.y += LETTER_GAP
-
-    def set_vertical_limit(self, starty, endy):
-        self.__y_start_limit = starty
-        self.__y_end_limit = endy
-
-    def set_horizontal_limit(self, startx, endx):
-        self.__x_start_limit = startx
-        self.__x_end_limit = endx
-
-    def set_selected(self, symbol):
-        if self.__active == False:
-            return
-        self.symbol = symbol
-
-    def enter_letter(self):
-        if self.__active == False:
-            return
-
-        if self.symbol == "→":
-            self.__save()
-            return
-
-        if self.symbol == "←":
-            self.delete_letter()
-            return
-
-        if len(self.__name) < self.__namelimit:
-            self.__name.append(self.symbol)
-
-    def delete_letter(self):
-        if self.__active == False:
-            return
-        if len(self.__name) > 0:
-            self.__name.remove(self.__name[len(self.__name) - 1])
-
-    def get_name(self):
-        return self.__name
-
-    def get_active_status(self):
-        return self.__active
-    
-    def set_active(self, active):
-        self.__active = active
 
 class LeaderboardScreenEventHandler(BaseScreenEventHandler):
     def __init__(self, leaderboard_screen, cursor):
