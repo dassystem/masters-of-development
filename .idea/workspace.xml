@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6ae8a8fc-c71e-44bf-bfb0-d9b1e9059ff8" name="Default" comment="added a countdown timer before the game starts&#10;added a ready check for each player">
+      <change afterPath="$PROJECT_DIR$/assets/sounds/glass.ogg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/timer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/block.py" beforeDir="false" afterPath="$PROJECT_DIR$/block.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handlers/global_event_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/handlers/global_event_handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/screens/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/countdown_screen.py" beforeDir="false" afterPath="$PROJECT_DIR$/screens/countdown_screen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/get_ready_screen.py" beforeDir="false" afterPath="$PROJECT_DIR$/screens/get_ready_screen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/in_game_screen.py" beforeDir="false" afterPath="$PROJECT_DIR$/screens/in_game_screen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/screens/start_screen.py" beforeDir="false" afterPath="$PROJECT_DIR$/screens/start_screen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tarentjumper.py" beforeDir="false" afterPath="$PROJECT_DIR$/tarentjumper.py" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/venv/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="tarentjumper.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2125">
+              <caret line="136" column="28" selection-start-line="136" selection-start-column="28" selection-end-line="136" selection-end-column="28" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="block.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/block.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="468">
+              <caret line="22" selection-start-line="22" selection-end-line="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="countdown_screen.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/screens/countdown_screen.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
+              <folding>
+                <element signature="e#0#59#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils/Utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="13" selection-start-column="13" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="get_ready_screen.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/screens/get_ready_screen.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="918">
+              <caret line="57" column="40" selection-start-line="57" selection-start-column="40" selection-end-line="57" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="player.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/player.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-4">
+              <caret line="294" column="95" selection-start-line="294" selection-start-column="95" selection-end-line="294" selection-end-column="95" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rect.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/203853389/pygame/rect.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-16">
+              <caret line="120" column="11" lean-forward="true" selection-start-line="120" selection-start-column="11" selection-end-line="120" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="in_game_screen.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/screens/in_game_screen.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1722">
+              <caret line="228" column="22" selection-start-line="228" selection-start-column="22" selection-end-line="228" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#59#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>tetri</find>
+      <find>game</find>
+      <find>ga,e</find>
+      <find>.git</find>
+      <find>debug</find>
+      <find>bac</find>
+      <find>clock</find>
+      <find>game over</find>
+      <find>font</find>
+      <find>game start</find>
+      <find>center</find>
+      <find>update</find>
+      <find>collid</find>
+      <find>collide</find>
+      <find>colliderect</find>
+      <find>jump</find>
+      <find>def update</find>
+      <find>scrolling</find>
+      <find>scroll</find>
+      <find>scrol</find>
+      <find>generate</find>
+      <find>len(level1)</find>
+      <find>TODO</find>
+    </findStrings>
+    <dirStrings>
+      <dir>C:\Users\Schmunzelhase\PycharmProjects\tarentJumper</dir>
+    </dirStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="old_master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/handlers/keyboard_event_handler.py" />
+        <option value="$PROJECT_DIR$/handlers/joystick_event_handler.py" />
+        <option value="$PROJECT_DIR$/tarentjumper.py" />
+        <option value="$PROJECT_DIR$/utils/Utils.py" />
+        <option value="$PROJECT_DIR$/screens/countdown_screen.py" />
+        <option value="$PROJECT_DIR$/block.py" />
+        <option value="$PROJECT_DIR$/screens/in_game_screen.py" />
+        <option value="$PROJECT_DIR$/player.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="tarentJumper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="tarentJumper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="tarentJumper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="tarentJumper" type="462c0819:PsiDirectoryNode" />
+              <item name="screens" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Default">
+          <expand>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="tarentJumper" type="cbb8eebc:String" user="tarentJumper" />
+            </path>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="tarentJumper" type="cbb8eebc:String" user="tarentJumper" />
+              <item name=".idea" type="cbb8eebc:String" user=".idea" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Schmunzelhase\PycharmProjects\tarentJumper\assets\sounds" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.tarentjumper">
+    <configuration name="a" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="tarentJumper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/main" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main/a.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="tarentjumper" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="tarentJumper" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tarentjumper.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.a" />
+      <item itemvalue="Python.tarentjumper" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.tarentjumper" />
+        <item itemvalue="Python.a" />
+        <item itemvalue="Python.tarentjumper" />
+        <item itemvalue="Python.a" />
+        <item itemvalue="Python.tarentjumper" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6ae8a8fc-c71e-44bf-bfb0-d9b1e9059ff8" name="Default" comment="" />
+      <created>1528791660164</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1528791660164</updated>
+    </task>
+    <task id="LOCAL-00001" summary="added a countdown timer before the game starts&#10;added a ready check for each player">
+      <created>1529275982445</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1529275982445</updated>
+    </task>
+    <task id="LOCAL-00002" summary="finished ready players to update text&#10;and added joystick support for ready button">
+      <created>1529324311422</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1529324311423</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fixed countdown center">
+      <created>1529340095652</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1529340095652</updated>
+    </task>
+    <task id="LOCAL-00004" summary="add scrolling">
+      <created>1529342829887</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1529342829887</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix scrolling">
+      <created>1529453490120</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1529453490120</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Messages" order="7" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="8" sideWeight="0.50159913" side_tool="true" visible="true" weight="0.25945947" />
+      <window_info anchor="bottom" id="Version Control" order="8" sideWeight="0.49840087" visible="true" weight="0.25945947" />
+      <window_info anchor="bottom" id="Python Console" order="8" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49733475" weight="0.32" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49840087" weight="0.32864866" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13486141" />
+      <window_info anchor="right" id="R Packages" order="4" />
+      <window_info anchor="right" id="R Graphics" order="4" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49946696" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" sideWeight="0.4989339" weight="0.32972974" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added a countdown timer before the game starts&#10;added a ready check for each player" />
+    <MESSAGE value="finished ready players to update text&#10;and added joystick support for ready button" />
+    <MESSAGE value="fixed countdown center" />
+    <MESSAGE value="add scrolling" />
+    <MESSAGE value="fix scrolling" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix scrolling" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="4" />
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="b" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/handlers/joystick_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/base_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1853">
+          <caret line="109" column="18" lean-forward="true" selection-start-line="109" selection-start-column="18" selection-end-line="109" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4369">
+          <caret line="257" lean-forward="true" selection-start-line="257" selection-end-line="257" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2023">
+          <caret line="119" selection-start-line="119" selection-end-line="119" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/handlers/main_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/joystick_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1632">
+          <caret line="96" column="18" selection-start-line="96" selection-start-column="18" selection-end-line="96" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/handlers/quit_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/main_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/keyboard_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/base_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/joystick_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/block.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1938">
+          <caret line="115" column="44" selection-start-line="115" selection-start-column="44" selection-end-line="115" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3689">
+          <caret line="217" column="35" selection-start-line="217" selection-start-column="35" selection-end-line="217" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3349">
+          <caret line="197" column="16" selection-start-line="197" selection-start-column="16" selection-end-line="197" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3281">
+          <caret line="193" column="35" selection-start-line="193" selection-start-column="35" selection-end-line="193" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3264">
+          <caret line="192" column="16" lean-forward="true" selection-start-line="192" selection-start-column="16" selection-end-line="192" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/handlers/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pyvenv.cfg">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/handlers/quit_event_handler.py" />
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/203853389/pygame/surface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="145">
+          <caret line="335" column="8" selection-start-line="335" selection-start-column="8" selection-end-line="335" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/Rar$DIa6028.22881/main.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/keyboard_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/main_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/joystick_event_handler.py" />
+    <entry file="file://$PROJECT_DIR$/handlers/base_event_handler.py" />
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/203853389/builtins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="1092" column="8" selection-start-line="1092" selection-start-column="8" selection-end-line="1092" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screens/base.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screens/start_screen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="17" column="8" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tarentjumper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2125">
+          <caret line="136" column="28" selection-start-line="136" selection-start-column="28" selection-end-line="136" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screens/get_ready_screen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="918">
+          <caret line="57" column="40" selection-start-line="57" selection-start-column="40" selection-end-line="57" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/block.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screens/countdown_screen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="13" column="8" selection-start-line="13" selection-start-column="8" selection-end-line="13" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/Utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="13" selection-start-column="13" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/screens/in_game_screen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1722">
+          <caret line="228" column="22" selection-start-line="228" selection-start-column="22" selection-end-line="228" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2018.1/system/python_stubs/203853389/pygame/rect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-16">
+          <caret line="120" column="11" lean-forward="true" selection-start-line="120" selection-start-column="11" selection-end-line="120" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/player.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4">
+          <caret line="294" column="95" selection-start-line="294" selection-start-column="95" selection-end-line="294" selection-end-column="95" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

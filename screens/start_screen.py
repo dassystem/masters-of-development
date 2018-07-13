@@ -3,7 +3,6 @@ from utils import Utils
 import utils.timer
 from screens.base import BaseScreen, BaseScreenEventHandler
 import masters_of_development
-import leaderboard
 
 class StartScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, leaderboard, seconds = 3):
@@ -103,8 +102,6 @@ class StartScreen(BaseScreen):
 
     def __render_leaderboard(self):
         for i, entry in enumerate(self.__leaderboard.get_entries()):
-            if i == leaderboard.MAX_ENTRIES:
-                return
             text_surface = self.__fonts["medium"].render("{0:d}. {1:<6s} {2:>5s}".format(i + 1, entry.get_name(), str(entry.get_score())), True, masters_of_development.MastersOfDevelopment.WHITE)
             text_rect = text_surface.get_rect(centerx = (self._surface.get_width() // 2), y = 771 + i * text_surface.get_height() + 5)
             self._surface.blit(text_surface, text_rect)

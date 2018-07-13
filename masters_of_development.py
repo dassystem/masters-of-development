@@ -17,7 +17,6 @@ class MastersOfDevelopment(object):
     # colors
     TARENT_RED = pygame.Color(204, 0, 0)
     TARENT_GREY = pygame.Color(180, 180, 180)
-    YELLOW = pygame.Color(255,185,15)
     WHITE = pygame.Color(255, 255, 255)
     BLACK = pygame.Color(0, 0, 0)
     BACKGROUND_COLOR = WHITE

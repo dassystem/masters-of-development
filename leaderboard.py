@@ -27,6 +27,16 @@ class Leaderboard(object):
         return tuple(self.__board)
     
     def add_entry(self, player_info):
+        if len(self.__board) >= MAX_ENTRIES:
+            last_entry = self.__board[-1]
+            
+            if last_entry.get_score() > player_info[1]:
+                return
+
+            c = self.__db_connector.get_cursor()
+            c.execute("DELETE FROM leaderboard WHERE id = :id", {"id": last_entry.get_id()})
+            self.__db_connector.commit()
+            
         self.__db_connector.execute_with_parameter("INSERT INTO leaderboard (name, score) VALUES (?,?)", player_info)
         self.__db_connector.commit()
         pk = self.__db_connector.get_cursor().lastrowid
@@ -87,7 +97,6 @@ class Cursor(pygame.sprite.Sprite):
 
         self.__active = False
         player_info = (''.join(self.__name), self.__player.get_score())
-        self.__player.set_player_name(''.join(self.__name))
         
         self.__leaderboard.add_entry(player_info)
 
