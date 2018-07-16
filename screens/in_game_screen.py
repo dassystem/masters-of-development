@@ -155,6 +155,9 @@ class InGameScreen(screens.base.BaseScreen):
     def get_players(self):
         return self.__players
 
+    def get_play_areas(self):
+        return self.__play_areas
+
     def get_timer(self):
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
@@ -172,7 +175,7 @@ class ScreenJoystickEventHandler(screens.base.BaseScreenEventHandler):
             return False
         
         active_keyboard = False
-        for play_area in self.__screen.get_play_areas():
+        for play_area in self.get_screen().get_play_areas():
             active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
         
         return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard

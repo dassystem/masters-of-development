@@ -156,7 +156,9 @@ class Keyboard(object):
 
     def __init_event_listeners(self):
         self.__event_handlers = []
-        self.__event_handlers.append(JoystickEventHandler(self.__screen, self, self.__player.get_joystick()))
+        
+        if self.__player.get_joystick() is not None:
+            self.__event_handlers.append(JoystickEventHandler(self.__screen, self, self.__player.get_joystick()))
         
         if self.__player.get_number() == 1:
             keyboard_event_handler = KeyboardEventHandler(self.__screen, self, Keyboard.key_mappings_1)
@@ -400,19 +402,19 @@ class JoystickEventHandler(screens.base.BaseJoystickEventHandler):
         return super().can_handle(event) and self.__keyboard.is_active()
 
     def _on_up(self, event):
-        self.__keyboard.move_cursor_up()
+        self.__keyboard.get_cursor().move_cursor_up()
         
     def _on_down(self, event):
-        self.__keyboard.move_cursor_down()
+        self.__keyboard.get_cursor().move_cursor_down()
         
     def _on_left(self, event):
-        self.__keyboard.move_cursor_left()
+        self.__keyboard.get_cursor().move_cursor_left()
         
     def _on_right(self, event):
-        self.__keyboard.move_cursor_right()
+        self.__keyboard.get_cursor().move_cursor_right()
         
     def _on_button_down(self, event):
-        self.__keyboard.enter_letter()
+        self.__keyboard.get_cursor().enter_letter()
 
 class KeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
     def __init__(self, screen, keyboard, key_mappings):

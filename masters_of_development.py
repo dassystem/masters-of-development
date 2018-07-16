@@ -4,12 +4,12 @@ import random
 import sys
 
 import handlers.global_event_handler
-import leaderboard
 import screens.start_screen
 import screens.in_game_screen
 import utils.joysticks
 
 from in_game.play_area.sprites.player import Player
+from leaderboard import Leaderboard
 
 PIXEL_PER_SECOND = 60
 
@@ -64,7 +64,7 @@ class MastersOfDevelopment(object):
         self.__init_joysticks()
         self.__init_players()
         
-        self.__leaderboard = leaderboard.Leaderboard()
+        self.__leaderboard = Leaderboard()
         
         self.__screen_dict = {
             "start": screens.start_screen.StartScreen(

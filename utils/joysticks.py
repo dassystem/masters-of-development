@@ -46,5 +46,5 @@ def is_horizontal_stop(event):
 def is_button_down(event):
     return event.type == pygame.JOYBUTTONDOWN
 
-def get_id(event):
-    return event.id
+def get_joystick_id(event):
+    return event.joy

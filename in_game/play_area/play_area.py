@@ -68,7 +68,8 @@ class PlayArea(object):
         # (735 - 35) / 32 = 22 
         self.__max_line_numbers = round((surface.get_height() - PlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
         
-        screen.add_event_handler(PlayerJoystickEventHandler(screen, player.get_joystick()))
+        if player.get_joystick() is not None:
+            screen.add_event_handler(PlayerJoystickEventHandler(screen, player.get_joystick(), player))
         event_handler = PlayerKeyboardEventHandler(
             screen, PlayArea.key_mappings[player.get_number() - 1], player)
         screen.add_event_handler(event_handler)

@@ -53,6 +53,9 @@ class BaseScreenEventHandler(object):
 class BaseJoystickEventHandler(BaseScreenEventHandler):
     def __init__(self, screen, joystick):
         super(BaseJoystickEventHandler, self).__init__(screen)
+        
+        assert joystick is not None
+        
         self.__joystick = joystick
 
     def can_handle(self, event):
@@ -64,7 +67,7 @@ class BaseJoystickEventHandler(BaseScreenEventHandler):
         if not joystick_event:
             return False
 
-        correct_joystick = utils.joysticks.get_id(event) == self.__joystick.get_id()
+        correct_joystick = utils.joysticks.get_joystick_id(event) == self.__joystick.get_id()
 
         return correct_joystick
 
@@ -81,7 +84,7 @@ class BaseJoystickEventHandler(BaseScreenEventHandler):
         elif utils.joysticks.is_right(event):
             self._on_right(event)
         elif utils.joysticks.is_horizontal_stop(event):
-            self._on_stop(event)
+            self._on_horizontal_stop(event)
         elif utils.joysticks.is_button_down(event):
             self._on_button_down(event)
             
