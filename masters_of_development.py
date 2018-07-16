@@ -5,10 +5,11 @@ import sys
 
 import handlers.global_event_handler
 import leaderboard
-import player
 import screens.start_screen
 import screens.in_game_screen
 import utils.joysticks
+
+from in_game.play_area.sprites.player import Player
 
 PIXEL_PER_SECOND = 60
 
@@ -150,7 +151,7 @@ class MastersOfDevelopment(object):
            
         self.__images["power_up_jump_height"] = pygame.image.load("assets/images/jump_power.png").convert_alpha()
         self.__images["bug"] = pygame.image.load("assets/images/bug.png").convert_alpha()
-        self.__images["power_up_bug_resistant"] = pygame.image.load("assets/images/armor.png").convert_alpha()
+        self.__images["power_up_shield"] = pygame.image.load("assets/images/armor.png").convert_alpha()
 
     def __init_joysticks(self):
         self.__joysticks = utils.joysticks.init_joysticks()
@@ -170,7 +171,7 @@ class MastersOfDevelopment(object):
                 self.__init_player(i + 1, self.__images, joystick, self.__sounds))
 
     def __init_player(self, number, images, joystick, sounds):
-        return player.Player(number, images, 1, joystick, sounds, self.__fonts, self.__fps)
+        return Player(number, images, 1, joystick, sounds, self.__fonts, self.__fps)
 
     def switch_music(self):
         self.__music = not self.__music

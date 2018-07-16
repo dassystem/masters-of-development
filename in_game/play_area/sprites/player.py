@@ -1,6 +1,7 @@
 import pygame
-import block
 import masters_of_development
+
+from in_game.play_area.sprites.block import Block
 
 class Player(pygame.sprite.Sprite):
     """A sprite representing a player."""
@@ -186,7 +187,7 @@ class Player(pygame.sprite.Sprite):
             
             power_ups = self.__power_ups.get("power_up_jump")
             
-            go_up = block.Block.BLOCK_HEIGHT * 3
+            go_up = Block.BLOCK_HEIGHT * 3
             
             if power_ups is not None:
                 if len(power_ups) > 0:
