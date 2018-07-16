@@ -1,6 +1,6 @@
 import pygame
-import masters_of_development
 
+from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
 
 class Player(pygame.sprite.Sprite):
@@ -83,12 +83,12 @@ class Player(pygame.sprite.Sprite):
 
     def __move_down(self, seconds):
         """Updates the player state to reflect a down move (aka falling)."""
-        self.rect.move_ip(0, self.__velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds))
+        self.rect.move_ip(0, self.__velocity * round(PIXEL_PER_SECOND * seconds))
         self.__velocity += self.__gravity
 
     def __move_up(self, seconds):
         """Updates the player state to reflect a up move (aka jumping)."""
-        self.rect.move_ip(0, self.__velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds) * -1)
+        self.rect.move_ip(0, self.__velocity * round(PIXEL_PER_SECOND * seconds) * -1)
         self.__jump_height = self.__jump_height - 2
 
     def __move_left(self, seconds):
@@ -96,28 +96,28 @@ class Player(pygame.sprite.Sprite):
            Stops movement if player is on the left edge of the play area.
         """        
         if self.__check_left_edge(seconds):
-            self.rect.move_ip(self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds) * -1, 0)
+            self.rect.move_ip(self.__speed * round(PIXEL_PER_SECOND * seconds) * -1, 0)
         else:
             # stop movement at the left edge
             self.stop()
 
     def __check_left_edge(self, seconds):
         """Checks if the player is not beyond the left edge of the play area."""
-        return self.rect.x - self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds) >= 0
+        return self.rect.x - self.__speed * round(PIXEL_PER_SECOND * seconds) >= 0
 
     def __move_right(self, seconds):
         """Updates the player state to reflect a move to the right.
            Stops movement if player is on the right edge of the play area.       
         """
         if self.__check_right_edge(seconds):
-            self.rect.move_ip(self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds), 0)
+            self.rect.move_ip(self.__speed * round(PIXEL_PER_SECOND * seconds), 0)
         else:
             # stop movement at the right edge
             self.stop()
 
     def __check_right_edge(self, seconds):
         """Checks is the player is not beyond the right edge of the play area."""
-        return self.rect.x <= self.__surface_rect.width - self.rect.width - self.__speed * round(masters_of_development.PIXEL_PER_SECOND * seconds)
+        return self.rect.x <= self.__surface_rect.width - self.rect.width - self.__speed * round(PIXEL_PER_SECOND * seconds)
 
     def __check_still_on_block(self):
         """Checks if the player is still on a block. If not player begins to fall."""

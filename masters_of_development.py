@@ -4,28 +4,14 @@ import random
 import sys
 
 import handlers.global_event_handler
-import screens.start_screen
-import screens.in_game_screen
 import utils.joysticks
 
 from in_game.play_area.sprites.player import Player
+from in_game.screen.screen import InGameScreen
 from leaderboard import Leaderboard
-
-PIXEL_PER_SECOND = 60
+from screens.start_screen import StartScreen
 
 class MastersOfDevelopment(object):
-    # colors
-    TARENT_RED = pygame.Color(204, 0, 0)
-    TARENT_GREY = pygame.Color(180, 180, 180)
-    WHITE = pygame.Color(255, 255, 255)
-    BLACK = pygame.Color(0, 0, 0)
-    BACKGROUND_COLOR = WHITE
-    GREEN = pygame.Color(93, 252, 172)
-    RED = pygame.Color(255, 0, 0)
-    LIGHT_GRAY = pygame.Color(131, 135, 135)
-    DARK_GRAY = pygame.Color(58, 58, 58)
-    DARKER_GRAY = pygame.Color(38, 38, 38)
-    
     # width and height = 0 -> current screen resolution
     def __init__(self, width = 0, height = 0, flags = 0, fps = 60):
         """Initialie pygame, window, background, ...
@@ -67,14 +53,14 @@ class MastersOfDevelopment(object):
         self.__leaderboard = Leaderboard()
         
         self.__screen_dict = {
-            "start": screens.start_screen.StartScreen(
+            "start": StartScreen(
                 self.__display,
                 self.__fonts,
                 self.__sounds,
                 self.__images,
                 self.__players,
                 self.__leaderboard),
-            "ingame": screens.in_game_screen.InGameScreen(
+            "ingame": InGameScreen(
                 self.__display,
                 self.__fonts,
                 self.__sounds,

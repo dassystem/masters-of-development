@@ -1,5 +1,6 @@
 import pygame
-import masters_of_development
+
+from colors import BACKGROUND_COLOR
 
 class DebugInfo(pygame.sprite.Sprite):
     """A sprite representing an area with some debug infos. Toggled by pressing i."""
@@ -64,7 +65,7 @@ class DebugInfo(pygame.sprite.Sprite):
                 height = debug_surface.get_height()
         
         self.image = pygame.Surface((max_width, height * len(debug_surfaces)))
-        self.image.fill(masters_of_development.MastersOfDevelopment.BACKGROUND_COLOR)
+        self.image.fill(BACKGROUND_COLOR)
         self.rect = self.image.get_rect(top = self.__play_area.get_score().rect.bottom)
         
         if self.__play_area.get_player().get_number() == 1:

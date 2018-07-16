@@ -1,8 +1,9 @@
 import screens.base
-import masters_of_development
 import pygame
 import string
 import utils.db_connector
+
+from colors import BLACK, WHITE
 
 LETTER_GAP = 30
 MAX_ENTRIES = 5
@@ -257,7 +258,7 @@ class Cursor(pygame.sprite.Sprite):
         super(Cursor, self).__init__()
         
         self.image = pygame.Surface((initial_width, 3))
-        self.image.fill(masters_of_development.MastersOfDevelopment.WHITE)
+        self.image.fill(WHITE)
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = 0, y = 0)
         
@@ -334,9 +335,9 @@ class Cursor(pygame.sprite.Sprite):
         self.__active = active
 
         if self.__active:
-            self.image.fill(masters_of_development.MastersOfDevelopment.BLACK)
+            self.image.fill(BLACK)
         else:
-            self.image.fill(masters_of_development.MastersOfDevelopment.WHITE)
+            self.image.fill(WHITE)
 
 class TextSprite(pygame.sprite.Sprite):
     render_cache = {}

@@ -1,6 +1,6 @@
 import pygame
-import leaderboard
-import masters_of_development
+
+from colors import DARK_GRAY, GREEN, RED, WHITE
 
 from in_game.play_area.block_area import BlockArea
 
@@ -11,6 +11,8 @@ from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.debug_info import DebugInfo
 from in_game.play_area.sprites.line_number import LineNumber
 from in_game.play_area.sprites.score import Score
+
+from leaderboard import Keyboard
 
 class PlayArea(object):
     """A area where a player is playing."""
@@ -39,13 +41,13 @@ class PlayArea(object):
         self.__fonts = fonts
         self.__sounds = sounds
         self.__images = images
-        self.__keyboard = leaderboard.Keyboard(
+        self.__keyboard = Keyboard(
             screen,
             surface,
             player,
             lb,
             self.__fonts,
-            masters_of_development.MastersOfDevelopment.WHITE)
+            WHITE)
 
         for event_handler in self.__keyboard.get_event_handlers():
             screen.add_event_handler(event_handler)
@@ -58,7 +60,7 @@ class PlayArea(object):
         self.__block_area = BlockArea(self, block_surface, fonts, images, sounds, player)
         
         self.__text = self.__fonts["big"].render(
-            "PLAYER {0:d}: ".format(player.get_number()), True, masters_of_development.MastersOfDevelopment.GREEN)
+            "PLAYER {0:d}: ".format(player.get_number()), True, GREEN)
         self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
@@ -121,12 +123,12 @@ class PlayArea(object):
         
         pygame.draw.rect(
             self.__surface,
-            masters_of_development.MastersOfDevelopment.DARK_GRAY,
+            DARK_GRAY,
             pygame.Rect(0, 0, self.__surface.get_width(), PlayArea.TOP_MARGIN)
         )
         pygame.draw.rect(
             self.__surface,
-            masters_of_development.MastersOfDevelopment.DARK_GRAY,
+            DARK_GRAY,
             pygame.Rect(0, PlayArea.TOP_MARGIN, PlayArea.LEFT_MARGIN, self.__surface.get_height())
         )
         
@@ -179,16 +181,16 @@ class PlayArea(object):
             
             if self.get_player().get_score() > other_player.get_score():
                 bg = self.__images["in_game_screen_win_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                score_color = GREEN
                 self.__screen.play_ending_sound(self.get_player())
             elif self.get_player().get_score() < other_player.get_score():
                 bg = self.__images["in_game_screen_loose_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.RED
+                score_color = RED
                 self.__screen.play_ending_sound(other_player)
             else:
                 # draw
                 bg = self.__images["in_game_screen_win_bg"]
-                score_color = masters_of_development.MastersOfDevelopment.GREEN
+                score_color = GREEN
                 self.__screen.set_ending_sound_played()
                 
             text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)

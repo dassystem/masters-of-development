@@ -1,5 +1,6 @@
 import pygame
-import masters_of_development
+
+from colors import WHITE
 
 class Score(pygame.sprite.Sprite):
     """A sprite representing the score display."""
@@ -24,7 +25,7 @@ class Score(pygame.sprite.Sprite):
         if not self.__dirty:
             return
         
-        self.image = self.__font.render("{0:d}".format(self.__score), True, masters_of_development.MastersOfDevelopment.WHITE)
+        self.image = self.__font.render("{0:d}".format(self.__score), True, WHITE)
 
         self.rect = self.image.get_rect(topleft = (target_surface.get_width() // 2, 5))
         

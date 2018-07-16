@@ -3,7 +3,9 @@ import pygame
 import random
 import re
 import string
-import masters_of_development
+
+from colors import DARKER_GRAY, LIGHT_GRAY, WHITE
+from constants import PIXEL_PER_SECOND
 
 class Block(pygame.sprite.Sprite):
     """A sprite representing a block. Contains the block level."""
@@ -58,14 +60,14 @@ class Block(pygame.sprite.Sprite):
             for i in range(0, letters):
                 self.__line += random.choice(string.ascii_letters)
         
-        color = masters_of_development.MastersOfDevelopment.WHITE
+        color = WHITE
         split = True
         
         if self.__line.startswith("#"):
-            color = masters_of_development.MastersOfDevelopment.LIGHT_GRAY
+            color = LIGHT_GRAY
             split = False
         elif self.__line.startswith("@"):
-            color = masters_of_development.MastersOfDevelopment.LIGHT_GRAY
+            color = LIGHT_GRAY
             split = False
         elif self.__line in keyword.kwlist:
             color = Block.KEYWORD_COLOR
@@ -78,7 +80,7 @@ class Block(pygame.sprite.Sprite):
             
             self.__inspect_line(self.__line, " ", parts, 0)
 
-            self.image.fill(masters_of_development.MastersOfDevelopment.DARKER_GRAY)
+            self.image.fill(DARKER_GRAY)
                 
             for part in parts:
                 self.image.blit(part[1], part[0])
@@ -97,7 +99,7 @@ class Block(pygame.sprite.Sprite):
             if s in keyword.kwlist:
                 color = Block.KEYWORD_COLOR
             elif s in Block.operators:
-                color = masters_of_development.MastersOfDevelopment.WHITE
+                color = WHITE
             elif "." in s:
                 x = self.__inspect_line(s, ".", global_parts, x)
                 continue
@@ -115,7 +117,7 @@ class Block(pygame.sprite.Sprite):
                         x = self.__inspect_line(group, " ", global_parts, x, override_color)
                         
                     if len(split) > 1 and i < len(split):
-                        separator_part = self.__render_part(separator, masters_of_development.MastersOfDevelopment.WHITE, x)
+                        separator_part = self.__render_part(separator, WHITE, x)
                         global_parts.append(separator_part)
                
                         x += separator_part[1].get_width()
@@ -132,7 +134,7 @@ class Block(pygame.sprite.Sprite):
             x += part[1].get_width()
 
             if len(split) > 1 and i < len(split):
-                separator_part = self.__render_part(separator, masters_of_development.MastersOfDevelopment.WHITE, x)
+                separator_part = self.__render_part(separator, WHITE, x)
                 global_parts.append(separator_part)
                
                 x += separator_part[1].get_width()
@@ -158,7 +160,7 @@ class Block(pygame.sprite.Sprite):
            
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
-        self.rect.y += scroll_velocity * round(masters_of_development.PIXEL_PER_SECOND * seconds)
+        self.rect.y += scroll_velocity * round(PIXEL_PER_SECOND * seconds)
         
         # delete blocks offscreen
         if self.rect.top >= surface_height:

@@ -1,7 +1,8 @@
-import masters_of_development
 import pygame
 import random
 
+from colors import DARKER_GRAY
+from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.bug import Bug
 from in_game.play_area.sprites.coin import Coin
@@ -37,7 +38,7 @@ class BlockArea(object):
         self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
 
     def update(self, seconds):
-        self.__surface.fill(masters_of_development.MastersOfDevelopment.DARKER_GRAY)
+        self.__surface.fill(DARKER_GRAY)
         
         self.__scroll_screen(seconds)
         
@@ -147,7 +148,7 @@ class BlockArea(object):
         player_rect = self.__player.sprite.rect
         
         if player_rect.top <= self.__surface.get_height() // 2:
-            player_rect.y += self.__play_area.get_scroll_velocity() * round(masters_of_development.PIXEL_PER_SECOND * seconds)
+            player_rect.y += self.__play_area.get_scroll_velocity() * round(PIXEL_PER_SECOND * seconds)
             
             self.__blocks.update(self.__play_area.get_scroll_velocity(), self.__surface.get_height(), seconds)
             self.__block_items.update()

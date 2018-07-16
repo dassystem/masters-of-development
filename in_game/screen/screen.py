@@ -1,12 +1,15 @@
-import screens.base
-import leaderboard
-import pygame
-import masters_of_development
-import utils
-
+from colors import GREEN, RED
 from in_game.play_area.play_area import PlayArea
+from in_game.screen import InGameScreenTimerElapsedEventHandler
+from in_game.screen.joystick  import ScreenJoystickEventHandler
+from in_game.screen.keyboard  import ScreenKeyboardEventHandler
+from leaderboard import MAX_ENTRIES
+from screens.base import BaseScreen
+from utils.timer import FontSpriteTimer
 
-class InGameScreen(screens.base.BaseScreen):
+import pygame
+
+class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, leaderboard, seconds = 100):
         super(InGameScreen, self).__init__(surface, [])
         
@@ -23,13 +26,13 @@ class InGameScreen(screens.base.BaseScreen):
         super().add_event_handler(ScreenJoystickEventHandler(self, self.__play_areas))
         super().add_event_handler(ScreenKeyboardEventHandler(self, self.__play_areas))
 
-        timer = utils.timer.FontSpriteTimer(
+        timer = FontSpriteTimer(
             "ingame",
             seconds,
             {"center": (960, 77)},
             fonts["big"],
-            masters_of_development.MastersOfDevelopment.GREEN,
-            masters_of_development.MastersOfDevelopment.RED,
+            GREEN,
+            RED,
             sounds,
             10)
              
@@ -97,7 +100,7 @@ class InGameScreen(screens.base.BaseScreen):
         if not self.__keyboard_states_dirty:
             return
         
-        if self.__leaderboard.get_count() + len(self.__players) <= leaderboard.MAX_ENTRIES:
+        if self.__leaderboard.get_count() + len(self.__players) <= MAX_ENTRIES:
             for play_area in self.__play_areas:
                 play_area.get_keyboard().set_active(True)
         else:
@@ -107,7 +110,7 @@ class InGameScreen(screens.base.BaseScreen):
             new_entries = 0
             
             for new_score in new_scores:
-                if self.__leaderboard.get_count() + new_entries < leaderboard.MAX_ENTRIES:
+                if self.__leaderboard.get_count() + new_entries < MAX_ENTRIES:
                     self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
                     new_entries += 1
                     continue
@@ -161,64 +164,3 @@ class InGameScreen(screens.base.BaseScreen):
     def get_timer(self):
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
-    
-class ScreenJoystickEventHandler(screens.base.BaseScreenEventHandler):
-    def __init__(self, in_game_screen, play_areas):
-        super(ScreenJoystickEventHandler, self).__init__(in_game_screen)
-        self.__play_areas = play_areas
-    
-    def can_handle(self, event):
-        if not super().can_handle(event):
-            return False
-        
-        if not utils.joysticks.is_button_down(event):
-            return False
-        
-        active_keyboard = False
-        for play_area in self.get_screen().get_play_areas():
-            active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
-        
-        return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
-    
-    def handle_event(self, event):
-        self.get_screen().set_active(False)
-
-class ScreenKeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
-    def __init__(self, in_game_screen, play_areas):
-        super(ScreenKeyboardEventHandler, self).__init__(
-            in_game_screen, {"info": pygame.K_i, "next": pygame.K_RETURN}, [pygame.KEYDOWN])
-        self.__play_areas = play_areas
-
-    def can_handle(self, event):
-        if not super().can_handle(event):
-            return False
-        
-        active_keyboard = False
-        
-        for play_area in self.__play_areas:
-            active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
-        
-        return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
-
-    def handle_event(self, event):
-        if self._key_mappings["info"] == event.key: 
-            for play_area in self.__play_areas:
-                play_area.switch_debug()
-        elif self._key_mappings["next"] == event.key:
-            self.get_screen().set_active(False)
-
-class InGameScreenTimerElapsedEventHandler(screens.base.BaseScreenEventHandler):
-    """Event handler that sets all players dead if a timer is elapsed."""
-    def __init__(self, in_game_screen, timer):
-        super(InGameScreenTimerElapsedEventHandler, self).__init__(in_game_screen)
-        self.__timer = timer
-
-    def can_handle(self, event):
-        if not super().can_handle(event):
-            return False
-
-        return event.type == utils.timer.ELAPSED_EVENT and event.timer == self.__timer
-
-    def handle_event(self, event):
-        for player in self.get_screen().get_players():
-            player.set_dead()

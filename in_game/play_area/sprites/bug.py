@@ -1,6 +1,6 @@
-import in_game.play_area.sprites.item as item
+from in_game.play_area.sprites.item import Item
 
-class Bug(item.Item):
+class Bug(Item):
     def __init__(self, images, block):
         self.image = images["bug"]
         self.__score = -500

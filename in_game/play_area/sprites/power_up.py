@@ -1,7 +1,6 @@
-import utils
-
 from in_game.play_area.event_handlers.power_up_timer_elapsed_event_handler import PowerUpTimerElapsedEventHandler
 from in_game.play_area.sprites.item import Item
+from utils.timer import Timer
 
 class PowerUp(Item):
     def __init__(self, name, block, block_area, active_seconds = 5):
@@ -21,7 +20,7 @@ class PowerUp(Item):
     def on_collide(self, player, score):
         player.add_power_up(self)
         
-        self.__timer = utils.timer.Timer("powerup", self.__active_seconds)
+        self.__timer = Timer("powerup", self.__active_seconds)
         
         self.__event_handlers = []
         self.__event_handlers.append(self.__timer.get_event_handler())
