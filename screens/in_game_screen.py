@@ -1,16 +1,15 @@
-from screens.base import BaseScreen, BaseScreenEventHandler
-from utils import Utils
+import screens.base
+import leaderboard
 import pygame
 import random
 import masters_of_development
 import block
-import utils.timer
+import utils
+import in_game.play_area.event_handlers
 
-class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, joysticks, leaderboard, seconds = 100):
-        super(InGameScreen, self).__init__(
-            surface,
-            [InGameScreenJoystickEventHandler(self, players, joysticks)])
+class InGameScreen(screens.base.BaseScreen):
+    def __init__(self, surface, fonts, sounds, images, players, leaderboard, seconds = 100):
+        super(InGameScreen, self).__init__(surface, [])
         
         self.__fonts = fonts
         self.__sounds = sounds
@@ -21,9 +20,10 @@ class InGameScreen(BaseScreen):
         
         self.__play_areas = []
         self.__init_play_areas(fonts, sounds, images)
-        
-        super().add_event_handler(InGameScreenKeyboardEventHandler(self, self.__play_areas))
-        
+
+        super().add_event_handler(ScreenJoystickEventHandler(self, self.__play_areas))
+        super().add_event_handler(ScreenKeyboardEventHandler(self, self.__play_areas))
+
         timer = utils.timer.FontSpriteTimer(
             "ingame",
             seconds,
@@ -39,7 +39,7 @@ class InGameScreen(BaseScreen):
         super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.get_timer()))
 
         self.__init_redraw_areas()
-
+        
     def __init_play_areas(self, fonts, sounds, images):
         split_screen = []
         player_1_rect = pygame.Rect(55, 85, 850, 735)
@@ -49,7 +49,9 @@ class InGameScreen(BaseScreen):
         split_screen.append(self._surface.subsurface(player_2_rect))
         
         for i, subsurface in enumerate(split_screen):
-            self.__play_areas.append(InGameScreenPlayArea(self, subsurface, fonts, sounds, images, self.__players[i]))
+            play_area = InGameScreenPlayArea(
+                self, subsurface, fonts, sounds, images, self.__players[i], self.__leaderboard)
+            self.__play_areas.append(play_area)
     
     def __init_redraw_areas(self):
         self.__redraw_areas = {}
@@ -91,6 +93,34 @@ class InGameScreen(BaseScreen):
             all_dead = all_dead and player.is_dead()
         
         return all_dead
+    
+    def set_keyboard_states(self):
+        if not self.__keyboard_states_dirty:
+            return
+        
+        if self.__leaderboard.get_count() + len(self.__players) <= leaderboard.MAX_ENTRIES:
+            for play_area in self.__play_areas:
+                play_area.get_keyboard().set_active(True)
+        else:
+            new_scores = self.__players.copy()
+            new_scores.sort(key = lambda player: player.get_score(), reverse = True)
+            
+            new_entries = 0
+            
+            for new_score in new_scores:
+                if self.__leaderboard.get_count() + new_entries < leaderboard.MAX_ENTRIES:
+                    self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
+                    new_entries += 1
+                    continue
+                else:
+                    for entry in self.__leaderboard.get_entries():
+                        if entry.get_score() < new_score.get_score():
+                            self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
+                            new_entries += 1
+                                
+                            break  
+
+        self.__keyboard_states_dirty = False
 
     def __render_timer(self):
         self.__timer.update()
@@ -107,6 +137,7 @@ class InGameScreen(BaseScreen):
                 play_area.reset()
                 
             self.__ending_sound_played = False
+            self.__keyboard_states_dirty = True
         else:
             self.get_timer().stop()
             self.remove_event_handler(self.get_timer().get_event_handler())
@@ -134,13 +165,38 @@ class InGameScreenPlayArea(object):
     
     LEFT_MARGIN = 85
     TOP_MARGIN = 35
+
+    key_mappings = [
+        {
+            "up": pygame.K_w,
+            "down": pygame.K_s,
+            "left": pygame.K_a,
+            "right": pygame.K_d
+        },
+        {
+            "up": pygame.K_UP,
+            "down": pygame.K_DOWN,
+            "left": pygame.K_LEFT,
+            "right": pygame.K_RIGHT
+        }
+    ]
     
-    def __init__(self, screen, surface, fonts, sounds, images, player):
+    def __init__(self, screen, surface, fonts, sounds, images, player, lb):
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
         self.__sounds = sounds
         self.__images = images
+        self.__keyboard = leaderboard.Keyboard(
+            screen,
+            surface,
+            player,
+            lb,
+            self.__fonts,
+            masters_of_development.MastersOfDevelopment.WHITE)
+
+        for event_handler in self.__keyboard.get_event_handlers():
+            screen.add_event_handler(event_handler)
 
         block_rect = surface.get_rect(
             topleft = (InGameScreenPlayArea.LEFT_MARGIN, InGameScreenPlayArea.TOP_MARGIN),
@@ -160,6 +216,11 @@ class InGameScreenPlayArea(object):
         # (735 - 35) / 32 = 22 
         self.__max_line_numbers = round((surface.get_height() - InGameScreenPlayArea.TOP_MARGIN) / block.Block.BLOCK_HEIGHT)
         
+        screen.add_event_handler(in_game.play_area.event_handlers.PlayerJoystickEventHandler(screen, player.get_joystick()))
+        event_handler = in_game.play_area.event_handlers.PlayerKeyboardEventHandler(
+            screen, InGameScreenPlayArea.key_mappings[player.get_number() - 1], player)
+        screen.add_event_handler(event_handler)
+        
     def reset(self):
         """Resets the state of the play area so that it can be (re-) used for a new game.
         
@@ -169,6 +230,7 @@ class InGameScreenPlayArea(object):
         self.__score.sprite.reset()
         self.__line_numbers.empty()
         self.__generate_line_numbers()
+        self.__keyboard.reset()
     
     def __generate_line_numbers(self):
         new_lines = self.__max_line_numbers - len(self.__line_numbers)
@@ -277,10 +339,13 @@ class InGameScreenPlayArea(object):
                 self.__screen.set_ending_sound_played()
                 
             text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
+            
+            self.get_screen().set_keyboard_states()
         else:
             bg = self.__images["in_game_screen_game_over_bg"]
         
         self.__surface.blit(bg, (0, 0))
+        self.__keyboard.render()
         
         if text is not None:
             self.__surface.blit(text, text.get_rect(center = (426, 604)))
@@ -302,6 +367,9 @@ class InGameScreenPlayArea(object):
     
     def get_surface(self):
         return self.__surface
+    
+    def get_keyboard(self):
+        return self.__keyboard
 
 class LineNumber(pygame.sprite.Sprite):
     def __init__(self, number, y, fonts):
@@ -771,7 +839,7 @@ class Bug(Item):
         score.add_score(self.get_score())
         player.set_score(score.get_score())
         
-class PowerupTimerElapsedEventHandler(BaseScreenEventHandler):
+class PowerupTimerElapsedEventHandler(screens.base.BaseScreenEventHandler):
     def __init__(self, in_game_screen, power_up):
         super(PowerupTimerElapsedEventHandler, self).__init__(in_game_screen)
         self.__power_up = power_up
@@ -785,119 +853,53 @@ class PowerupTimerElapsedEventHandler(BaseScreenEventHandler):
     def handle_event(self, event):
         self.__power_up.deactivate()
 
-class InGameScreenKeyboardEventHandler(BaseScreenEventHandler):
+class ScreenJoystickEventHandler(screens.base.BaseScreenEventHandler):
     def __init__(self, in_game_screen, play_areas):
-        super(InGameScreenKeyboardEventHandler, self).__init__(in_game_screen)
+        super(ScreenJoystickEventHandler, self).__init__(in_game_screen)
+        self.__play_areas = play_areas
+    
+    def can_handle(self, event):
+        if not super().can_handle(event):
+            return False
+        
+        if not utils.joysticks.is_button_down(event):
+            return False
+        
+        active_keyboard = False
+        for play_area in self.__screen.get_play_areas():
+            active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
+        
+        return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
+    
+    def handle_event(self, event):
+        self.get_screen().set_active(False)
+
+class ScreenKeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
+    def __init__(self, in_game_screen, play_areas):
+        super(ScreenKeyboardEventHandler, self).__init__(
+            in_game_screen, {"info": pygame.K_i, "next": pygame.K_RETURN}, [pygame.KEYDOWN])
         self.__play_areas = play_areas
 
     def can_handle(self, event):
         if not super().can_handle(event):
             return False
         
-        return event.type == pygame.KEYDOWN or event.type == pygame.KEYUP
+        active_keyboard = False
+        
+        for play_area in self.__play_areas:
+            active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
+        
+        return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
 
     def handle_event(self, event):
-        if event.type == pygame.KEYDOWN:
-            self.__handle_keydown_event(event)
-        elif event.type == pygame.KEYUP:
-            self.__handle_keyup_event(event)
-
-    def __handle_keydown_event(self, event):
-        if event.key == pygame.K_w:
-            self.__play_areas[0].get_player().jump()
-        elif event.key == pygame.K_a:
-            self.__play_areas[0].get_player().move_left()
-        elif event.key == pygame.K_d:
-            self.__play_areas[0].get_player().move_right()
-        elif event.key == pygame.K_RIGHT:
-            self.__play_areas[1].get_player().move_right()
-        elif event.key == pygame.K_LEFT:
-            self.__play_areas[1].get_player().move_left()
-        elif event.key == pygame.K_UP:
-            self.__play_areas[1].get_player().jump()
-        elif event.key == pygame.K_i:
+        if self._key_mappings["info"] == event.key: 
             for play_area in self.__play_areas:
                 play_area.switch_debug()
-        elif event.key == pygame.K_RETURN:
-            # TODO: Hier noch zusätzlich prüfen ob neuer Highscore vorliegt -Leaderboard globale Variable in MastersPfDevelopment?
-            if self.get_screen().all_dead() or not self.get_screen().get_timer().is_started():
-                self.get_screen().set_active(False)
-
-    def __handle_keyup_event(self, event):
-        if event.key == pygame.K_a or event.key == pygame.K_d:
-            self.__play_areas[0].get_player().stop()
-        elif event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-            self.__play_areas[1].get_player().stop()
-
-class InGameScreenJoystickEventHandler(BaseScreenEventHandler):
-    VERTICAL_AXIS = 1
-    HORIZONTAL_AXIS = 0
-    UP = -1
-    DOWN = 1
-    LEFT = -1
-    RIGHT = 1
-    STOP = 0
-
-    def __init__(self, in_game_screen, players, joysticks):
-        super(InGameScreenJoystickEventHandler, self).__init__(in_game_screen)
-        self.__players = players
-        self.__joysticks = joysticks
-
-    def can_handle(self, event):
-        if not super().can_handle(event):
-            return False
-        
-        return event.type == pygame.JOYAXISMOTION or event.type == pygame.JOYBUTTONDOWN
-
-    def handle_event(self, event):
-        if event.type == pygame.JOYAXISMOTION:
-            self.__handle_axis_motion(event)
-        elif event.type == pygame.JOYBUTTONDOWN:
-            self.__handle_button_down(event)
-
-    def __handle_axis_motion(self, event):
-        if event.axis > InGameScreenJoystickEventHandler.VERTICAL_AXIS:
-            return
-
-        player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
-
-        if player is None:
-            return
-
-        if event.axis == InGameScreenJoystickEventHandler.VERTICAL_AXIS:
-            self.__handle_vertical_axis_motion(event, player)
-        elif event.axis == InGameScreenJoystickEventHandler.HORIZONTAL_AXIS:
-            self.__handle_horizontal_axis_motion(event, player)
-
-    def __handle_vertical_axis_motion(self, event, player):
-        if self.__round_event_value(event) == InGameScreenJoystickEventHandler.UP:
-            player.jump()
-
-    def __handle_horizontal_axis_motion(self, event, player):
-        event_value = self.__round_event_value(event)
-
-        if event_value == InGameScreenJoystickEventHandler.LEFT:
-            player.move_left()
-        elif event_value == InGameScreenJoystickEventHandler.RIGHT:
-            player.move_right()
-        elif event_value == InGameScreenJoystickEventHandler.STOP:
-            player.stop()
-
-    def __round_event_value(self, event):
-        return round(event.value, 0)
-
-    def __handle_button_down(self, event):
-        if self.get_screen().all_dead() or not self.get_screen().get_timer().is_started():
+        elif self._key_mappings["next"] == event.key:
             self.get_screen().set_active(False)
-        else:
-            player = Utils.get_player_from_joystick_event(event, self.__joysticks, self.__players)
-    
-            if player is None:
-                return
-    
-            player.jump()
 
-class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
+class InGameScreenTimerElapsedEventHandler(screens.base.BaseScreenEventHandler):
+    """Event handler that sets all players dead if a timer is elapsed."""
     def __init__(self, in_game_screen, timer):
         super(InGameScreenTimerElapsedEventHandler, self).__init__(in_game_screen)
         self.__timer = timer

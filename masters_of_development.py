@@ -8,8 +8,7 @@ import leaderboard
 import player
 import screens.start_screen
 import screens.in_game_screen
-import screens.leaderboard_screen
-import utils.timer
+import utils.joysticks
 
 PIXEL_PER_SECOND = 60
 
@@ -80,15 +79,6 @@ class MastersOfDevelopment(object):
                 self.__sounds,
                 self.__images,
                 self.__players,
-                self.__joysticks,
-                self.__leaderboard),
-            "leaderboard" : screens.leaderboard_screen.LeaderboardScreen(
-                self.__display,
-                self.__players,
-                self.__joysticks,
-                self.__fonts,
-                MastersOfDevelopment.TARENT_RED,
-                MastersOfDevelopment.WHITE,
                 self.__leaderboard)
         }
         
@@ -96,8 +86,6 @@ class MastersOfDevelopment(object):
             if item[0] == "start":
                 item[1].set_next_screen(self.__screen_dict["ingame"])
             elif item[0] == "ingame":
-                item[1].set_next_screen(self.__screen_dict["leaderboard"])
-            elif item[0] == "leaderboard":
                 item[1].set_next_screen(self.__screen_dict["start"])
         
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
@@ -165,10 +153,7 @@ class MastersOfDevelopment(object):
         self.__images["power_up_bug_resistant"] = pygame.image.load("assets/images/armor.png").convert_alpha()
 
     def __init_joysticks(self):
-        self.__joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-        
-        for joystick in self.__joysticks:
-            joystick.init()
+        self.__joysticks = utils.joysticks.init_joysticks()
 
     def __init_players(self):
         self.__players = []

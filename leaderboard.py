@@ -1,3 +1,4 @@
+import screens.base
 import masters_of_development
 import pygame
 import string
@@ -62,7 +63,26 @@ class LeaderboardEntry(object):
         return self.__score
 
 class Keyboard(object):
-    def __init__(self, surface, player, leaderboard, fonts, font_color, columns = 10):
+    key_mappings_1 = {
+        "up": pygame.K_w,
+        "down": pygame.K_s,
+        "left": pygame.K_a,
+        "right": pygame.K_d,
+        "delete": pygame.K_BACKSPACE,
+        "enter": pygame.K_RETURN
+    }
+    
+    key_mappings_2 = {
+        "up": pygame.K_UP,
+        "down": pygame.K_DOWN,
+        "left": pygame.K_LEFT,
+        "right": pygame.K_RIGHT,
+        "delete": pygame.K_DELETE,
+        "enter": pygame.K_KP_ENTER
+    }
+    
+    def __init__(self, screen, surface, player, leaderboard, fonts, font_color, columns = 10):
+        self.__screen = screen
         self.__surface = surface
         self.__player = player
         self.__leaderboard = leaderboard
@@ -72,11 +92,13 @@ class Keyboard(object):
         
         self.__name = ""
         self.__max_name_length = 6
-                
+        self.__active = False
+        
         self.__init_letters()
         self.__init_cursor()
         self.__init_name_display()
         self.__init_hints()
+        self.__init_event_listeners()
     
     def __init_letters(self):
         self.__letters = pygame.sprite.OrderedUpdates()
@@ -132,13 +154,25 @@ class Keyboard(object):
         hint_2 = TextSprite((x, y), "or → to confirm your name", self.__fonts["small"], self.__font_color)
         self.__hints.add(hint_2)
 
-    def render(self):
-        surface = self.__surface
+    def __init_event_listeners(self):
+        self.__event_handlers = []
+        self.__event_handlers.append(JoystickEventHandler(self.__screen, self, self.__player.get_joystick()))
         
-        self.__name_display.draw(surface)
-        self.__letters.draw(surface)
-        self.__cursor.draw(surface)
-        self.__hints.draw(surface)
+        if self.__player.get_number() == 1:
+            keyboard_event_handler = KeyboardEventHandler(self.__screen, self, Keyboard.key_mappings_1)
+        else:
+            keyboard_event_handler = KeyboardEventHandler(self.__screen, self, Keyboard.key_mappings_2)
+            
+        self.__event_handlers.append(keyboard_event_handler)
+
+    def render(self):
+        if not self.__active:
+            return
+            
+        self.__name_display.draw(self.__surface)
+        self.__letters.draw(self.__surface)
+        self.__cursor.draw(self.__surface)
+        self.__hints.draw(self.__surface)
 
     def reset(self):
         self.get_cursor().reset()
@@ -186,10 +220,15 @@ class Keyboard(object):
         return self.__cursor.sprite
                  
     def is_active(self):
-        return self.get_cursor().get_active_status()
+        return self.__active
+        #return self.get_cursor().get_active_status()
     
     def set_active(self, active):
+        self.__active = active
         self.get_cursor().set_active(active)
+    
+    def get_event_handlers(self):
+        return self.__event_handlers
     
 class CoordLetter(pygame.sprite.Sprite):
     def __init__(self, symbol, row, column, start_topleft, font, font_color):
@@ -216,7 +255,7 @@ class Cursor(pygame.sprite.Sprite):
         super(Cursor, self).__init__()
         
         self.image = pygame.Surface((initial_width, 3))
-        self.image.fill(masters_of_development.MastersOfDevelopment.BLACK)
+        self.image.fill(masters_of_development.MastersOfDevelopment.WHITE)
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = 0, y = 0)
         
@@ -351,3 +390,48 @@ class NameDisplay(TextSprite):
 
     def get_name(self):
         return self.__name
+
+class JoystickEventHandler(screens.base.BaseJoystickEventHandler):
+    def __init__(self, screen, keyboard, joystick):
+        super(JoystickEventHandler, self).__init__(screen, joystick)
+        self.__keyboard = keyboard
+
+    def can_handle(self, event):
+        return super().can_handle(event) and self.__keyboard.is_active()
+
+    def _on_up(self, event):
+        self.__keyboard.move_cursor_up()
+        
+    def _on_down(self, event):
+        self.__keyboard.move_cursor_down()
+        
+    def _on_left(self, event):
+        self.__keyboard.move_cursor_left()
+        
+    def _on_right(self, event):
+        self.__keyboard.move_cursor_right()
+        
+    def _on_button_down(self, event):
+        self.__keyboard.enter_letter()
+
+class KeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
+    def __init__(self, screen, keyboard, key_mappings):
+        super(KeyboardEventHandler, self).__init__(screen, key_mappings, [pygame.KEYDOWN])
+        self.__keyboard = keyboard
+
+    def can_handle(self, event):
+        return super().can_handle(event) and self.__keyboard.is_active()
+
+    def handle_event(self, event):
+        if self._key_mappings["up"] == event.key:
+            self.__keyboard.get_cursor().move_cursor_up()
+        elif self._key_mappings["down"] == event.key:
+            self.__keyboard.get_cursor().move_cursor_down()
+        elif self._key_mappings["left"] == event.key:
+            self.__keyboard.get_cursor().move_cursor_left()
+        elif self._key_mappings["right"] == event.key:
+            self.__keyboard.get_cursor().move_cursor_right()
+        elif self._key_mappings["delete"] == event.key:
+            self.__keyboard.delete_letter()
+        elif self._key_mappings["enter"] == event.key:
+            self.__keyboard.get_cursor().enter_letter()

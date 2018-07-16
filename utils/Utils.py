@@ -28,16 +28,6 @@ def get_player_from_joystick_event(event, joysticks, players):
 
     return player
 
-def get_cursor_from_joystick_event(event, joysticks, cursors):
-    cursor = None
-
-    for i in range(len(joysticks)):
-        if joysticks[i] is not None and joysticks[i].get_id() == event.joy:
-            cursor =cursors[i]
-            break
-
-    return cursor
-
 def split_screen(surface):
     half_width = surface.get_width() // 2
     height = surface.get_height()
