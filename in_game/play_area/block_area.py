@@ -36,23 +36,8 @@ class BlockArea(object):
         
         self.get_player().set_on_block(self.__blocks.sprites()[0])
         self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
-
-    def update(self, seconds):
+        
         self.__surface.fill(DARKER_GRAY)
-        
-        self.__scroll_screen(seconds)
-        
-        # generate new blocks after scrolling if necessary
-        self.__generate_blocks()
-        
-        self.__player.update(seconds)
-        
-        self.__detect_block_collision()
-        self.__detect_block_item_collision()
-        
-        self.__blocks.draw(self.__surface)
-        self.__block_items.draw(self.__surface)
-        self.__player.draw(self.__surface)                
 
     def __generate_blocks(self):
         if len(self.__blocks) == 0:
@@ -143,6 +128,25 @@ class BlockArea(object):
         baseBlock.rect.width = self.__surface.get_width()
         
         self.__blocks.add(baseBlock)
+
+    def update(self, seconds):
+        self.__blocks.clear(self.__surface, clear_callback)
+        self.__block_items.clear(self.__surface, clear_callback)
+        self.__player.clear(self.__surface, clear_callback)
+        
+        self.__scroll_screen(seconds)
+        
+        # generate new blocks after scrolling if necessary
+        self.__generate_blocks()
+        
+        self.__player.update(seconds)
+        
+        self.__detect_block_collision()
+        self.__detect_block_item_collision()
+        
+        self.__blocks.draw(self.__surface)
+        self.__block_items.draw(self.__surface)
+        self.__player.draw(self.__surface)                
                 
     def __scroll_screen(self, seconds):
         player_rect = self.__player.sprite.rect
@@ -185,3 +189,7 @@ def detect_player_block_collide(player, block):
             collided = player.rect.bottom == block.rect.top
     
     return collided
+
+def clear_callback(surface, rect):
+    """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""
+    surface.fill(DARKER_GRAY, rect)
