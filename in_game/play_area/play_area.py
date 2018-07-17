@@ -148,8 +148,8 @@ class PlayArea(object):
         
         power_ups = self.get_player().get_power_ups()
             
-        if "power_up_bug_resistant" in power_ups:
-            same_power_ups = power_ups["power_up_bug_resistant"]
+        if "power_up_shield" in power_ups:
+            same_power_ups = power_ups["power_up_shield"]
             if len(same_power_ups) > 0:
                 self.__render_bug_resistant(same_power_ups[0], text_rect)
         if "power_up_jump" in power_ups:
