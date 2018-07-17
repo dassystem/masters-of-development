@@ -8,7 +8,6 @@ import utils.joysticks
 
 from in_game.play_area.sprites.player import Player
 from in_game.screen.screen import InGameScreen
-from leaderboard import Leaderboard
 from screens.start_screen import StartScreen
 
 class MastersOfDevelopment(object):
@@ -50,23 +49,19 @@ class MastersOfDevelopment(object):
         self.__init_joysticks()
         self.__init_players()
         
-        self.__leaderboard = Leaderboard()
-        
         self.__screen_dict = {
             "start": StartScreen(
                 self.__display,
                 self.__fonts,
                 self.__sounds,
                 self.__images,
-                self.__players,
-                self.__leaderboard),
+                self.__players),
             "ingame": InGameScreen(
                 self.__display,
                 self.__fonts,
                 self.__sounds,
                 self.__images,
-                self.__players,
-                self.__leaderboard)
+                self.__players)
         }
         
         for item in self.__screen_dict.items():

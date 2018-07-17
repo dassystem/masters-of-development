@@ -3,14 +3,14 @@ from in_game.play_area.play_area import PlayArea
 from in_game.screen import InGameScreenTimerElapsedEventHandler
 from in_game.screen.joystick  import ScreenJoystickEventHandler
 from in_game.screen.keyboard  import ScreenKeyboardEventHandler
-from leaderboard import MAX_ENTRIES
+from leaderboard import INSTANCE as LEADERBOARD, MAX_ENTRIES
 from screens.base import BaseScreen
 from utils.timer import FontSpriteTimer
 
 import pygame
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, leaderboard, seconds = 100):
+    def __init__(self, surface, fonts, sounds, images, players, seconds = 100):
         super(InGameScreen, self).__init__(surface, [])
         
         self.__fonts = fonts
@@ -18,7 +18,6 @@ class InGameScreen(BaseScreen):
         self.__images = images
         
         self.__players = players
-        self.__leaderboard = leaderboard
         
         self.__play_areas = []
         self.__init_play_areas(fonts, sounds, images)
@@ -52,7 +51,7 @@ class InGameScreen(BaseScreen):
         
         for i, subsurface in enumerate(split_screen):
             play_area = PlayArea(
-                self, subsurface, fonts, sounds, images, self.__players[i], self.__leaderboard)
+                self, subsurface, fonts, sounds, images, self.__players[i])
             self.__play_areas.append(play_area)
     
     def __init_redraw_areas(self):
@@ -100,7 +99,7 @@ class InGameScreen(BaseScreen):
         if not self.__keyboard_states_dirty:
             return
         
-        if self.__leaderboard.get_count() + len(self.__players) <= MAX_ENTRIES:
+        if LEADERBOARD.get_count() + len(self.__players) <= MAX_ENTRIES:
             for play_area in self.__play_areas:
                 play_area.get_keyboard().set_active(True)
         else:
@@ -110,12 +109,12 @@ class InGameScreen(BaseScreen):
             new_entries = 0
             
             for new_score in new_scores:
-                if self.__leaderboard.get_count() + new_entries < MAX_ENTRIES:
+                if LEADERBOARD.get_count() + new_entries < MAX_ENTRIES:
                     self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
                     new_entries += 1
                     continue
                 else:
-                    for entry in self.__leaderboard.get_entries():
+                    for entry in LEADERBOARD.get_entries():
                         if entry.get_score() < new_score.get_score():
                             self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
                             new_entries += 1

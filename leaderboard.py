@@ -3,7 +3,7 @@ import pygame
 import string
 import utils.db_connector
 
-from colors import BLACK, WHITE
+from colors import DARKER_GRAY, WHITE
 
 LETTER_GAP = 30
 MAX_ENTRIES = 5
@@ -47,7 +47,7 @@ class Leaderboard(object):
         pk = self.__db_connector.get_cursor().lastrowid
         self.__board.append(LeaderboardEntry(pk, player_info[0], player_info[1]))
         self.__board.sort(key = lambda entry: entry.get_score(), reverse = True)
-    
+ 
 class LeaderboardEntry(object):
     def __init__(self, identity, name, score):
         self.__id = identity
@@ -62,6 +62,8 @@ class LeaderboardEntry(object):
         
     def get_score(self):
         return self.__score
+
+INSTANCE = Leaderboard()
 
 class Keyboard(object):
     key_mappings_1 = {
@@ -82,11 +84,10 @@ class Keyboard(object):
         "enter": pygame.K_KP_ENTER
     }
     
-    def __init__(self, screen, surface, player, leaderboard, fonts, font_color, columns = 10):
+    def __init__(self, screen, surface, player, fonts, font_color, columns = 10):
         self.__screen = screen
         self.__surface = surface
         self.__player = player
-        self.__leaderboard = leaderboard
         self.__fonts = fonts
         self.__font_color = font_color
         self.__columns = columns
@@ -124,7 +125,7 @@ class Keyboard(object):
         
         rows = round(len(self.get_letters()) / self.__columns)
         
-        cursor = Cursor(self, first_letter.rect.x, first_letter.rect.y, first_letter.rect.width, rows, self.__columns)
+        cursor = Cursor(self, first_letter.rect.x, first_letter.rect.y - 5, first_letter.rect.width, rows, self.__columns)
         self.__cursor.add(cursor)
         
     def __init_name_display(self):
@@ -211,7 +212,7 @@ class Keyboard(object):
         
         player_info = (''.join(self.get_name_display().get_name()), self.__player.get_score())
         
-        self.__leaderboard.add_entry(player_info)
+        INSTANCE.add_entry(player_info)
         
     def get_name_display(self):
         return self.__name_display.sprite
@@ -335,9 +336,9 @@ class Cursor(pygame.sprite.Sprite):
         self.__active = active
 
         if self.__active:
-            self.image.fill(BLACK)
-        else:
             self.image.fill(WHITE)
+        else:
+            self.image.fill(DARKER_GRAY)
 
 class TextSprite(pygame.sprite.Sprite):
     render_cache = {}

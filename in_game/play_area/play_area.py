@@ -35,7 +35,7 @@ class PlayArea(object):
         }
     ]
     
-    def __init__(self, screen, surface, fonts, sounds, images, player, lb):
+    def __init__(self, screen, surface, fonts, sounds, images, player):
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
@@ -45,7 +45,6 @@ class PlayArea(object):
             screen,
             surface,
             player,
-            lb,
             self.__fonts,
             WHITE)
 
