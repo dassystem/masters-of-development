@@ -87,6 +87,8 @@ class PlayArea(object):
         self.__active_power_up_jump = GroupSingleAnyRect()
         self.__active_power_up_shield = GroupSingleAnyRect()
         
+        self.__game_over_score = pygame.sprite.GroupSingle()
+        
         # (735 - 35) / 32 = 22 
         self.__max_line_numbers = round((surface.get_height() - PlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
         
@@ -105,6 +107,9 @@ class PlayArea(object):
         self.__score.sprite.reset()
         self.__line_numbers.empty()
         self.__generate_line_numbers()
+        
+        self.__game_over_bg = None
+        self.__game_over_score.empty()
         self.__keyboard.reset()
         
         pygame.draw.rect(
@@ -200,10 +205,9 @@ class PlayArea(object):
             self.__active_power_up_shield.draw(self.__surface, text_rect.move((original_rect.width + 5) * -1, -4))
             
     def __render_game_over(self):
-        # TODO use dirty flag
-        bg = None
-        text = None
-        
+        if  self.__game_over_bg is not None and not self.get_screen().all_dead():
+            return
+                
         if self.get_screen().all_dead():
             other_player = None
             score_color = None
@@ -214,30 +218,32 @@ class PlayArea(object):
                 other_player = self.get_screen().get_players()[0]
             
             if self.get_player().get_score() > other_player.get_score():
-                bg = self.__images["in_game_screen_win_bg"]
+                self.__game_over_bg = self.__images["in_game_screen_win_bg"]
                 score_color = GREEN
                 self.__screen.play_ending_sound(self.get_player())
             elif self.get_player().get_score() < other_player.get_score():
-                bg = self.__images["in_game_screen_loose_bg"]
+                self.__game_over_bg = self.__images["in_game_screen_loose_bg"]
                 score_color = RED
                 self.__screen.play_ending_sound(other_player)
             else:
                 # draw
-                bg = self.__images["in_game_screen_win_bg"]
+                self.__game_over_bg = self.__images["in_game_screen_win_bg"]
                 score_color = GREEN
                 self.__screen.set_ending_sound_played()
-                
-            text = self.__fonts["big"].render(str(self.get_player().get_score()), True, score_color)
             
+            score_string = str(self.get_player().get_score())
+            score_size = self.__fonts["big"].size(score_string)
+            initial_pos = (426 - score_size[0]  // 2, 604 - score_size[1] // 2)
+            self.__game_over_score.add(TextSprite(initial_pos, score_string, self.__fonts["big"], score_color))
+                
             self.get_screen().set_keyboard_states()
         else:
-            bg = self.__images["in_game_screen_game_over_bg"]
+            self.__game_over_bg = self.__images["in_game_screen_game_over_bg"]
         
-        self.__surface.blit(bg, (0, 0))
+        self.__surface.blit(self.__game_over_bg, (0, 0))
         self.__keyboard.render()
         
-        if text is not None:
-            self.__surface.blit(text, text.get_rect(center = (426, 604)))
+        self.__game_over_score.draw(self.__surface)
     
     def get_player(self):
         return self.__block_area.get_player()
