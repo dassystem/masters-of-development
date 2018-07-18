@@ -7,6 +7,7 @@ import handlers.global_event_handler
 import utils.joysticks
 
 from in_game.play_area.sprites.player import Player
+from in_game.play_area.sprites.power_up_shield import PowerUpShield
 from in_game.screen.screen import InGameScreen
 from screens.start_screen import StartScreen
 
@@ -132,7 +133,7 @@ class MastersOfDevelopment(object):
            
         self.__images["power_up_jump_height"] = pygame.image.load("assets/images/jump_power.png").convert_alpha()
         self.__images["bug"] = pygame.image.load("assets/images/bug.png").convert_alpha()
-        self.__images["power_up_shield"] = pygame.image.load("assets/images/armor.png").convert_alpha()
+        self.__images[PowerUpShield.NAME] = pygame.image.load("assets/images/armor.png").convert_alpha()
 
     def __init_joysticks(self):
         self.__joysticks = utils.joysticks.init_joysticks()

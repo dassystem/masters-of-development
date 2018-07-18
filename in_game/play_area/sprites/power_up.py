@@ -44,3 +44,4 @@ class PowerUp(Item):
             self.__block_area.get_play_area().get_screen().remove_event_handler(event_handler)
         
         self.__event_handlers = []
+        self.kill()

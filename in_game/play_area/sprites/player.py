@@ -2,6 +2,7 @@ import pygame
 
 from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
+from in_game.play_area.sprites.power_up_jump import PowerUpJump
 
 class Player(pygame.sprite.Sprite):
     """A sprite representing a player."""
@@ -185,7 +186,7 @@ class Player(pygame.sprite.Sprite):
             self.__jumping = True
             self.__velocity = 6
             
-            power_ups = self.__power_ups.get("power_up_jump")
+            power_ups = self.__power_ups.get(PowerUpJump.NAME)
             
             go_up = Block.BLOCK_HEIGHT * 3
             

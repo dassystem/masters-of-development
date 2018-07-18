@@ -10,9 +10,22 @@ from in_game.play_area.event_handlers.player_keyboard_event_handler import Playe
 from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.debug_info import DebugInfo
 from in_game.play_area.sprites.line_number import LineNumber
+from in_game.play_area.sprites.power_up_jump import PowerUpJump
+from in_game.play_area.sprites.power_up_shield import PowerUpShield
 from in_game.play_area.sprites.score import Score
 
 from leaderboard import Keyboard
+
+class GroupSingleAnyRect(pygame.sprite.GroupSingle):
+    def __init__(self, sprite = None):
+        super(GroupSingleAnyRect, self).__init__(sprite)
+        
+    def draw(self, surface, rect):
+        sprites = self.sprites()
+        surface_blit = surface.blit
+        for spr in sprites:
+            self.spritedict[spr] = surface_blit(spr.image, rect)
+        self.lostsprites = []
 
 class PlayArea(object):
     """A area where a player is playing."""
@@ -65,6 +78,8 @@ class PlayArea(object):
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
         self.__line_numbers = pygame.sprite.OrderedUpdates()
+        self.__active_power_up_jump = GroupSingleAnyRect()
+        self.__active_power_up_shield = GroupSingleAnyRect()
         
         # (735 - 35) / 32 = 22 
         self.__max_line_numbers = round((surface.get_height() - PlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
@@ -85,6 +100,17 @@ class PlayArea(object):
         self.__line_numbers.empty()
         self.__generate_line_numbers()
         self.__keyboard.reset()
+        
+        pygame.draw.rect(
+            self.__surface,
+            DARK_GRAY,
+            pygame.Rect(0, 0, self.__surface.get_width(), PlayArea.TOP_MARGIN)
+        )
+        pygame.draw.rect(
+            self.__surface,
+            DARK_GRAY,
+            pygame.Rect(0, PlayArea.TOP_MARGIN, PlayArea.LEFT_MARGIN, self.__surface.get_height())
+        )
     
     def __generate_line_numbers(self):
         new_lines = self.__max_line_numbers - len(self.__line_numbers)
@@ -120,20 +146,15 @@ class PlayArea(object):
             self.__render_game_over()
             return
         
-        pygame.draw.rect(
-            self.__surface,
-            DARK_GRAY,
-            pygame.Rect(0, 0, self.__surface.get_width(), PlayArea.TOP_MARGIN)
-        )
-        pygame.draw.rect(
-            self.__surface,
-            DARK_GRAY,
-            pygame.Rect(0, PlayArea.TOP_MARGIN, PlayArea.LEFT_MARGIN, self.__surface.get_height())
-        )
+        self.__line_numbers.clear(self.__surface, clear_callback)
+        self.__score.clear(self.__surface, clear_callback)
+        self.__debug_info.clear(self.__surface, clear_callback)
+        self.__active_power_up_jump.clear(self.__surface, clear_callback)
+        self.__active_power_up_shield.clear(self.__surface, clear_callback)
         
         self.__block_area.update(seconds)
         self.__generate_line_numbers()
-        self.__render_line_numbers()
+        self.__line_numbers.draw(self.__surface)
         
         text_rect = self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5))
         self.__surface.blit(self.__text, text_rect)
@@ -146,26 +167,35 @@ class PlayArea(object):
         if self.__debug_info.sprite.is_visible():
             self.__debug_info.draw(self.__surface)
         
-        power_ups = self.get_player().get_power_ups()
+        self.__add_active_power_ups()
+        self.__draw_active_power_ups(text_rect)
+       
+    def __add_active_power_ups(self):
+        player_power_ups = self.get_player().get_power_ups()
+        
+        if not bool(self.__active_power_up_jump) and PowerUpJump.NAME in player_power_ups:
+            power_ups = player_power_ups[PowerUpJump.NAME]
             
-        if "power_up_shield" in power_ups:
-            same_power_ups = power_ups["power_up_shield"]
-            if len(same_power_ups) > 0:
-                self.__render_bug_resistant(same_power_ups[0], text_rect)
-        if "power_up_jump" in power_ups:
-            same_power_ups = power_ups["power_up_jump"]
-            if len(same_power_ups) > 0:
-                self.__render_double_jump(same_power_ups[0], text_rect)
+            if len(power_ups) > 0:
+                self.__active_power_up_jump.add(power_ups[0])
+        
+        if not bool(self.__active_power_up_shield) and PowerUpShield.NAME in player_power_ups:
+            power_ups = player_power_ups[PowerUpShield.NAME]
+            
+            if len(power_ups) > 0:
+                self.__active_power_up_shield.add(power_ups[0])
 
-    def __render_bug_resistant(self, power_up, text_rect):
-        rect = text_rect.move((power_up.rect.width + 5) * -1, -4)
-        self.__surface.blit(power_up.image, rect)
-    
-    def __render_double_jump(self, power_up, text_rect):
-        rect = text_rect.move((power_up.rect.width + 5) * -2, -4)
-        self.__surface.blit(power_up.image, rect)
-
+    def __draw_active_power_ups(self, text_rect):
+        if bool(self.__active_power_up_jump):
+            original_rect = self.__active_power_up_jump.sprite.rect
+            self.__active_power_up_jump.draw(self.__surface, text_rect.move((original_rect.width + 5) * -2, -4))
+        
+        if bool(self.__active_power_up_shield):
+            original_rect = self.__active_power_up_shield.sprite.rect
+            self.__active_power_up_shield.draw(self.__surface, text_rect.move((original_rect.width + 5) * -1, -4))
+            
     def __render_game_over(self):
+        # TODO use dirty flag
         bg = None
         text = None
         
@@ -204,9 +234,6 @@ class PlayArea(object):
         if text is not None:
             self.__surface.blit(text, text.get_rect(center = (426, 604)))
     
-    def __render_line_numbers(self):
-        self.__line_numbers.draw(self.__surface)
-
     def get_player(self):
         return self.__block_area.get_player()
     
@@ -216,6 +243,9 @@ class PlayArea(object):
     def get_score(self):
         return self.__score.sprite
     
+    def __get_active_power_ups(self):
+        return self.__active_power_ups.sprites()
+    
     def get_screen(self):
         return self.__screen
     
@@ -224,3 +254,7 @@ class PlayArea(object):
     
     def get_keyboard(self):
         return self.__keyboard
+
+def clear_callback(surface, rect):
+    """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""
+    surface.fill(DARK_GRAY, rect)

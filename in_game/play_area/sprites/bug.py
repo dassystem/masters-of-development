@@ -1,4 +1,5 @@
 from in_game.play_area.sprites.item import Item
+from in_game.play_area.sprites.power_up_shield import PowerUpShield
 
 class Bug(Item):
     def __init__(self, images, block):
@@ -13,8 +14,8 @@ class Bug(Item):
     def on_collide(self, player, score):
         power_ups = player.get_power_ups()
         
-        if "power_up_shield" in power_ups:
-            bug_resistant = power_ups["power_up_shield"]
+        if PowerUpShield.NAME in power_ups:
+            bug_resistant = power_ups[PowerUpShield.NAME]
             
             if len(bug_resistant) > 0:
                 return
