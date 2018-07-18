@@ -77,8 +77,9 @@ class PlayArea(object):
         initial_pos = (self.__surface.get_width() // 2 - size[0], 5)
         self.__player_text = pygame.sprite.GroupSingle(TextSprite(initial_pos, player_string, self.__fonts["big"], GREEN))
         
-        # TODO: score auch text-sprite?
-        self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
+        initial_pos = (self.__surface.get_width() // 2, 5)
+        score = Score(initial_pos, fonts["big"], sounds["score"])
+        self.__score = pygame.sprite.GroupSingle(score)
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
         self.__scroll_velocity = 8
@@ -161,7 +162,6 @@ class PlayArea(object):
         self.__block_area.update(seconds)
         self.__generate_line_numbers()
         
-        self.__score.update(self.__surface)
         self.__debug_info.update(seconds)
 
         self.__add_active_power_ups()
