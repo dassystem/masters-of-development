@@ -1,6 +1,7 @@
 import pygame
 
 from colors import DARK_GRAY, GREEN, RED, WHITE
+from commons.text_sprite import TextSprite
 
 from in_game.play_area.block_area import BlockArea
 
@@ -71,8 +72,12 @@ class PlayArea(object):
         block_surface = surface.subsurface(block_rect)
         self.__block_area = BlockArea(self, block_surface, fonts, images, sounds, player)
         
-        self.__text = self.__fonts["big"].render(
-            "PLAYER {0:d}: ".format(player.get_number()), True, GREEN)
+        player_string = "PLAYER {0:d}: ".format(player.get_number())
+        size = self.__fonts["big"].size(player_string)
+        initial_pos = (self.__surface.get_width() // 2 - size[0], 5)
+        self.__player_text = pygame.sprite.GroupSingle(TextSprite(initial_pos, player_string, self.__fonts["big"], GREEN))
+        
+        # TODO: score auch text-sprite?
         self.__score = pygame.sprite.GroupSingle(Score(fonts["big"], sounds["score"]))
         
         self.__debug_info = pygame.sprite.GroupSingle(DebugInfo(self, fonts))
@@ -146,29 +151,29 @@ class PlayArea(object):
             self.__render_game_over()
             return
         
-        self.__line_numbers.clear(self.__surface, clear_callback)
-        self.__score.clear(self.__surface, clear_callback)
-        self.__debug_info.clear(self.__surface, clear_callback)
-        self.__active_power_up_jump.clear(self.__surface, clear_callback)
-        self.__active_power_up_shield.clear(self.__surface, clear_callback)
+        self.__line_numbers.clear(self.__surface, fill_with_dark_gray)
+        self.__player_text.clear(self.__surface, fill_with_dark_gray)
+        self.__score.clear(self.__surface, fill_with_dark_gray)
+        self.__debug_info.clear(self.__surface, fill_with_dark_gray)
+        self.__active_power_up_jump.clear(self.__surface, fill_with_dark_gray)
+        self.__active_power_up_shield.clear(self.__surface, fill_with_dark_gray)
         
         self.__block_area.update(seconds)
         self.__generate_line_numbers()
-        self.__line_numbers.draw(self.__surface)
-        
-        text_rect = self.__text.get_rect(topright = (self.__surface.get_width() // 2, 5))
-        self.__surface.blit(self.__text, text_rect)
         
         self.__score.update(self.__surface)
         self.__debug_info.update(seconds)
 
+        self.__add_active_power_ups()
+
+        self.__player_text.draw(self.__surface)
         self.__score.draw(self.__surface)
+        self.__line_numbers.draw(self.__surface)
         
         if self.__debug_info.sprite.is_visible():
             self.__debug_info.draw(self.__surface)
-        
-        self.__add_active_power_ups()
-        self.__draw_active_power_ups(text_rect)
+
+        self.__draw_active_power_ups(self.__player_text.sprite.rect)
        
     def __add_active_power_ups(self):
         player_power_ups = self.get_player().get_power_ups()
@@ -255,6 +260,6 @@ class PlayArea(object):
     def get_keyboard(self):
         return self.__keyboard
 
-def clear_callback(surface, rect):
+def fill_with_dark_gray(surface, rect):
     """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""
     surface.fill(DARK_GRAY, rect)
