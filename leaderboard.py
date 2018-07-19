@@ -226,7 +226,6 @@ class Keyboard(object):
 
     def is_active(self):
         return self.__active
-        #return self.get_cursor().get_active_status()
 
     def set_active(self, active):
         self.__active = active
