@@ -44,7 +44,7 @@ class BaseScreenEventHandler(object):
         self.__screen = screen
 
     def get_screen(self):
-        return self.__screen;
+        return self.__screen
 
     def can_handle(self, event):
         return self.__screen.is_active()
