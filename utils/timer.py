@@ -93,7 +93,7 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
 class FontSpriteTimer(SpriteTimer):
     """A sprite representing a timer."""
 
-    def __init__(self, name, initial_seconds, pos_dict, font, font_color_1, font_color_2, sounds, change_font_color_at = 0, format_string = "{0:d}"):
+    def __init__(self, name, initial_seconds, pos_dict, font, font_color_1, font_color_2, sounds, change_font_color_at=0, format_string="{0:d}"):
         super(FontSpriteTimer, self).__init__(name, initial_seconds, pos_dict, sounds)
 
         self.__font = font

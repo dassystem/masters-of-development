@@ -10,7 +10,7 @@ from utils.timer import FontSpriteTimer
 import pygame
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, seconds = 100):
+    def __init__(self, surface, fonts, sounds, images, players, seconds=100):
         super(InGameScreen, self).__init__(surface, [])
 
         self.__fonts = fonts
@@ -102,7 +102,7 @@ class InGameScreen(BaseScreen):
                 play_area.get_keyboard().set_active(True)
         else:
             new_scores = self.__players.copy()
-            new_scores.sort(key = lambda player: player.get_score(), reverse = True)
+            new_scores.sort(key=lambda player: player.get_score(), reverse=True)
 
             new_entries = 0
 

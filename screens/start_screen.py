@@ -8,7 +8,7 @@ from utils import Utils
 
 
 class StartScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, seconds = 3):
+    def __init__(self, surface, fonts, sounds, images, players, seconds=3):
         super(StartScreen, self).__init__(surface, [StartScreenEventHandler(self, players)], True)
 
         self.__fonts = fonts

@@ -64,7 +64,7 @@ class Player(pygame.sprite.Sprite):
                 self.__falling = True
                 self.__velocity = Player.VELOCITY
                 self.image = self.__images["in_game_screen_player"]
-                self.rect = self.image.get_rect(topleft = self.rect.topleft)
+                self.rect = self.image.get_rect(topleft=self.rect.topleft)
 
         if self.__on_block is not None:
             self.__check_still_on_block()
@@ -177,7 +177,7 @@ class Player(pygame.sprite.Sprite):
         # jump only possible if standing on a block
         if self.__on_block is not None:
             self.image = self.__images["in_game_screen_player_jumping"]
-            self.rect = self.image.get_rect(topleft = self.rect.topleft)
+            self.rect = self.image.get_rect(topleft=self.rect.topleft)
 
             self.__sounds["jump"].play()
 

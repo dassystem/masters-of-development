@@ -13,7 +13,7 @@ class TextSprite(pygame.sprite.Sprite):
         self._font_color = font_color
 
         self.image = self.__render(self._text, self._font, self._font_color)
-        self.rect = self.image.get_rect(topleft = self._initial_pos)
+        self.rect = self.image.get_rect(topleft=self._initial_pos)
 
         self._dirty = False
 
@@ -35,6 +35,6 @@ class TextSprite(pygame.sprite.Sprite):
             self._text = new_text
 
             self.image = self.__render(self._text, self._font, self._font_color)
-            self.rect = self.image.get_rect(topleft = self._initial_pos)
+            self.rect = self.image.get_rect(topleft=self._initial_pos)
 
             self._dirty = False

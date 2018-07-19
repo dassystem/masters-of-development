@@ -3,7 +3,7 @@ from in_game.play_area.sprites.item import Item
 from utils.timer import Timer
 
 class PowerUp(Item):
-    def __init__(self, name, block, block_area, active_seconds = 5):
+    def __init__(self, name, block, block_area, active_seconds=5):
         self.__name = name
         self.__block_area = block_area
         self.__active_seconds = active_seconds
