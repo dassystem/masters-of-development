@@ -5,6 +5,8 @@ from colors import WHITE
 from leaderboard import INSTANCE as LEADERBOARD
 from screens.base import BaseScreen, BaseScreenEventHandler
 from utils import Utils
+import utils.joysticks
+import utils.keyboard
 
 
 class StartScreen(BaseScreen):
@@ -123,7 +125,11 @@ class StartScreenEventHandler(BaseScreenEventHandler):
         if not super().can_handle(event):
             return False
 
-        return event.type == pygame.KEYDOWN or event.type == pygame.JOYBUTTONDOWN or event.type == utils.timer.ELAPSED_EVENT
+        return (
+            utils.keyboard.is_key_down(event) or
+            utils.joysticks.is_button_down(event) or
+            event.type == utils.timer.ELAPSED_EVENT
+        )
 
     def handle_event(self, event):
         if self.get_screen().all_players_ready():

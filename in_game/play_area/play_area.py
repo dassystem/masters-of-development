@@ -77,7 +77,9 @@ class PlayArea(object):
         player_string = "PLAYER {0:d}: ".format(player.get_number())
         size = self.__fonts["big"].size(player_string)
         initial_pos = (self.__surface.get_width() // 2 - size[0], 5)
-        self.__player_text = pygame.sprite.GroupSingle(TextSprite(initial_pos, player_string, self.__fonts["big"], GREEN))
+        self.__player_text = pygame.sprite.GroupSingle(
+            TextSprite(initial_pos, player_string, self.__fonts["big"], GREEN)
+        )
 
         initial_pos = (self.__surface.get_width() // 2, 5)
         score = Score(initial_pos, fonts["big"], sounds["score"])

@@ -117,4 +117,8 @@ class BaseKeyboardEventHandler(BaseScreenEventHandler):
         self.__supported_events = supported_events
 
     def can_handle(self, event):
-        return super().can_handle(event) and event.type in self.__supported_events and event.key in self._key_mappings.values()
+        return (
+            super().can_handle(event) and
+            event.type in self.__supported_events and
+            event.key in self._key_mappings.values()
+        )

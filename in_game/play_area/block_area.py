@@ -160,7 +160,9 @@ class BlockArea(object):
             self.get_play_area().scroll(seconds)
 
     def __detect_block_collision(self):
-        collided_blocks = pygame.sprite.spritecollide(self.get_player(), self.__blocks, False, detect_player_block_collide)
+        collided_blocks = pygame.sprite.spritecollide(
+            self.get_player(), self.__blocks, False, detect_player_block_collide
+        )
 
         for block in collided_blocks:
             block.on_collide(self.get_player(), self.__play_area.get_score())

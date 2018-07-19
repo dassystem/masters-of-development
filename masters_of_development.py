@@ -111,30 +111,33 @@ class MastersOfDevelopment(object):
     def __init_images(self):
         self.__images = {}
 
-        self.__images["start_screen_bg"] = pygame.image.load("assets/images/start_screen_bg.png").convert_alpha()
-        self.__images["start_screen_player_1"] = pygame.image.load("assets/images/player_1.png").convert_alpha()
-        self.__images["start_screen_player_2"] = pygame.image.load("assets/images/player_2.png").convert_alpha()
-        self.__images["start_screen_start_normal"] = pygame.image.load("assets/images/start_button_normal.png").convert_alpha()
-        self.__images["start_screen_start_pushed"] = pygame.image.load("assets/images/start_button_pushed.png").convert_alpha()
+        self.__images["start_screen_bg"] = self.__load_image("assets/images/start_screen_bg.png")
+        self.__images["start_screen_player_1"] = self.__load_image("assets/images/player_1.png")
+        self.__images["start_screen_player_2"] = self.__load_image("assets/images/player_2.png")
+        self.__images["start_screen_start_normal"] = self.__load_image("assets/images/start_button_normal.png")
+        self.__images["start_screen_start_pushed"] = self.__load_image("assets/images/start_button_pushed.png")
 
-        self.__images["start_screen_countdown_bg"] = pygame.image.load("assets/images/countdown_screen_bg.png").convert_alpha()
-        self.__images["start_screen_countdown_3"] = pygame.image.load("assets/images/countdown_3.png").convert_alpha()
-        self.__images["start_screen_countdown_2"] = pygame.image.load("assets/images/countdown_2.png").convert_alpha()
-        self.__images["start_screen_countdown_1"] = pygame.image.load("assets/images/countdown_1.png").convert_alpha()
-        self.__images["start_screen_countdown_go"] = pygame.image.load("assets/images/countdown_lets_code.png").convert_alpha()
+        self.__images["start_screen_countdown_bg"] = self.__load_image("assets/images/countdown_screen_bg.png")
+        self.__images["start_screen_countdown_3"] = self.__load_image("assets/images/countdown_3.png")
+        self.__images["start_screen_countdown_2"] = self.__load_image("assets/images/countdown_2.png")
+        self.__images["start_screen_countdown_1"] = self.__load_image("assets/images/countdown_1.png")
+        self.__images["start_screen_countdown_go"] = self.__load_image("assets/images/countdown_lets_code.png")
 
-        self.__images["in_game_screen_bg"] = pygame.image.load("assets/images/game_screen_frame.png").convert_alpha()
-        self.__images["in_game_screen_game_over_bg"] = pygame.image.load("assets/images/inscreen_game_over.png").convert_alpha()
-        self.__images["in_game_screen_win_bg"] = pygame.image.load("assets/images/inscreen_you_win.png").convert_alpha()
-        self.__images["in_game_screen_loose_bg"] = pygame.image.load("assets/images/inscreen_you_lose.png").convert_alpha()
-        self.__images["in_game_screen_player"] = pygame.image.load("assets/images/game_figure.png").convert_alpha()
-        self.__images["in_game_screen_player_jumping"] = pygame.image.load("assets/images/game_figure_jump.png").convert_alpha()
+        self.__images["in_game_screen_bg"] = self.__load_image("assets/images/game_screen_frame.png")
+        self.__images["in_game_screen_game_over_bg"] = self.__load_image("assets/images/inscreen_game_over.png")
+        self.__images["in_game_screen_win_bg"] = self.__load_image("assets/images/inscreen_you_win.png")
+        self.__images["in_game_screen_loose_bg"] = self.__load_image("assets/images/inscreen_you_lose.png")
+        self.__images["in_game_screen_player"] = self.__load_image("assets/images/game_figure.png")
+        self.__images["in_game_screen_player_jumping"] = self.__load_image("assets/images/game_figure_jump.png")
 
-        self.__images["coin"] = pygame.image.load("assets/images/coin.png").convert_alpha()
+        self.__images["coin"] = self.__load_image("assets/images/coin.png")
 
-        self.__images["power_up_jump_height"] = pygame.image.load("assets/images/jump_power.png").convert_alpha()
-        self.__images["bug"] = pygame.image.load("assets/images/bug.png").convert_alpha()
-        self.__images[PowerUpShield.NAME] = pygame.image.load("assets/images/armor.png").convert_alpha()
+        self.__images["power_up_jump_height"] = self.__load_image("assets/images/jump_power.png")
+        self.__images["bug"] = self.__load_image("assets/images/bug.png")
+        self.__images[PowerUpShield.NAME] = self.__load_image("assets/images/armor.png")
+
+    def __load_image(self, filename):
+        return pygame.image.load(filename).convert_alpha()
 
     def __init_joysticks(self):
         self.__joysticks = utils.joysticks.init_joysticks()

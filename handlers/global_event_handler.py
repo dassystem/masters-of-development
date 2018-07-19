@@ -24,7 +24,11 @@ class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
         super(GlobalSwitchMusicEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event):
-        return event.type == pygame.KEYDOWN and (event.key == pygame.K_m or event.key == pygame.K_b or event.key == pygame.K_n)
+        return (
+            event.type == pygame.KEYDOWN and (
+                event.key == pygame.K_m or event.key == pygame.K_b or event.key == pygame.K_n
+            )
+        )
 
     def handle_event(self, event):
         if event.key == pygame.K_m:

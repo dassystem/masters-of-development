@@ -58,10 +58,12 @@ class InGameScreen(BaseScreen):
     def __init_redraw_areas(self):
         self.__redraw_areas = {}
 
-        self.__redraw_areas["timer_1"] = (self.__images["in_game_screen_bg"].subsurface((870, 85, 35, 40)), (870, 85))
-        self.__redraw_areas["timer_2"] = (self.__images["in_game_screen_bg"].subsurface((1015, 85, 35, 40)), (1015, 85))
-        self.__redraw_areas["head_1"] = (self.__images["in_game_screen_bg"].subsurface((400, 795, 155, 25)), (400, 795))
-        self.__redraw_areas["head_2"] = (self.__images["in_game_screen_bg"].subsurface((1360, 800, 120, 20)), (1360, 800))
+        background = self.__images["in_game_screen_bg"]
+
+        self.__redraw_areas["timer_1"] = (background.subsurface((870, 85, 35, 40)), (870, 85))
+        self.__redraw_areas["timer_2"] = (background.subsurface((1015, 85, 35, 40)), (1015, 85))
+        self.__redraw_areas["head_1"] = (background.subsurface((400, 795, 155, 25)), (400, 795))
+        self.__redraw_areas["head_2"] = (background.subsurface((1360, 800, 120, 20)), (1360, 800))
 
     def render(self, seconds):
         if not self.is_active():

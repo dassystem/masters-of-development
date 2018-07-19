@@ -119,7 +119,8 @@ class Player(pygame.sprite.Sprite):
 
     def __check_right_edge(self, seconds):
         """Checks is the player is not beyond the right edge of the play area."""
-        return self.rect.x <= self.__surface_rect.width - self.rect.width - self.__speed * round(PIXEL_PER_SECOND * seconds)
+        new_x = self.__surface_rect.width - self.rect.width - self.__speed * round(PIXEL_PER_SECOND * seconds)
+        return self.rect.x <= new_x
 
     def __check_still_on_block(self):
         """Checks if the player is still on a block. If not player begins to fall."""

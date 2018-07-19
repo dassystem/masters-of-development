@@ -130,7 +130,9 @@ class Keyboard(object):
 
         rows = round(len(self.get_letters()) / self.__columns)
 
-        cursor = Cursor(self, first_letter.rect.x, first_letter.rect.y - 5, first_letter.rect.width, rows, self.__columns)
+        cursor = Cursor(
+            self, first_letter.rect.x, first_letter.rect.y - 5, first_letter.rect.width, rows, self.__columns
+        )
         self.__cursor.add(cursor)
 
     def __init_name_display(self):
