@@ -293,7 +293,7 @@ class Cursor(pygame.sprite.Sprite):
         self.__active = False   
 
     def move_cursor_right(self):
-        if self.__active == False:
+        if not self.__active:
             return
 
         if self.__current_column < self.__columns - 1:
@@ -301,7 +301,7 @@ class Cursor(pygame.sprite.Sprite):
             self.rect.x = self.__initial_x + self.__current_column * LETTER_GAP
 
     def move_cursor_left(self):
-        if self.__active == False:
+        if not self.__active:
             return
 
         if self.__current_column > 0:
@@ -309,7 +309,7 @@ class Cursor(pygame.sprite.Sprite):
             self.rect.x = self.__initial_x + self.__current_column * LETTER_GAP
 
     def move_cursor_up(self):
-        if self.__active == False:
+        if not self.__active:
             return
 
         if self.__current_row > 0:
@@ -317,7 +317,7 @@ class Cursor(pygame.sprite.Sprite):
             self.rect.y = self.__initial_y + self.__current_row * LETTER_GAP
 
     def move_cursor_down(self):
-        if self.__active == False:
+        if not self.__active:
             return
 
         if self.__current_row < self.__rows - 1:
@@ -325,12 +325,13 @@ class Cursor(pygame.sprite.Sprite):
             self.rect.y = self.__initial_y + self.__current_row * LETTER_GAP
 
     def set_selected(self, symbol):
-        if self.__active == False:
+        if not self.__active:
             return
+
         self.symbol = symbol
 
     def enter_letter(self):
-        if self.__active == False:
+        if not self.__active:
             return
 
         self.__keyboard.enter_letter(self.__current_row, self.__current_column)
