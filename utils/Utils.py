@@ -46,4 +46,3 @@ def split_screen(surface):
         split.append(surface.subsurface(player_rect))
 
     return split
-
