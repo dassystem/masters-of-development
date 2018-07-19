@@ -27,7 +27,7 @@ class Block(pygame.sprite.Sprite):
         6: ["i += 1", "x == y", "s = \"\"", "len(d)", "import", "lambda", "return", "i = 42", "str(i)", "# TODO"],
         7: ["finally", "next(g)", "d = {}", "l  = []", "type(x)", "# FIXME", "except:"],
         8: ["continue", "nonlocal", "print(i)", "d.copy()", "d.clear()", "global a"],
-        9 : ["self.rect", "d.clear()", "if x < 0:", "f.__doc__"],
+        9: ["self.rect", "d.clear()", "if x < 0:", "f.__doc__"],
         10: ["import sys", "print(d[k])", "d.values()", "l2 = l1[:]", "f(*t, **d)", "@decorator", "f.__name__"],
         11: ["for k in d:", "print(s[-1])", "import math", "a, b = 0, 1"],
         12: ["s.center(10)", "f.__module__", "@wraps(func)"],
@@ -41,7 +41,7 @@ class Block(pygame.sprite.Sprite):
 
     operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"]
 
-    def __init__(self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
+    def __init__(self, font, level, x, y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Block, self).__init__()
 

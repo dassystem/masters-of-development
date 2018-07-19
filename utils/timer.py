@@ -108,7 +108,7 @@ class FontSpriteTimer(SpriteTimer):
         if self.__change_font_color_at > 0 and self._seconds_left <= self.__change_font_color_at:
             color = self.__font_color_2
 
-        return self.__font.render(self.__format_string.format(self._seconds_left), True , color)
+        return self.__font.render(self.__format_string.format(self._seconds_left), True, color)
 
 class ImageSpriteTimer(SpriteTimer):
     """A sprite representing a timer."""
