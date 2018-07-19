@@ -205,7 +205,7 @@ class PlayArea(object):
             self.__active_power_up_shield.draw(self.__surface, text_rect.move((original_rect.width + 5) * -1, -4))
 
     def __render_game_over(self):
-        if  self.__game_over_bg is not None and not self.get_screen().all_dead():
+        if self.__game_over_bg is not None and not self.get_screen().all_dead():
             return
 
         if self.get_screen().all_dead():
