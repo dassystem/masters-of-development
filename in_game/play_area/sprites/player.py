@@ -4,6 +4,7 @@ from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.power_up_jump import PowerUpJump
 
+
 class Player(pygame.sprite.Sprite):
     """A sprite representing a player."""
     NORMAL_JUMP_HEIGHT = 10

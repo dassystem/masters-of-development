@@ -9,6 +9,7 @@ from in_game.play_area.sprites.coin import Coin
 from in_game.play_area.sprites.power_up_jump import PowerUpJump
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
 
+
 class BlockArea(object):
     def __init__(self, play_area, surface, fonts, images, sounds, player):
         self.__play_area = play_area
@@ -179,6 +180,7 @@ class BlockArea(object):
     def __render_debug_info(self, debug_info):
         return self.__font.render(debug_info, False, self.__color)
 
+
 def detect_player_block_collide(player, block):
     collided = False
 
@@ -189,6 +191,7 @@ def detect_player_block_collide(player, block):
             collided = player.rect.bottom == block.rect.top
 
     return collided
+
 
 def clear_callback(surface, rect):
     """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""

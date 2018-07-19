@@ -2,6 +2,7 @@ import utils.keyboard
 
 from screens.base import BaseKeyboardEventHandler
 
+
 class PlayerKeyboardEventHandler(BaseKeyboardEventHandler):
     def __init__(self, in_game_screen, key_mappings, player):
         super(PlayerKeyboardEventHandler, self).__init__(in_game_screen, key_mappings)

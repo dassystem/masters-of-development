@@ -1,6 +1,7 @@
 import sqlite3
 # https://docs.python.org/3/library/sqlite3.html
 
+
 class DbConnector():
     def __init__(self, path):
         self.__path = path

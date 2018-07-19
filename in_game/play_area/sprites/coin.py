@@ -1,5 +1,6 @@
 from in_game.play_area.sprites.item import Item
 
+
 class Coin(Item):
     """A sprite representing a collectable extra score item."""
 

@@ -7,6 +7,7 @@ import string
 from colors import DARKER_GRAY, LIGHT_GRAY, WHITE
 from constants import PIXEL_PER_SECOND
 
+
 class Block(pygame.sprite.Sprite):
     """A sprite representing a block. Contains the block level."""
     BLOCK_WIDTH = 32

@@ -2,6 +2,7 @@ import pygame
 
 from colors import BACKGROUND_COLOR
 
+
 class DebugInfo(pygame.sprite.Sprite):
     """A sprite representing an area with some debug infos. Toggled by pressing i."""
     def __init__(self, play_area, fonts):

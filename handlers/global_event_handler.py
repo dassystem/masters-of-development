@@ -1,9 +1,11 @@
 import pygame
 from screens.base import BaseScreen
 
+
 class GlobalBaseEventHandler(object):
     def __init__(self, tarent_jumper):
         self._tarent_jumper = tarent_jumper
+
 
 class GlobalQuitEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
@@ -15,6 +17,7 @@ class GlobalQuitEventHandler(GlobalBaseEventHandler):
     def handle_event(self, event):
         if self.can_handle(event):
             self._tarent_jumper.shutdown()
+
 
 class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
@@ -31,6 +34,7 @@ class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
         elif event.key == pygame.K_n:
             self._tarent_jumper.next_music()
 
+
 class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):
         super(GlobalScreenDeactivateEventHandler, self).__init__(tarent_jumper)
@@ -40,6 +44,7 @@ class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
 
     def handle_event(self, event):
         self._tarent_jumper.change_screen(event.screen)
+
 
 class GlobalEventHandler(GlobalBaseEventHandler):
     def __init__(self, tarent_jumper):

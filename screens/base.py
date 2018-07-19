@@ -1,6 +1,7 @@
 import pygame
 import utils.joysticks
 
+
 class BaseScreen(object):
     DEACTIVE_SCREEN_EVENT = pygame.USEREVENT + 1
 
@@ -37,6 +38,7 @@ class BaseScreen(object):
         if not self.__active:
             return
 
+
 class BaseScreenEventHandler(object):
     def __init__(self, screen):
         self.__screen = screen
@@ -49,6 +51,7 @@ class BaseScreenEventHandler(object):
 
     def handle_event(self, event):
         pass
+
 
 class BaseJoystickEventHandler(BaseScreenEventHandler):
     def __init__(self, screen, joystick):
@@ -105,6 +108,7 @@ class BaseJoystickEventHandler(BaseScreenEventHandler):
 
     def _on_button_down(self, event):
         pass
+
 
 class BaseKeyboardEventHandler(BaseScreenEventHandler):
     def __init__(self, screen, key_mappings, supported_events=[pygame.KEYDOWN, pygame.KEYUP]):

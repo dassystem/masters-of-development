@@ -1,5 +1,6 @@
 from screens.base import BaseJoystickEventHandler
 
+
 class PlayerJoystickEventHandler(BaseJoystickEventHandler):
     """Joystick event handler for a player."""
 

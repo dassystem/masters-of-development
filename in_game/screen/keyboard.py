@@ -2,6 +2,7 @@ import pygame
 
 from screens.base import BaseKeyboardEventHandler
 
+
 class ScreenKeyboardEventHandler(BaseKeyboardEventHandler):
     def __init__(self, in_game_screen, play_areas):
         super(ScreenKeyboardEventHandler, self).__init__(

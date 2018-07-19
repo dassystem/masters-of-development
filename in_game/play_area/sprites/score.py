@@ -1,6 +1,7 @@
 from colors import WHITE
 from commons.text_sprite import TextSprite
 
+
 class Score(TextSprite):
     """A sprite representing the score display."""
     PLATFORM_LEVEL_SCORE = 100

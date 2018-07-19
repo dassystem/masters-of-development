@@ -3,6 +3,7 @@ import pygame
 from colors import LIGHT_GRAY
 from constants import PIXEL_PER_SECOND
 
+
 class LineNumber(pygame.sprite.Sprite):
     def __init__(self, number, y, right, fonts):
         # IMPORTANT: call the parent class (Sprite) constructor

@@ -1,5 +1,6 @@
 import pygame
 
+
 class TextSprite(pygame.sprite.Sprite):
     render_cache = {}
 

@@ -3,6 +3,7 @@ import pygame
 COUNTDOWN_EVENT = pygame.USEREVENT + 2
 ELAPSED_EVENT = pygame.USEREVENT + 3
 
+
 class Timer(object):
     def __init__(self, name, initial_seconds):
         self._name = name
@@ -39,6 +40,7 @@ class Timer(object):
         if self._seconds_left <= 0:
             self.stop()
             pygame.event.post(pygame.event.Event(ELAPSED_EVENT, {"timer": self}))
+
 
 class SpriteTimer(pygame.sprite.Sprite, Timer):
     """A sprite representing a timer."""
@@ -90,6 +92,7 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
         if self._seconds_left <= 10 and self._seconds_left > 0:
             self._sounds[str(self._seconds_left)].play()
 
+
 class FontSpriteTimer(SpriteTimer):
     """A sprite representing a timer."""
 
@@ -109,6 +112,7 @@ class FontSpriteTimer(SpriteTimer):
             color = self.__font_color_2
 
         return self.__font.render(self.__format_string.format(self._seconds_left), True, color)
+
 
 class ImageSpriteTimer(SpriteTimer):
     """A sprite representing a timer."""
@@ -135,6 +139,7 @@ class ImageSpriteTimer(SpriteTimer):
     def _update_image(self):
         key = "countdown_{0:d}".format(self._seconds_left)
         return self.__images[key]
+
 
 class TimerCountdownEventHandler(object):
     def __init__(self, timer):

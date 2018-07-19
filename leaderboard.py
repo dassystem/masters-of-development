@@ -9,6 +9,7 @@ from commons.text_sprite import TextSprite
 LETTER_GAP = 30
 MAX_ENTRIES = 5
 
+
 class Leaderboard(object):
     def __init__(self):
         self.__db_connector = utils.db_connector.DbConnector("assets/leaderboard.db")
@@ -48,6 +49,7 @@ class Leaderboard(object):
         pk = self.__db_connector.get_cursor().lastrowid
         self.__board.append(LeaderboardEntry(pk, player_info[0], player_info[1]))
         self.__board.sort(key=lambda entry: entry.get_score(), reverse=True)
+
 
 class LeaderboardEntry(object):
     def __init__(self, identity, name, score):
@@ -236,6 +238,7 @@ class Keyboard(object):
     def get_event_handlers(self):
         return self.__event_handlers
 
+
 class CoordLetter(pygame.sprite.Sprite):
     def __init__(self, symbol, row, column, start_topleft, font, font_color):
         # IMPORTANT: call the parent class (Sprite) constructor
@@ -254,6 +257,7 @@ class CoordLetter(pygame.sprite.Sprite):
 
     def get_symbol(self):
         return self.__symbol
+
 
 class Cursor(pygame.sprite.Sprite):
     def __init__(self, keyboard, initial_x, initial_y, initial_width, rows, columns):
@@ -342,6 +346,7 @@ class Cursor(pygame.sprite.Sprite):
         else:
             self.image.fill(DARKER_GRAY)
 
+
 class NameDisplay(TextSprite):
     def __init__(self, initial_pos, font, font_color):
         self.__name = ""
@@ -357,6 +362,7 @@ class NameDisplay(TextSprite):
 
     def get_name(self):
         return self.__name
+
 
 class JoystickEventHandler(screens.base.BaseJoystickEventHandler):
     def __init__(self, screen, keyboard, joystick):
@@ -380,6 +386,7 @@ class JoystickEventHandler(screens.base.BaseJoystickEventHandler):
 
     def _on_button_down(self, event):
         self.__keyboard.get_cursor().enter_letter()
+
 
 class KeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
     def __init__(self, screen, keyboard, key_mappings):

@@ -17,6 +17,7 @@ from in_game.play_area.sprites.score import Score
 
 from leaderboard import Keyboard
 
+
 class GroupSingleAnyRect(pygame.sprite.GroupSingle):
     def __init__(self, sprite=None):
         super(GroupSingleAnyRect, self).__init__(sprite)
@@ -27,6 +28,7 @@ class GroupSingleAnyRect(pygame.sprite.GroupSingle):
         for spr in sprites:
             self.spritedict[spr] = surface_blit(spr.image, rect)
         self.lostsprites = []
+
 
 class PlayArea(object):
     """A area where a player is playing."""
@@ -265,6 +267,7 @@ class PlayArea(object):
 
     def get_keyboard(self):
         return self.__keyboard
+
 
 def fill_with_dark_gray(surface, rect):
     """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""

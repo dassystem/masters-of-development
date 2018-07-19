@@ -2,6 +2,7 @@ import utils
 
 from screens.base import BaseScreenEventHandler
 
+
 class PowerUpTimerElapsedEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, power_up):
         super(PowerUpTimerElapsedEventHandler, self).__init__(in_game_screen)

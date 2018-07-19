@@ -9,6 +9,7 @@ from utils.timer import FontSpriteTimer
 
 import pygame
 
+
 class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, seconds=100):
         super(InGameScreen, self).__init__(surface, [])
@@ -161,6 +162,7 @@ class InGameScreen(BaseScreen):
     def get_timer(self):
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
+
 
 def fill_with_black(surface, rect):
     surface.fill(BLACK, rect)

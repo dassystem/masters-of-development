@@ -2,6 +2,7 @@ import utils.timer
 
 from screens.base import BaseScreenEventHandler
 
+
 class InGameScreenTimerElapsedEventHandler(BaseScreenEventHandler):
     """Event handler that sets all players dead if a timer is elapsed."""
     def __init__(self, in_game_screen, timer):

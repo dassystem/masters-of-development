@@ -2,6 +2,7 @@ from in_game.play_area.event_handlers.power_up_timer_elapsed_event_handler impor
 from in_game.play_area.sprites.item import Item
 from utils.timer import Timer
 
+
 class PowerUp(Item):
     def __init__(self, name, block, block_area, active_seconds=5):
         self.__name = name

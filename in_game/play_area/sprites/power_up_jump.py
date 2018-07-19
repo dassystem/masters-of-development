@@ -1,5 +1,6 @@
 from in_game.play_area.sprites.power_up import PowerUp
 
+
 class PowerUpJump(PowerUp):
     NAME = "power_up_jump"
 

@@ -1,6 +1,7 @@
 from in_game.play_area.sprites.item import Item
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
 
+
 class Bug(Item):
     def __init__(self, images, block):
         self.image = images["bug"]

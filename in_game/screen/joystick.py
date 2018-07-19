@@ -2,6 +2,7 @@ import utils.joysticks
 
 from screens.base import BaseScreenEventHandler
 
+
 class ScreenJoystickEventHandler(BaseScreenEventHandler):
     def __init__(self, in_game_screen, play_areas):
         super(ScreenJoystickEventHandler, self).__init__(in_game_screen)

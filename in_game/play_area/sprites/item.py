@@ -1,6 +1,7 @@
 import pygame
 import random
 
+
 class Item(pygame.sprite.Sprite):
     def __init__(self, block):
         # IMPORTANT: call the parent class (Sprite) constructor
