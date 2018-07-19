@@ -1,4 +1,4 @@
-from colors import GREEN, RED
+from colors import BLACK, GREEN, RED
 from in_game.play_area.play_area import PlayArea
 from in_game.screen import InGameScreenTimerElapsedEventHandler
 from in_game.screen.joystick  import ScreenJoystickEventHandler
@@ -66,8 +66,6 @@ class InGameScreen(BaseScreen):
         if not self.is_active():
             return
         
-        self._surface.blit(self.__images["in_game_screen_bg"], (0, 0))
-
         for play_area in self.__play_areas:
             play_area.update(seconds)
         
@@ -124,6 +122,7 @@ class InGameScreen(BaseScreen):
         self.__keyboard_states_dirty = False
 
     def __render_timer(self):
+        self.__timer.clear(self._surface, fill_with_black)
         self.__timer.update()
         self.__timer.draw(self._surface)
 
@@ -136,7 +135,9 @@ class InGameScreen(BaseScreen):
             
             for play_area in self.__play_areas:
                 play_area.reset()
-                
+
+            self._surface.blit(self.__images["in_game_screen_bg"], (0, 0))
+
             self.__ending_sound_played = False
             self.__keyboard_states_dirty = True
         else:
@@ -151,9 +152,6 @@ class InGameScreen(BaseScreen):
     def set_ending_sound_played(self):
         self.__ending_sound_played = True
 
-    def get_player_surfaces(self):
-        return self.__player_surfaces
-
     def get_players(self):
         return self.__players
 
@@ -163,3 +161,6 @@ class InGameScreen(BaseScreen):
     def get_timer(self):
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
+
+def fill_with_black(surface, rect):
+    surface.fill(BLACK, rect)
