@@ -10,10 +10,10 @@ STOP = 0
 
 def init_joysticks():
     joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-    
+
     for joystick in joysticks:
         joystick.init()
-        
+
     return joysticks
 
 def round_event_value(event):

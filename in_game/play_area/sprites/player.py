@@ -9,11 +9,11 @@ class Player(pygame.sprite.Sprite):
     NORMAL_JUMP_HEIGHT = 10
     SPEED = 5
     VELOCITY = 5
-    
+
     def __init__(self, number, images, gravity, joystick, sounds, fonts, fps):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Player, self).__init__()
-        
+
         self.__number = number
         self.__images = images
 
@@ -42,10 +42,10 @@ class Player(pygame.sprite.Sprite):
         self.__power_ups = {}
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
         self.image = self.__images["in_game_screen_player"]
-        
+
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect()
-    
+
     def update(self, seconds):
         """Updates the player state. Does nothing if player is dead.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
@@ -57,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         """Updates the player state while he is stil alive."""
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
-                    
+
             if self.__jump_height <= 0:
                 self.__jump_height = self.__initial_jump_height
                 self.__jumping = False
@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):
             self.__move_down(seconds)
         elif self.__jumping:
             self.__move_up(seconds)
-    
+
         if self.__move is not None:
             if self.__move == "left":
                 self.__move_left(seconds)
@@ -136,17 +136,17 @@ class Player(pygame.sprite.Sprite):
         uplevel = 0
         self.__on_block = block
         self.rect.bottom = block.rect.y
-        
+
         if self.__on_block.get_level() > self.__highest_block_level:
             uplevel = self.__on_block.get_level() - self.__highest_block_level
             self.__highest_block_level = self.__on_block.get_level()
-        
+
         self.__falling = False
         self.__jumping = False
         self.__velocity = 0
-        
+
         return uplevel
-    
+
     def move_right(self):
         """Marks the player as moving to the right. Update method will apply state changes."""
         if self.__dead:
@@ -158,14 +158,14 @@ class Player(pygame.sprite.Sprite):
         """Marks the player as moving to the left. Update method will apply state changes."""
         if self.__dead:
             return
-        
+
         self.__move = "left"
 
     def stop(self):
         """Stops player movement to left or right.  Update method will apply state changes."""
         if self.__dead:
             return
-        
+
         self.__move = None
 
     def jump(self):
@@ -173,44 +173,44 @@ class Player(pygame.sprite.Sprite):
         """Marks the player as jumping. Update method will apply state changes."""
         if self.__dead:
             return
-       
+
         # jump only possible if standing on a block
         if self.__on_block is not None:
             self.image = self.__images["in_game_screen_player_jumping"]
             self.rect = self.image.get_rect(topleft = self.rect.topleft)
-            
+
             self.__sounds["jump"].play()
-            
+
             self.__on_block = None
             self.__falling = False
             self.__jumping = True
             self.__velocity = 6
-            
+
             power_ups = self.__power_ups.get(PowerUpJump.NAME)
-            
+
             go_up = Block.BLOCK_HEIGHT * 3
-            
+
             if power_ups is not None:
                 if len(power_ups) > 0:
                     go_up = go_up * 2
-            
+
             # go up 3 block heights
             self.rect.y = self.rect.y - go_up
-    
+
     def set_surface_rect(self, surface_rect):
         """Sets the rect of the play area surface. Needed for calculations of player state.
            Player MUST NOT update the play area surface!
         """
         self.__surface_rect = surface_rect
-        
+
     def get_joystick(self):
         """Gets the joystick assigned to the player, if any."""
         return self.__joystick
-        
+
     def is_falling(self):
         """Checks if player is falling."""
         return self.__falling
-    
+
     def is_jumping(self):
         """Checks if player is jumping."""
         return self.__jumping
@@ -221,7 +221,7 @@ class Player(pygame.sprite.Sprite):
     def get_speed(self):
         """Gets the current player speed (left or right direction)."""
         return self.__speed
-    
+
     def get_velocity(self):
         """Gets the current player velocity (falling speed?)."""
         return self.__velocity
@@ -229,18 +229,18 @@ class Player(pygame.sprite.Sprite):
     def is_ready(self):
         """Checks if the player is ready to begin a new game round."""
         return self.__ready
-    
+
     def set_ready(self, ready):
         """Marks if the player is ready to begin a new game round."""
         self.__ready = ready
-    
+
     def is_dead(self):
         """Checks if the player is dead (game over for him, sorry)."""
         return self.__dead
-    
+
     def set_dead(self):
         self.__dead = True
-    
+
     def get_number(self):
         """Gets the player numer (1 or 2)."""
         return self.__number
@@ -248,25 +248,25 @@ class Player(pygame.sprite.Sprite):
     def get_score(self):
         """Gets the current player score (number)."""
         return self.__score
-    
+
     def set_score(self, score):
         """Sets the current player score (number)."""
         self.__score = score
 
     def add_power_up(self, power_up):
         same_name = None
-        
+
         if power_up.get_name() in self.__power_ups:
             same_name = self.__power_ups[power_up.get_name()]
         else:
             same_name = []
             self.__power_ups[power_up.get_name()] = same_name
-            
+
         same_name.append(power_up)
-    
+
     def remove_power_up(self, power_up):
         same_name = self.__power_ups[power_up.get_name()]
-           
+
         same_name.remove(power_up)
 
     def get_power_ups(self):

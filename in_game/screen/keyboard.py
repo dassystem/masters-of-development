@@ -11,12 +11,12 @@ class ScreenKeyboardEventHandler(BaseKeyboardEventHandler):
     def can_handle(self, event):
         if not super().can_handle(event):
             return False
-        
+
         active_keyboard = False
-        
+
         for play_area in self.__play_areas:
             active_keyboard = active_keyboard or play_area.get_keyboard().is_active()
-        
+
         return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
 
     def handle_event(self, event):

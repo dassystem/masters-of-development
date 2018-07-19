@@ -19,29 +19,29 @@ class PowerUp(Item):
 
     def on_collide(self, player, score):
         player.add_power_up(self)
-        
+
         self.__timer = Timer("powerup", self.__active_seconds)
-        
+
         self.__event_handlers = []
         self.__event_handlers.append(self.__timer.get_event_handler())
-        
+
         screen = self.__block_area.get_play_area().get_screen()
-        
+
         self.__event_handlers.append(
             PowerUpTimerElapsedEventHandler(screen, self))
-        
+
         for event_handler in self.__event_handlers:
             screen.add_event_handler(event_handler)
-        
+
         self.__timer.start()
-        
+
     def deactivate(self):
         self.__block_area.get_play_area().get_player().remove_power_up(self)
         self.__timer.stop()
         self.__timer = None
-        
+
         for event_handler in self.__event_handlers:
             self.__block_area.get_play_area().get_screen().remove_event_handler(event_handler)
-        
+
         self.__event_handlers = []
         self.kill()

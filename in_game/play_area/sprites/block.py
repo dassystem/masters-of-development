@@ -11,14 +11,14 @@ class Block(pygame.sprite.Sprite):
     """A sprite representing a block. Contains the block level."""
     BLOCK_WIDTH = 32
     BLOCK_HEIGHT = 32
-    
+
     KEYWORD_COLOR = pygame.Color(204, 108, 29)
     NAME_COLOR = pygame.Color(100, 220, 242)
     FUNCTION_COLOR = pygame.Color(164, 231, 33)
     #KEYWORD_COLOR = pygame.Color(81, 86, 88)
     # Eclipse Photon Dark Theme Comment Color
     #KEYWORD_COLOR = pygame.Color(88, 96, 92)
-    
+
     words = {
         2: ["as", "if", "in", "is", "or"],
         3: ["and", "def", "del", "for", "not"],
@@ -38,9 +38,9 @@ class Block(pygame.sprite.Sprite):
         17: ["self.rect.x += dx", "self.rect.y += dy", "math.cos(math.pi)"],
         18: ["def __str__(self):", "s.format(\"0:d\", i)", "def f(): return 42", "f = 9 * c / 5 + 32"]
     }
-    
+
     operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"]
-    
+
     def __init__(self, font, level, x , y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Block, self).__init__()
@@ -50,19 +50,19 @@ class Block(pygame.sprite.Sprite):
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
         #self.image = pygame.Surface((width, height))
         #self.image.fill(pygame.Color(255, 0, 0))
-        
+
         letters = width // 25
         self.__line = ""
-        
+
         if letters in Block.words:
             self.__line = random.choice(Block.words[letters])
         else:
             for i in range(0, letters):
                 self.__line += random.choice(string.ascii_letters)
-        
+
         color = WHITE
         split = True
-        
+
         if self.__line.startswith("#"):
             color = LIGHT_GRAY
             split = False
@@ -72,19 +72,19 @@ class Block(pygame.sprite.Sprite):
         elif self.__line in keyword.kwlist:
             color = Block.KEYWORD_COLOR
             split = False
-        
+
         self.image = font.render(self.__line, True, color)
 
         if split:
             parts = []
-            
+
             self.__inspect_line(self.__line, " ", parts, 0)
 
             self.image.fill(DARKER_GRAY)
-                
+
             for part in parts:
                 self.image.blit(part[1], part[0])
-        
+
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect(x = x, y = y)
         #pygame.draw.rect(self.image, MastersOfDevelopment.WHITE, pygame.Rect(0, 0, self.rect.width, self.rect.height), 1)
@@ -94,7 +94,7 @@ class Block(pygame.sprite.Sprite):
 
     def __inspect_line(self, line, separator, global_parts, x, override_color = None):
         split = line.split(separator)
-                
+
         for i, s in enumerate(split):
             if s in keyword.kwlist:
                 color = Block.KEYWORD_COLOR
@@ -105,7 +105,7 @@ class Block(pygame.sprite.Sprite):
                 continue
             else:
                 match = re.match(r"(.*?)([\(\[\{])(.*)([\)\]\}])", s)
-                
+
                 if match:
                     override_color = None
                     for j, group in enumerate(match.groups()):
@@ -113,39 +113,39 @@ class Block(pygame.sprite.Sprite):
                             override_color = Block.FUNCTION_COLOR
                         else:
                             override_color = None
-                            
+
                         x = self.__inspect_line(group, " ", global_parts, x, override_color)
-                        
+
                     if len(split) > 1 and i < len(split):
                         separator_part = self.__render_part(separator, WHITE, x)
                         global_parts.append(separator_part)
-               
+
                         x += separator_part[1].get_width()
                     continue
                 elif override_color is not None:
                     color = override_color
                 else:        
                     color = Block.NAME_COLOR
-            
+
             part = self.__render_part(s, color, x)
-            
+
             global_parts.append(part)
-            
+
             x += part[1].get_width()
 
             if len(split) > 1 and i < len(split):
                 separator_part = self.__render_part(separator, WHITE, x)
                 global_parts.append(separator_part)
-               
+
                 x += separator_part[1].get_width()
-            
+
         return x
 
     def __render_part(self, s, color, x):
         part_image = self.__font.render(s, True, color)
         part_rect = part_image.get_rect().copy()
         part_rect.x += x
-        
+
         return (part_rect, part_image)
 
     def get_level(self):
@@ -157,27 +157,27 @@ class Block(pygame.sprite.Sprite):
 
     def update(self, scroll_velocity, surface_height, seconds):
         """Updates the block for moving down while scrolling the play area. Kills itself if moving out of surface.
-           
+
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
         self.rect.y += scroll_velocity * round(PIXEL_PER_SECOND * seconds)
-        
+
         # delete blocks offscreen
         if self.rect.top >= surface_height:
             self.kill()
-                
+
     def kill(self):
         """Kills any score item.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.kill
         """
         if self.__item is not None:
             self.__item.kill()
-            
+
         super().kill()
-        
+
     def on_collide(self, player, score):
         uplevel = player.set_on_block(self)
-            
+
         if uplevel > 0:
             score.add_platform_score(uplevel)
             player.set_score(score.get_score())

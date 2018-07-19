@@ -12,13 +12,13 @@ import pygame
 class InGameScreen(BaseScreen):
     def __init__(self, surface, fonts, sounds, images, players, seconds = 100):
         super(InGameScreen, self).__init__(surface, [])
-        
+
         self.__fonts = fonts
         self.__sounds = sounds
         self.__images = images
-        
+
         self.__players = players
-        
+
         self.__play_areas = []
         self.__init_play_areas(fonts, sounds, images)
 
@@ -34,26 +34,26 @@ class InGameScreen(BaseScreen):
             RED,
             sounds,
             10)
-             
+
         self.__timer = pygame.sprite.GroupSingle(timer)
-        
+
         super().add_event_handler(InGameScreenTimerElapsedEventHandler(self, self.get_timer()))
 
         self.__init_redraw_areas()
-        
+
     def __init_play_areas(self, fonts, sounds, images):
         split_screen = []
         player_1_rect = pygame.Rect(55, 85, 850, 735)
         split_screen.append(self._surface.subsurface(player_1_rect))
-        
+
         player_2_rect = pygame.Rect(1015, 85, 850, 735)
         split_screen.append(self._surface.subsurface(player_2_rect))
-        
+
         for i, subsurface in enumerate(split_screen):
             play_area = PlayArea(
                 self, subsurface, fonts, sounds, images, self.__players[i])
             self.__play_areas.append(play_area)
-    
+
     def __init_redraw_areas(self):
         self.__redraw_areas = {}
 
@@ -65,20 +65,20 @@ class InGameScreen(BaseScreen):
     def render(self, seconds):
         if not self.is_active():
             return
-        
+
         for play_area in self.__play_areas:
             play_area.update(seconds)
-        
+
         self.__redraw()
-            
+
         all_dead = True
 
         for player in self.__players:
             all_dead = all_dead and player.is_dead()
-            
+
         if self.all_dead() and self.get_timer().is_started():
             self.get_timer().stop()
-            
+
         self.__render_timer()
 
     def __redraw(self):
@@ -90,22 +90,22 @@ class InGameScreen(BaseScreen):
 
         for player in self.__players:
             all_dead = all_dead and player.is_dead()
-        
+
         return all_dead
-    
+
     def set_keyboard_states(self):
         if not self.__keyboard_states_dirty:
             return
-        
+
         if LEADERBOARD.get_count() + len(self.__players) <= MAX_ENTRIES:
             for play_area in self.__play_areas:
                 play_area.get_keyboard().set_active(True)
         else:
             new_scores = self.__players.copy()
             new_scores.sort(key = lambda player: player.get_score(), reverse = True)
-            
+
             new_entries = 0
-            
+
             for new_score in new_scores:
                 if LEADERBOARD.get_count() + new_entries < MAX_ENTRIES:
                     self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
@@ -116,7 +116,7 @@ class InGameScreen(BaseScreen):
                         if entry.get_score() < new_score.get_score():
                             self.__play_areas[new_scores[0].get_number() - 1].get_keyboard().set_active(True)
                             new_entries += 1
-                                
+
                             break  
 
         self.__keyboard_states_dirty = False
@@ -128,11 +128,11 @@ class InGameScreen(BaseScreen):
 
     def set_active(self, active):
         super().set_active(active)
-        
+
         if self.is_active():
             self.add_event_handler(self.get_timer().get_event_handler())
             self.get_timer().start()
-            
+
             for play_area in self.__play_areas:
                 play_area.reset()
 

@@ -12,7 +12,7 @@ class DbConnector():
         self.__cursor = self.__conn.cursor()
         self.__cursor.execute("CREATE TABLE IF NOT EXISTS leaderboard (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, score INTEGER NOT NULL)")
         self.__conn.commit()
-    
+
     def execute(self, query):
         return self.__cursor.execute(query)
 
