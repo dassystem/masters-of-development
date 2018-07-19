@@ -64,7 +64,9 @@ class LeaderboardEntry(object):
     def get_score(self):
         return self.__score
 
+
 INSTANCE = Leaderboard()
+
 
 class Keyboard(object):
     key_mappings_1 = {

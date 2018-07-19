@@ -216,6 +216,7 @@ class MastersOfDevelopment(object):
 
         pygame.quit()
 
+
 if __name__ == "__main__":
     width = 1920
     height = 1080
