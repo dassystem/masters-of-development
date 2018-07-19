@@ -49,7 +49,7 @@ class BlockArea(object):
         while len(self.__blocks) < 13:
             self.__level += 1
 
-            ygaps = random.randint(2,3) * Block.BLOCK_HEIGHT
+            ygaps = random.randint(2, 3) * Block.BLOCK_HEIGHT
 
             block_width = random.randrange(80, 400)
             last_block = self.__blocks.sprites()[-1]
