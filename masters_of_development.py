@@ -219,7 +219,7 @@ class MastersOfDevelopment(object):
 if __name__ == "__main__":
     width = 1920
     height = 1080
-    flags = 0 #pygame.NOFRAME
+    flags = 0  # pygame.NOFRAME
 
     for i, arg in enumerate(sys.argv):
         if arg == "fullscreen":
