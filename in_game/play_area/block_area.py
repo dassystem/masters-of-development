@@ -117,11 +117,11 @@ class BlockArea(object):
     def __generate_base_block(self):
         baseBlock = Block(
             self.__fonts["big"],
-            0, # level
-            0, # x
-            self.__surface.get_height() - 1 - Block.BLOCK_HEIGHT, # y
-            self.__surface.get_width(), # width
-            self.__surface.get_height() - 1 - Block.BLOCK_HEIGHT # height
+            0,  # level
+            0,  # x
+            self.__surface.get_height() - 1 - Block.BLOCK_HEIGHT,  # y
+            self.__surface.get_width(),  # width
+            self.__surface.get_height() - 1 - Block.BLOCK_HEIGHT  # height
         )
 
         baseBlock.rect.x = 0
