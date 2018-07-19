@@ -119,7 +119,7 @@ class Block(pygame.sprite.Sprite):
                     continue
                 elif override_color is not None:
                     color = override_color
-                else:        
+                else:
                     color = Block.NAME_COLOR
 
             part = self.__render_part(s, color, x)

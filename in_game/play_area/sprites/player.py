@@ -96,7 +96,7 @@ class Player(pygame.sprite.Sprite):
     def __move_left(self, seconds):
         """Updates the player state to reflect a move to the left.
            Stops movement if player is on the left edge of the play area.
-        """        
+        """
         if self.__check_left_edge(seconds):
             self.rect.move_ip(self.__speed * round(PIXEL_PER_SECOND * seconds) * -1, 0)
         else:
@@ -109,7 +109,7 @@ class Player(pygame.sprite.Sprite):
 
     def __move_right(self, seconds):
         """Updates the player state to reflect a move to the right.
-           Stops movement if player is on the right edge of the play area.       
+           Stops movement if player is on the right edge of the play area.
         """
         if self.__check_right_edge(seconds):
             self.rect.move_ip(self.__speed * round(PIXEL_PER_SECOND * seconds), 0)

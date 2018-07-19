@@ -4,7 +4,7 @@ import string
 import utils.db_connector
 
 from colors import DARKER_GRAY, WHITE
-from commons.text_sprite import TextSprite 
+from commons.text_sprite import TextSprite
 
 LETTER_GAP = 30
 MAX_ENTRIES = 5
@@ -138,7 +138,7 @@ class Keyboard(object):
 
         first_letter = self.get_letters()[0]
 
-        x = first_letter.rect.x 
+        x = first_letter.rect.x
         y = first_letter.rect.y - 100
 
         name_display = NameDisplay((x, y), self.__fonts["medium"], self.__font_color)
@@ -272,7 +272,7 @@ class Cursor(pygame.sprite.Sprite):
         self.__initial_x = initial_x
         self.__initial_y = initial_y + LETTER_GAP
 
-        self.rect.x = initial_x 
+        self.rect.x = initial_x
         self.rect.y = initial_y
 
         self.__rows = rows
@@ -286,11 +286,11 @@ class Cursor(pygame.sprite.Sprite):
         self.__columns = columns
 
     def reset(self):
-        self.rect.x = self.__initial_x 
+        self.rect.x = self.__initial_x
         self.rect.y = self.__initial_y
         self.__current_row = 0
         self.__current_column = 0
-        self.__active = False   
+        self.__active = False
 
     def move_cursor_right(self):
         if not self.__active:

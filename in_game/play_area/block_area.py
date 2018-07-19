@@ -147,7 +147,7 @@ class BlockArea(object):
 
         self.__blocks.draw(self.__surface)
         self.__block_items.draw(self.__surface)
-        self.__player.draw(self.__surface)                
+        self.__player.draw(self.__surface)
 
     def __scroll_screen(self, seconds):
         player_rect = self.__player.sprite.rect

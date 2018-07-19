@@ -20,5 +20,5 @@ class PlayerKeyboardEventHandler(BaseKeyboardEventHandler):
             elif self._key_mappings["right"] == event.key:
                 self.__player.move_right()
         elif utils.keyboard.is_key_up(event):
-            if self._key_mappings["left"] == event.key or self._key_mappings["right"] == event.key: 
+            if self._key_mappings["left"] == event.key or self._key_mappings["right"] == event.key:
                 self.__player.stop()

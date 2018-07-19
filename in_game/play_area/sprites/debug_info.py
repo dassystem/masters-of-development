@@ -12,7 +12,7 @@ class DebugInfo(pygame.sprite.Sprite):
         self.__visible = False
 
         self.__font = fonts["micro"]
-        self.__color = pygame.Color(0, 255, 0)    
+        self.__color = pygame.Color(0, 255, 0)
 
     def update(self, seconds):
         """Updates the debug info. Does nothing if not visible.
@@ -56,7 +56,7 @@ class DebugInfo(pygame.sprite.Sprite):
             debug_surfaces.append(self.__render_debug_info(debug_info, 0, 64))
 
         max_width = 0
-        height = 0    
+        height = 0
 
         for debug_surface in debug_surfaces:
             if max_width < debug_surface.get_width():

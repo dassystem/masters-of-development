@@ -91,7 +91,7 @@ class PlayArea(object):
 
         self.__game_over_score = pygame.sprite.GroupSingle()
 
-        # (735 - 35) / 32 = 22 
+        # (735 - 35) / 32 = 22
         self.__max_line_numbers = round((surface.get_height() - PlayArea.TOP_MARGIN) / Block.BLOCK_HEIGHT)
 
         if player.get_joystick() is not None:

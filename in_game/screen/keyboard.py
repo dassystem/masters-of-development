@@ -21,7 +21,7 @@ class ScreenKeyboardEventHandler(BaseKeyboardEventHandler):
         return (self.get_screen().all_dead() or not self.get_screen().get_timer().is_started()) and not active_keyboard
 
     def handle_event(self, event):
-        if self._key_mappings["info"] == event.key: 
+        if self._key_mappings["info"] == event.key:
             for play_area in self.__play_areas:
                 play_area.switch_debug()
         elif self._key_mappings["next"] == event.key:
