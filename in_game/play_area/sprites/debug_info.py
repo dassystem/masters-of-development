@@ -49,7 +49,7 @@ class DebugInfo(pygame.sprite.Sprite):
 
         joystick = player.get_joystick()
 
-        if joystick != None:
+        if joystick is not None:
             debug_info = "joystick: {0:s} {1:s}".format(
                 str(joystick.get_id()), self.__remove_whitespace(joystick.get_name()))
 
