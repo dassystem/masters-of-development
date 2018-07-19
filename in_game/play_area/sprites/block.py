@@ -41,7 +41,7 @@ class Block(pygame.sprite.Sprite):
 
     operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"]
 
-    def __init__(self, font, level, x, y, width = BLOCK_WIDTH, height = BLOCK_HEIGHT):
+    def __init__(self, font, level, x, y, width=BLOCK_WIDTH, height=BLOCK_HEIGHT):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Block, self).__init__()
 
@@ -86,13 +86,13 @@ class Block(pygame.sprite.Sprite):
                 self.image.blit(part[1], part[0])
 
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        self.rect = self.image.get_rect(x = x, y = y)
+        self.rect = self.image.get_rect(x=x, y=y)
         #pygame.draw.rect(self.image, MastersOfDevelopment.WHITE, pygame.Rect(0, 0, self.rect.width, self.rect.height), 1)
         self.__level = level
         self.__item = None
         #print("new block level {0}, image {1}, rect {2}, line {3}".format(self.__level, self.image, self.rect, self.__line))
 
-    def __inspect_line(self, line, separator, global_parts, x, override_color = None):
+    def __inspect_line(self, line, separator, global_parts, x, override_color=None):
         split = line.split(separator)
 
         for i, s in enumerate(split):

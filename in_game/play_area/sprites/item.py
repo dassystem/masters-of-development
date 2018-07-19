@@ -23,7 +23,7 @@ class Item(pygame.sprite.Sprite):
 
     def update(self):
         # items scroll with their block, get killed by their block
-        self.rect = self.image.get_rect(bottom = self.__block.rect.top, x = self.rect.x)
+        self.rect = self.image.get_rect(bottom=self.__block.rect.top, x=self.rect.x)
 
     def on_collide(self, player, score):
         pass

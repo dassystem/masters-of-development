@@ -47,7 +47,7 @@ class Leaderboard(object):
         self.__db_connector.commit()
         pk = self.__db_connector.get_cursor().lastrowid
         self.__board.append(LeaderboardEntry(pk, player_info[0], player_info[1]))
-        self.__board.sort(key = lambda entry: entry.get_score(), reverse = True)
+        self.__board.sort(key=lambda entry: entry.get_score(), reverse=True)
 
 class LeaderboardEntry(object):
     def __init__(self, identity, name, score):
@@ -85,7 +85,7 @@ class Keyboard(object):
         "enter": pygame.K_KP_ENTER
     }
 
-    def __init__(self, screen, surface, player, fonts, font_color, columns = 10):
+    def __init__(self, screen, surface, player, fonts, font_color, columns=10):
         self.__screen = screen
         self.__surface = surface
         self.__player = player
@@ -247,7 +247,7 @@ class CoordLetter(pygame.sprite.Sprite):
         self.__font_color = font_color
 
         self.image = self.__font.render(self.__symbol, True, self.__font_color)
-        self.rect = self.image.get_rect(topleft = start_topleft)
+        self.rect = self.image.get_rect(topleft=start_topleft)
 
         self.rect.move_ip(self.__column * LETTER_GAP, self.__row * LETTER_GAP)
 
@@ -262,7 +262,7 @@ class Cursor(pygame.sprite.Sprite):
         self.image = pygame.Surface((initial_width, 3))
         self.image.fill(WHITE)
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
-        self.rect = self.image.get_rect(x = 0, y = 0)
+        self.rect = self.image.get_rect(x=0, y=0)
 
         self.__initial_x = initial_x
         self.__initial_y = initial_y + LETTER_GAP

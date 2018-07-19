@@ -18,7 +18,7 @@ from in_game.play_area.sprites.score import Score
 from leaderboard import Keyboard
 
 class GroupSingleAnyRect(pygame.sprite.GroupSingle):
-    def __init__(self, sprite = None):
+    def __init__(self, sprite=None):
         super(GroupSingleAnyRect, self).__init__(sprite)
 
     def draw(self, surface, rect):
@@ -66,9 +66,9 @@ class PlayArea(object):
             screen.add_event_handler(event_handler)
 
         block_rect = surface.get_rect(
-            topleft = (PlayArea.LEFT_MARGIN, PlayArea.TOP_MARGIN),
-            width = surface.get_width() - PlayArea.LEFT_MARGIN,
-            height = surface.get_height() - PlayArea.TOP_MARGIN)
+            topleft=(PlayArea.LEFT_MARGIN, PlayArea.TOP_MARGIN),
+            width=surface.get_width() - PlayArea.LEFT_MARGIN,
+            height=surface.get_height() - PlayArea.TOP_MARGIN)
         block_surface = surface.subsurface(block_rect)
         self.__block_area = BlockArea(self, block_surface, fonts, images, sounds, player)
 
