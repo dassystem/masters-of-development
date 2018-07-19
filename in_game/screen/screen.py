@@ -1,8 +1,8 @@
 from colors import BLACK, GREEN, RED
 from in_game.play_area.play_area import PlayArea
 from in_game.screen import InGameScreenTimerElapsedEventHandler
-from in_game.screen.joystick  import ScreenJoystickEventHandler
-from in_game.screen.keyboard  import ScreenKeyboardEventHandler
+from in_game.screen.joystick import ScreenJoystickEventHandler
+from in_game.screen.keyboard import ScreenKeyboardEventHandler
 from leaderboard import INSTANCE as LEADERBOARD, MAX_ENTRIES
 from screens.base import BaseScreen
 from utils.timer import FontSpriteTimer
