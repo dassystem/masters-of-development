@@ -233,7 +233,7 @@ class PlayArea(object):
 
             score_string = str(self.get_player().get_score())
             score_size = self.__fonts["big"].size(score_string)
-            initial_pos = (426 - score_size[0]  // 2, 604 - score_size[1] // 2)
+            initial_pos = (426 - score_size[0] // 2, 604 - score_size[1] // 2)
             self.__game_over_score.add(TextSprite(initial_pos, score_string, self.__fonts["big"], score_color))
 
             self.get_screen().set_keyboard_states()
