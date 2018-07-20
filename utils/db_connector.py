@@ -3,12 +3,12 @@ import sqlite3
 
 
 class DbConnector():
-    def __init__(self, path):
-        self.__path = path
+    def __init__(self, path: str):
+        self.__path: str = path
         self.__conn = None
-        self.__cursor = None
+        self.__cursor: sqlite3.Cursor = None
 
-    def connect(self):
+    def connect(self) -> None:
         self.__conn = sqlite3.connect(self.__path)
         self.__cursor = self.__conn.cursor()
         self.__cursor.execute(
@@ -20,20 +20,20 @@ class DbConnector():
         )
         self.__conn.commit()
 
-    def execute(self, query):
+    def execute(self, query: str) -> None:
         return self.__cursor.execute(query)
 
-    def execute_with_parameter(self, query, parameter):
+    def execute_with_parameter(self, query: str, parameter: tuple) -> None:
         return self.__cursor.execute(query, parameter)
 
-    def execute_many(self, query, parameters):
+    def execute_many(self, query: str, parameters: tuple) -> None:
         return self.__cursor.executemany(query, parameters)
 
-    def get_cursor(self):
+    def get_cursor(self) -> sqlite3.Cursor:
         return self.__cursor
 
-    def commit(self):
+    def commit(self) -> None:
         self.__conn.commit()
 
-    def close_connection(self):
+    def close_connection(self) -> None:
         self.__conn.close()

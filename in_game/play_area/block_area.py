@@ -6,12 +6,25 @@ from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.bug import Bug
 from in_game.play_area.sprites.coin import Coin
+from in_game.play_area.sprites.debug_info import DebugInfo
+from in_game.play_area.sprites.player import Player
 from in_game.play_area.sprites.power_up_jump import PowerUpJump
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
+from pygame import Rect, Surface
+from pygame.font import Font
+from pygame.mixer import Sound
+from typing import Dict
 
 
 class BlockArea(object):
-    def __init__(self, play_area, surface, fonts, images, sounds, player):
+    def __init__(
+            self,
+            play_area: "in_game.play_area.play_area.PlayArea",
+            surface: Surface,
+            fonts: Dict[str, Font],
+            images: Dict[str, Surface],
+            sounds: Dict[str, Sound],
+            player: Player) -> None:
         self.__play_area = play_area
         self.__surface = surface
         self.__fonts = fonts
@@ -27,7 +40,7 @@ class BlockArea(object):
         # pass a copy of the surface rect to the player so that the player can't mess up with the surface
         player.set_surface_rect(surface.get_rect().copy())
 
-    def reset(self):
+    def reset(self) -> None:
         self.__level = 0
 
         self.get_player().reset()
@@ -40,7 +53,7 @@ class BlockArea(object):
 
         self.__surface.fill(DARKER_GRAY)
 
-    def __generate_blocks(self):
+    def __generate_blocks(self) -> None:
         if len(self.__blocks) == 0:
             self.__generate_base_block()
 
@@ -115,7 +128,7 @@ class BlockArea(object):
                 power_up = PowerUpShield(self.__images, new_block, self)
                 self.__block_items.add(power_up)
 
-    def __generate_base_block(self):
+    def __generate_base_block(self) -> None:
         baseBlock = Block(
             self.__fonts["big"],
             0,  # level
@@ -130,7 +143,7 @@ class BlockArea(object):
 
         self.__blocks.add(baseBlock)
 
-    def update(self, seconds):
+    def update(self, seconds: int) -> None:
         self.__blocks.clear(self.__surface, clear_callback)
         self.__block_items.clear(self.__surface, clear_callback)
         self.__player.clear(self.__surface, clear_callback)
@@ -149,7 +162,7 @@ class BlockArea(object):
         self.__block_items.draw(self.__surface)
         self.__player.draw(self.__surface)
 
-    def __scroll_screen(self, seconds):
+    def __scroll_screen(self, seconds: int) -> None:
         player_rect = self.__player.sprite.rect
 
         if player_rect.top <= self.__surface.get_height() // 2:
@@ -159,7 +172,7 @@ class BlockArea(object):
             self.__block_items.update()
             self.get_play_area().scroll(seconds)
 
-    def __detect_block_collision(self):
+    def __detect_block_collision(self) -> None:
         collided_blocks = pygame.sprite.spritecollide(
             self.get_player(), self.__blocks, False, detect_player_block_collide
         )
@@ -167,23 +180,23 @@ class BlockArea(object):
         for block in collided_blocks:
             block.on_collide(self.get_player(), self.__play_area.get_score())
 
-    def __detect_block_item_collision(self):
+    def __detect_block_item_collision(self) -> None:
         collided_items = pygame.sprite.spritecollide(self.get_player(), self.__block_items, True)
 
         for collided_item in collided_items:
             collided_item.on_collide(self.get_player(), self.__play_area.get_score())
 
-    def get_player(self):
+    def get_player(self) -> Player:
         return self.__player.sprite
 
-    def get_play_area(self):
+    def get_play_area(self) -> "in_game.play_area.play_area.PlayArea":
         return self.__play_area
 
-    def __render_debug_info(self, debug_info):
+    def __render_debug_info(self, debug_info: DebugInfo) -> None:
         return self.__font.render(debug_info, False, self.__color)
 
 
-def detect_player_block_collide(player, block):
+def detect_player_block_collide(player: Player, block: Block) -> bool:
     collided = False
 
     if player.rect.colliderect(block.rect):
@@ -195,6 +208,6 @@ def detect_player_block_collide(player, block):
     return collided
 
 
-def clear_callback(surface, rect):
+def clear_callback(surface: Surface, rect: Rect) -> None:
     """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""
     surface.fill(DARKER_GRAY, rect)

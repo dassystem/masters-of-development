@@ -1,11 +1,14 @@
 import pygame
 
 from colors import BACKGROUND_COLOR
+from pygame.font import Font
+from pygame.sprite import Sprite
+from typing import Dict
 
 
-class DebugInfo(pygame.sprite.Sprite):
+class DebugInfo(Sprite):
     """A sprite representing an area with some debug infos. Toggled by pressing i."""
-    def __init__(self, play_area, fonts):
+    def __init__(self, play_area: "in_game.play_area.play_area.PlayArea", fonts: Dict[str, Font]):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(DebugInfo, self).__init__()
         self.__play_area = play_area
@@ -14,7 +17,7 @@ class DebugInfo(pygame.sprite.Sprite):
         self.__font = fonts["micro"]
         self.__color = pygame.Color(0, 255, 0)
 
-    def update(self, seconds):
+    def update(self, seconds: int) -> None:
         """Updates the debug info. Does nothing if not visible.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
@@ -77,7 +80,7 @@ class DebugInfo(pygame.sprite.Sprite):
         for i, debug_surface in enumerate(debug_surfaces):
             self.image.blit(debug_surface, (0, i * height))
 
-    def __remove_whitespace(self, name):
+    def __remove_whitespace(self, name: str) -> None:
         """Remove unneccessary whitespaces (for the joystick name)."""
         whitespaces = 0
         new_name = ""
@@ -93,10 +96,10 @@ class DebugInfo(pygame.sprite.Sprite):
 
         return new_name
 
-    def switch_visibility(self):
+    def switch_visibility(self) -> None:
         """Switches debug info visibility on/off."""
         self.__visible = not self.__visible
 
-    def is_visible(self):
+    def is_visible(self) -> bool:
         """Checks if the debug info is visible."""
         return self.__visible

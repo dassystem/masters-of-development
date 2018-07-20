@@ -1,10 +1,13 @@
-import pygame
+from pygame.color import Color
+from pygame.font import Font
+from pygame.sprite import Sprite
+from typing import Tuple
 
 
-class TextSprite(pygame.sprite.Sprite):
+class TextSprite(Sprite):
     render_cache = {}
 
-    def __init__(self, initial_pos, text, font, font_color):
+    def __init__(self, initial_pos: Tuple[int, int], text: str, font: Font, font_color: Color) -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(TextSprite, self).__init__()
 
@@ -18,7 +21,7 @@ class TextSprite(pygame.sprite.Sprite):
 
         self._dirty = False
 
-    def __render(self, text, font, font_color):
+    def __render(self, text: str, font: Font, font_color: Color) -> None:
         key = (text, font, font_color.normalize())
 
         if key in TextSprite.render_cache:
@@ -29,7 +32,7 @@ class TextSprite(pygame.sprite.Sprite):
 
         return surface
 
-    def update(self, new_text):
+    def update(self, new_text: str) -> None:
         self._dirty = self._text != new_text
 
         if self._dirty:

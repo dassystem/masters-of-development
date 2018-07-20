@@ -1,23 +1,28 @@
 import keyword
-import pygame
 import random
 import re
 import string
 
 from colors import DARKER_GRAY, LIGHT_GRAY, WHITE
 from constants import PIXEL_PER_SECOND
+from in_game.play_area.sprites.score import Score
+from pygame import Rect, Surface
+from pygame.color import Color
+from pygame.font import Font
+from pygame.sprite import Sprite
+from typing import Dict, List, Tuple
 
 
-class Block(pygame.sprite.Sprite):
+class Block(Sprite):
     """A sprite representing a block. Contains the block level."""
-    BLOCK_WIDTH = 32
-    BLOCK_HEIGHT = 32
+    BLOCK_WIDTH: int = 32
+    BLOCK_HEIGHT: int = 32
 
-    KEYWORD_COLOR = pygame.Color(204, 108, 29)
-    NAME_COLOR = pygame.Color(100, 220, 242)
-    FUNCTION_COLOR = pygame.Color(164, 231, 33)
+    KEYWORD_COLOR: Color = Color(204, 108, 29)
+    NAME_COLOR: Color = Color(100, 220, 242)
+    FUNCTION_COLOR: Color = Color(164, 231, 33)
 
-    words = {
+    words: Dict[int, List[str]] = {
         2: ["as", "if", "in", "is", "or"],
         3: ["and", "def", "del", "for", "not"],
         4: ["from", "pass", "None", "True", "try:", "with"],
@@ -37,9 +42,12 @@ class Block(pygame.sprite.Sprite):
         18: ["def __str__(self):", "s.format(\"0:d\", i)", "def f(): return 42", "f = 9 * c / 5 + 32"]
     }
 
-    operators = ["=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"]
+    operators: List[str] = [
+        "=", "==", ">=", "<=", "+=", "-=", "*=", "%", "-", "+", "<", ">", "(", ")", "[", "]", "{", "}"
+    ]
 
-    def __init__(self, font, level, x, y, width=BLOCK_WIDTH, height=BLOCK_HEIGHT):
+    def __init__(
+            self, font: Font, level: int, x: int, y: int, width: int=BLOCK_WIDTH, height: int=BLOCK_HEIGHT) -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Block, self).__init__()
 
@@ -91,7 +99,13 @@ class Block(pygame.sprite.Sprite):
         #     self.__level, self.image, self.rect, self.__line)
         # )
 
-    def __inspect_line(self, line, separator, global_parts, x, override_color=None):
+    def __inspect_line(
+            self,
+            line: str,
+            separator: str,
+            global_parts: List[Tuple[Rect, Surface]],
+            x: int,
+            override_color: Color=None) -> None:
         split = line.split(separator)
 
         for i, s in enumerate(split):
@@ -140,21 +154,21 @@ class Block(pygame.sprite.Sprite):
 
         return x
 
-    def __render_part(self, s, color, x):
+    def __render_part(self, s: str, color: Color, x: int) -> Tuple[Rect, Surface]:
         part_image = self.__font.render(s, True, color)
         part_rect = part_image.get_rect().copy()
         part_rect.x += x
 
         return (part_rect, part_image)
 
-    def get_level(self):
+    def get_level(self) -> int:
         """Gets the level of this block. Used to calculate the score when a player reaches a higher block"""
         return self.__level
 
-    def add_item(self, item):
+    def add_item(self, item: "in_game.play_area.sprites.item.Item") -> None:
         self.__item = item
 
-    def update(self, scroll_velocity, surface_height, seconds):
+    def update(self, scroll_velocity: int, surface_height: int, seconds: int) -> None:
         """Updates the block for moving down while scrolling the play area. Kills itself if moving out of surface.
 
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
@@ -165,7 +179,7 @@ class Block(pygame.sprite.Sprite):
         if self.rect.top >= surface_height:
             self.kill()
 
-    def kill(self):
+    def kill(self) -> None:
         """Kills any score item.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.kill
         """
@@ -174,7 +188,7 @@ class Block(pygame.sprite.Sprite):
 
         super().kill()
 
-    def on_collide(self, player, score):
+    def on_collide(self, player: "in_game.play_area.sprites.player.Player", score: Score) -> None:
         uplevel = player.set_on_block(self)
 
         if uplevel > 0:

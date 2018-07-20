@@ -5,19 +5,27 @@ import utils.db_connector
 
 from colors import DARKER_GRAY, WHITE
 from commons.text_sprite import TextSprite
+from pygame import Surface
+from pygame.color import Color
+from pygame.event import Event
+from pygame.font import Font
+from pygame.joystick import Joystick
+from pygame.sprite import Sprite
+from typing import Dict, List, Tuple
 
-LETTER_GAP = 30
-MAX_ENTRIES = 5
+
+LETTER_GAP: int = 30
+MAX_ENTRIES: int = 5
 
 
 class Leaderboard(object):
-    def __init__(self):
+    def __init__(self) -> None:
         self.__db_connector = utils.db_connector.DbConnector("assets/leaderboard.db")
         self.__db_connector.connect()
 
         self.__init_board()
 
-    def __init_board(self):
+    def __init_board(self) -> None:
         c = self.__db_connector.get_cursor()
 
         self.__board = []
@@ -25,13 +33,13 @@ class Leaderboard(object):
         for row in c.execute("SELECT id, name, score FROM leaderboard ORDER BY score DESC"):
             self.__board.append(LeaderboardEntry(row[0], row[1], row[2]))
 
-    def get_count(self):
+    def get_count(self) -> int:
         return len(self.__board)
 
-    def get_entries(self):
+    def get_entries(self)-> Tuple["LeaderboardEntry"]:
         return tuple(self.__board)
 
-    def add_entry(self, player_info):
+    def add_entry(self, player_info: Tuple[str, int]) -> None:
         if len(self.__board) >= MAX_ENTRIES:
             last_entry = self.__board[-1]
 
@@ -52,22 +60,22 @@ class Leaderboard(object):
 
 
 class LeaderboardEntry(object):
-    def __init__(self, identity, name, score):
+    def __init__(self, identity: int, name: str, score: int) -> None:
         self.__id = identity
         self.__name = name
         self.__score = score
 
-    def get_id(self):
+    def get_id(self) -> int:
         return self.__id
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.__name
 
-    def get_score(self):
+    def get_score(self) -> int:
         return self.__score
 
 
-INSTANCE = Leaderboard()
+INSTANCE: Leaderboard = Leaderboard()
 
 
 class Keyboard(object):
@@ -89,7 +97,14 @@ class Keyboard(object):
         "enter": pygame.K_KP_ENTER
     }
 
-    def __init__(self, screen, surface, player, fonts, font_color, columns=10):
+    def __init__(
+            self,
+            screen: "screens.base.BaseScreen",
+            surface: Surface,
+            player: "in_game.play_area.sprites.player.Player",
+            fonts: Dict[str, Font],
+            font_color: Color,
+            columns: int=10) -> None:
         self.__screen = screen
         self.__surface = surface
         self.__player = player
@@ -107,7 +122,7 @@ class Keyboard(object):
         self.__init_hints()
         self.__init_event_listeners()
 
-    def __init_letters(self):
+    def __init_letters(self) -> None:
         self.__letters = pygame.sprite.OrderedUpdates()
 
         letters = []
@@ -123,7 +138,7 @@ class Keyboard(object):
             coord_letter = CoordLetter(letter, row, column, (x, y), self.__fonts["medium"], self.__font_color)
             self.__letters.add(coord_letter)
 
-    def __init_cursor(self):
+    def __init_cursor(self) -> None:
         self.__cursor = pygame.sprite.GroupSingle()
 
         first_letter = self.get_letters()[0]
@@ -135,7 +150,7 @@ class Keyboard(object):
         )
         self.__cursor.add(cursor)
 
-    def __init_name_display(self):
+    def __init_name_display(self) -> None:
         self.__name_display = pygame.sprite.GroupSingle()
 
         first_letter = self.get_letters()[0]
@@ -146,7 +161,7 @@ class Keyboard(object):
         name_display = NameDisplay((x, y), self.__fonts["medium"], self.__font_color)
         self.__name_display.add(name_display)
 
-    def __init_hints(self):
+    def __init_hints(self) -> None:
         self.__hints = pygame.sprite.OrderedUpdates()
 
         first_letter = self.get_letters()[0]
@@ -163,7 +178,7 @@ class Keyboard(object):
         hint_2 = TextSprite((x, y), "or → to confirm your name", self.__fonts["small"], self.__font_color)
         self.__hints.add(hint_2)
 
-    def __init_event_listeners(self):
+    def __init_event_listeners(self) -> None:
         self.__event_handlers = []
 
         if self.__player.get_joystick() is not None:
@@ -176,7 +191,7 @@ class Keyboard(object):
 
         self.__event_handlers.append(keyboard_event_handler)
 
-    def render(self):
+    def render(self) -> None:
         if not self.__active:
             return
 
@@ -185,11 +200,11 @@ class Keyboard(object):
         self.__cursor.draw(self.__surface)
         self.__hints.draw(self.__surface)
 
-    def reset(self):
+    def reset(self) -> None:
         self.get_cursor().reset()
         self.get_name_display().reset()
 
-    def enter_letter(self, row, column):
+    def enter_letter(self, row: int, column: int) -> None:
         index = row * self.__columns + column
         coord_letter = self.get_letters()[index]
         symbol = coord_letter.get_symbol()
@@ -206,14 +221,14 @@ class Keyboard(object):
             new_name = self.get_name_display().get_name() + symbol
             self.get_name_display().update(new_name)
 
-    def delete_letter(self):
+    def delete_letter(self) -> None:
         current_name = self.get_name_display().get_name()
 
         if len(current_name) > 0:
             new_name = current_name[:-1]
             self.get_name_display().update(new_name)
 
-    def save(self):
+    def save(self) -> None:
         self.__active = False
         self.get_cursor().set_active(False)
 
@@ -221,28 +236,35 @@ class Keyboard(object):
 
         INSTANCE.add_entry(player_info)
 
-    def get_name_display(self):
+    def get_name_display(self) -> Sprite:
         return self.__name_display.sprite
 
-    def get_letters(self):
+    def get_letters(self) -> List[Sprite]:
         return self.__letters.sprites()
 
-    def get_cursor(self):
+    def get_cursor(self) -> Sprite:
         return self.__cursor.sprite
 
-    def is_active(self):
+    def is_active(self) -> bool:
         return self.__active
 
-    def set_active(self, active):
+    def set_active(self, active: bool) -> None:
         self.__active = active
         self.get_cursor().set_active(active)
 
-    def get_event_handlers(self):
+    def get_event_handlers(self) -> List["screens.baseBaseScreenEventHandler"]:
         return self.__event_handlers
 
 
-class CoordLetter(pygame.sprite.Sprite):
-    def __init__(self, symbol, row, column, start_topleft, font, font_color):
+class CoordLetter(Sprite):
+    def __init__(
+            self,
+            symbol: str,
+            row: int,
+            column: int,
+            start_topleft: Tuple[int, int],
+            font: Font,
+            font_color: Color) -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(CoordLetter, self).__init__()
 
@@ -257,12 +279,19 @@ class CoordLetter(pygame.sprite.Sprite):
 
         self.rect.move_ip(self.__column * LETTER_GAP, self.__row * LETTER_GAP)
 
-    def get_symbol(self):
+    def get_symbol(self) -> str:
         return self.__symbol
 
 
-class Cursor(pygame.sprite.Sprite):
-    def __init__(self, keyboard, initial_x, initial_y, initial_width, rows, columns):
+class Cursor(Sprite):
+    def __init__(
+            self,
+            keyboard: Keyboard,
+            initial_x: int,
+            initial_y: int,
+            initial_width: int,
+            rows: int,
+            columns: int) -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Cursor, self).__init__()
 
@@ -287,14 +316,14 @@ class Cursor(pygame.sprite.Sprite):
         self.__keyboard = keyboard
         self.__columns = columns
 
-    def reset(self):
+    def reset(self) -> None:
         self.rect.x = self.__initial_x
         self.rect.y = self.__initial_y
         self.__current_row = 0
         self.__current_column = 0
         self.__active = False
 
-    def move_cursor_right(self):
+    def move_cursor_right(self) -> None:
         if not self.__active:
             return
 
@@ -302,7 +331,7 @@ class Cursor(pygame.sprite.Sprite):
             self.__current_column += 1
             self.rect.x = self.__initial_x + self.__current_column * LETTER_GAP
 
-    def move_cursor_left(self):
+    def move_cursor_left(self) -> None:
         if not self.__active:
             return
 
@@ -310,7 +339,7 @@ class Cursor(pygame.sprite.Sprite):
             self.__current_column -= 1
             self.rect.x = self.__initial_x + self.__current_column * LETTER_GAP
 
-    def move_cursor_up(self):
+    def move_cursor_up(self) -> None:
         if not self.__active:
             return
 
@@ -318,7 +347,7 @@ class Cursor(pygame.sprite.Sprite):
             self.__current_row -= 1
             self.rect.y = self.__initial_y + self.__current_row * LETTER_GAP
 
-    def move_cursor_down(self):
+    def move_cursor_down(self) -> None:
         if not self.__active:
             return
 
@@ -326,22 +355,22 @@ class Cursor(pygame.sprite.Sprite):
             self.__current_row += 1
             self.rect.y = self.__initial_y + self.__current_row * LETTER_GAP
 
-    def set_selected(self, symbol):
+    def set_selected(self, symbol: str) -> None:
         if not self.__active:
             return
 
         self.symbol = symbol
 
-    def enter_letter(self):
+    def enter_letter(self) -> None:
         if not self.__active:
             return
 
         self.__keyboard.enter_letter(self.__current_row, self.__current_column)
 
-    def get_active_status(self):
+    def get_active_status(self) -> bool:
         return self.__active
 
-    def set_active(self, active):
+    def set_active(self, active: bool) -> None:
         self.__active = active
 
         if self.__active:
@@ -351,55 +380,55 @@ class Cursor(pygame.sprite.Sprite):
 
 
 class NameDisplay(TextSprite):
-    def __init__(self, initial_pos, font, font_color):
+    def __init__(self, initial_pos: Tuple[int, int], font: Font, font_color: Color) -> None:
         self.__name = ""
         # IMPORTANT: call the parent class (Sprite) constructor
         super(NameDisplay, self).__init__(initial_pos, self.__name, font, font_color)
 
-    def update(self, name):
+    def update(self, name: str) -> None:
         self.__name = name
         super().update("Your name: {0}".format(self.__name))
 
-    def reset(self):
+    def reset(self) -> None:
         self.update("")
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.__name
 
 
 class JoystickEventHandler(screens.base.BaseJoystickEventHandler):
-    def __init__(self, screen, keyboard, joystick):
+    def __init__(self, screen: "screens.base.BaseScreen", keyboard: Keyboard, joystick: Joystick) -> None:
         super(JoystickEventHandler, self).__init__(screen, joystick)
         self.__keyboard = keyboard
 
-    def can_handle(self, event):
+    def can_handle(self, event: Event) -> bool:
         return super().can_handle(event) and self.__keyboard.is_active()
 
-    def _on_up(self, event):
+    def _on_up(self, event: Event) -> None:
         self.__keyboard.get_cursor().move_cursor_up()
 
-    def _on_down(self, event):
+    def _on_down(self, event: Event) -> None:
         self.__keyboard.get_cursor().move_cursor_down()
 
-    def _on_left(self, event):
+    def _on_left(self, event: Event) -> None:
         self.__keyboard.get_cursor().move_cursor_left()
 
-    def _on_right(self, event):
+    def _on_right(self, event: Event) -> None:
         self.__keyboard.get_cursor().move_cursor_right()
 
-    def _on_button_down(self, event):
+    def _on_button_down(self, event: Event) -> None:
         self.__keyboard.get_cursor().enter_letter()
 
 
 class KeyboardEventHandler(screens.base.BaseKeyboardEventHandler):
-    def __init__(self, screen, keyboard, key_mappings):
+    def __init__(self, screen: "screens.base.BaseScreen", keyboard: Keyboard, key_mappings: Dict[str, int]) -> None:
         super(KeyboardEventHandler, self).__init__(screen, key_mappings, [pygame.KEYDOWN])
         self.__keyboard = keyboard
 
-    def can_handle(self, event):
+    def can_handle(self, event: Event) -> bool:
         return super().can_handle(event) and self.__keyboard.is_active()
 
-    def handle_event(self, event):
+    def handle_event(self, event: Event) -> None:
         if self._key_mappings["up"] == event.key:
             self.__keyboard.get_cursor().move_cursor_up()
         elif self._key_mappings["down"] == event.key:

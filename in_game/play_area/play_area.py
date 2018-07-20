@@ -2,27 +2,29 @@ import pygame
 
 from colors import DARK_GRAY, GREEN, RED, WHITE
 from commons.text_sprite import TextSprite
-
 from in_game.play_area.block_area import BlockArea
-
 from in_game.play_area.event_handlers.player_joystick_event_handler import PlayerJoystickEventHandler
 from in_game.play_area.event_handlers.player_keyboard_event_handler import PlayerKeyboardEventHandler
-
 from in_game.play_area.sprites.block import Block
 from in_game.play_area.sprites.debug_info import DebugInfo
 from in_game.play_area.sprites.line_number import LineNumber
+from in_game.play_area.sprites.power_up import PowerUp
 from in_game.play_area.sprites.power_up_jump import PowerUpJump
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
 from in_game.play_area.sprites.score import Score
-
 from leaderboard import Keyboard
+from pygame import Rect, Surface
+from pygame.font import Font
+from pygame.mixer import Sound
+from pygame.sprite import GroupSingle, Sprite
+from typing import Dict, List
 
 
-class GroupSingleAnyRect(pygame.sprite.GroupSingle):
-    def __init__(self, sprite=None):
+class GroupSingleAnyRect(GroupSingle):
+    def __init__(self, sprite: Sprite=None) -> None:
         super(GroupSingleAnyRect, self).__init__(sprite)
 
-    def draw(self, surface, rect):
+    def draw(self, surface: Surface, rect: Rect) -> None:
         sprites = self.sprites()
         surface_blit = surface.blit
         for spr in sprites:
@@ -33,10 +35,10 @@ class GroupSingleAnyRect(pygame.sprite.GroupSingle):
 class PlayArea(object):
     """A area where a player is playing."""
 
-    LEFT_MARGIN = 85
-    TOP_MARGIN = 35
+    LEFT_MARGIN: int = 85
+    TOP_MARGIN: int = 35
 
-    key_mappings = [
+    key_mappings: Dict[str, int] = [
         {
             "up": pygame.K_w,
             "down": pygame.K_s,
@@ -51,7 +53,14 @@ class PlayArea(object):
         }
     ]
 
-    def __init__(self, screen, surface, fonts, sounds, images, player):
+    def __init__(
+            self,
+            screen: "in_game.screen.screen.InGameScreen",
+            surface: Surface,
+            fonts: Dict[str, Font],
+            sounds: Dict[str, Sound],
+            images: Dict[str, Surface],
+            player: "in_game.play_area.sprites.player.Player") -> None:
         self.__screen = screen
         self.__surface = surface
         self.__fonts = fonts
@@ -102,7 +111,7 @@ class PlayArea(object):
             screen, PlayArea.key_mappings[player.get_number() - 1], player)
         screen.add_event_handler(event_handler)
 
-    def reset(self):
+    def reset(self) -> None:
         """Resets the state of the play area so that it can be (re-) used for a new game.
 
            Resets the player and generates new blocks.
@@ -127,7 +136,7 @@ class PlayArea(object):
             pygame.Rect(0, PlayArea.TOP_MARGIN, PlayArea.LEFT_MARGIN, self.__surface.get_height())
         )
 
-    def __generate_line_numbers(self):
+    def __generate_line_numbers(self) -> None:
         new_lines = self.__max_line_numbers - len(self.__line_numbers)
 
         if new_lines <= 0:
@@ -145,14 +154,14 @@ class PlayArea(object):
             self.__line_numbers.add(new_line_number)
             dy -= Block.BLOCK_HEIGHT
 
-    def scroll(self, seconds):
+    def scroll(self, seconds: int) -> None:
         self.__line_numbers.update(self.__scroll_velocity, self.__surface.get_height(), seconds)
 
-    def switch_debug(self):
+    def switch_debug(self) -> None:
         """Switches the debug information on/off."""
         self.__debug_info.sprite.switch_visibility()
 
-    def update(self, seconds):
+    def update(self, seconds: int) -> None:
         """Updates all sprites and draws them on the play area. Scrolls if necessary.
            see also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
@@ -184,7 +193,7 @@ class PlayArea(object):
 
         self.__draw_active_power_ups(self.__player_text.sprite.rect)
 
-    def __add_active_power_ups(self):
+    def __add_active_power_ups(self) -> None:
         player_power_ups = self.get_player().get_power_ups()
 
         if not bool(self.__active_power_up_jump) and PowerUpJump.NAME in player_power_ups:
@@ -199,7 +208,7 @@ class PlayArea(object):
             if len(power_ups) > 0:
                 self.__active_power_up_shield.add(power_ups[0])
 
-    def __draw_active_power_ups(self, text_rect):
+    def __draw_active_power_ups(self, text_rect: Rect) -> None:
         if bool(self.__active_power_up_jump):
             original_rect = self.__active_power_up_jump.sprite.rect
             self.__active_power_up_jump.draw(self.__surface, text_rect.move((original_rect.width + 5) * -2, -4))
@@ -208,7 +217,7 @@ class PlayArea(object):
             original_rect = self.__active_power_up_shield.sprite.rect
             self.__active_power_up_shield.draw(self.__surface, text_rect.move((original_rect.width + 5) * -1, -4))
 
-    def __render_game_over(self):
+    def __render_game_over(self) -> None:
         if self.__game_over_bg is not None and not self.get_screen().all_dead():
             return
 
@@ -249,28 +258,28 @@ class PlayArea(object):
 
         self.__game_over_score.draw(self.__surface)
 
-    def get_player(self):
+    def get_player(self) -> "in_game.play_area.sprites.player.Player":
         return self.__block_area.get_player()
 
-    def get_scroll_velocity(self):
+    def get_scroll_velocity(self) -> int:
         return self.__scroll_velocity
 
-    def get_score(self):
+    def get_score(self) -> Score:
         return self.__score.sprite
 
-    def __get_active_power_ups(self):
+    def __get_active_power_ups(self) -> List[PowerUp]:
         return self.__active_power_ups.sprites()
 
-    def get_screen(self):
+    def get_screen(self) -> "in_game.screen.screen.InGameScreen":
         return self.__screen
 
-    def get_surface(self):
+    def get_surface(self) -> Surface:
         return self.__surface
 
-    def get_keyboard(self):
+    def get_keyboard(self) -> Keyboard:
         return self.__keyboard
 
 
-def fill_with_dark_gray(surface, rect):
+def fill_with_dark_gray(surface: Surface, rect: Rect) -> None:
     """see https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.clear"""
     surface.fill(DARK_GRAY, rect)

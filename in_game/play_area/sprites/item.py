@@ -3,7 +3,7 @@ import random
 
 
 class Item(pygame.sprite.Sprite):
-    def __init__(self, block):
+    def __init__(self, block: "in_game.play_area.sprites.block.Block") -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Item, self).__init__()
         self.__block = block
@@ -22,9 +22,10 @@ class Item(pygame.sprite.Sprite):
 
         self.__block.add_item(self)
 
-    def update(self):
+    def update(self) -> None:
         # items scroll with their block, get killed by their block
         self.rect = self.image.get_rect(bottom=self.__block.rect.top, x=self.rect.x)
 
-    def on_collide(self, player, score):
+    def on_collide(
+            self, player: "in_game.play_area.sprites.player.Player", score: "in_game.play_area.sprites.score.Score"):
         pass

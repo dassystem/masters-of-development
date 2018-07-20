@@ -2,10 +2,13 @@ import pygame
 
 from colors import LIGHT_GRAY
 from constants import PIXEL_PER_SECOND
+from pygame.font import Font
+from pygame.sprite import Sprite
+from typing import Dict
 
 
-class LineNumber(pygame.sprite.Sprite):
-    def __init__(self, number, y, right, fonts):
+class LineNumber(Sprite):
+    def __init__(self, number: int, y: int, right: int, fonts: Dict[str, Font]):
         # IMPORTANT: call the parent class (Sprite) constructor
         super(LineNumber, self).__init__()
 
@@ -20,7 +23,7 @@ class LineNumber(pygame.sprite.Sprite):
         self.rect.right = right
         self.rect.y = y
 
-    def update(self, scroll_velocity, surface_height, seconds):
+    def update(self, scroll_velocity: int, surface_height: int, seconds: int) -> None:
         """Updates the line number for moving down while scrolling the play area. Kills itself if moving out of surface.
 
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
@@ -31,5 +34,5 @@ class LineNumber(pygame.sprite.Sprite):
         if self.rect.top >= surface_height:
             self.kill()
 
-    def get_number(self):
+    def get_number(self) -> int:
         return self.__number

@@ -1,17 +1,30 @@
-import pygame
-
 from constants import PIXEL_PER_SECOND
 from in_game.play_area.sprites.block import Block
+from in_game.play_area.sprites.power_up import PowerUp
 from in_game.play_area.sprites.power_up_jump import PowerUpJump
+from pygame import Rect, Surface
+from pygame.font import Font
+from pygame.joystick import Joystick
+from pygame.mixer import Sound
+from pygame.sprite import Sprite
+from typing import Dict, List
 
 
-class Player(pygame.sprite.Sprite):
+class Player(Sprite):
     """A sprite representing a player."""
-    NORMAL_JUMP_HEIGHT = 10
-    SPEED = 5
-    VELOCITY = 5
+    NORMAL_JUMP_HEIGHT: int = 10
+    SPEED: int = 5
+    VELOCITY: int = 5
 
-    def __init__(self, number, images, gravity, joystick, sounds, fonts, fps):
+    def __init__(
+            self,
+            number: int,
+            images: Dict[str, Surface],
+            gravity: int,
+            joystick: Joystick,
+            sounds: Dict[str, Sound],
+            fonts: Dict[str, Font],
+            fps: int) -> None:
         # IMPORTANT: call the parent class (Sprite) constructor
         super(Player, self).__init__()
 
@@ -25,7 +38,7 @@ class Player(pygame.sprite.Sprite):
         self.__font = fonts["small"]
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         """Resets the player state so that the player can be reused in a new game round."""
         self.__dead = False
         self.__velocity = 0
@@ -47,14 +60,14 @@ class Player(pygame.sprite.Sprite):
         # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect()
 
-    def update(self, seconds):
+    def update(self, seconds: int) -> None:
         """Updates the player state. Does nothing if player is dead.
            See also https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite.update
         """
         if not self.__dead:
             self.__update_alive(seconds)
 
-    def __update_alive(self, seconds):
+    def __update_alive(self, seconds: int) -> None:
         """Updates the player state while he is stil alive."""
         if self.__jumping:
             self.__jump_height = self.__jump_height - 2
@@ -83,17 +96,17 @@ class Player(pygame.sprite.Sprite):
 
         self.__dead = self.__falling and self.rect.top > self.__surface_rect.bottom
 
-    def __move_down(self, seconds):
+    def __move_down(self, seconds: int) -> None:
         """Updates the player state to reflect a down move (aka falling)."""
         self.rect.move_ip(0, self.__velocity * round(PIXEL_PER_SECOND * seconds))
         self.__velocity += self.__gravity
 
-    def __move_up(self, seconds):
+    def __move_up(self, seconds: int) -> None:
         """Updates the player state to reflect a up move (aka jumping)."""
         self.rect.move_ip(0, self.__velocity * round(PIXEL_PER_SECOND * seconds) * -1)
         self.__jump_height = self.__jump_height - 2
 
-    def __move_left(self, seconds):
+    def __move_left(self, seconds: int) -> None:
         """Updates the player state to reflect a move to the left.
            Stops movement if player is on the left edge of the play area.
         """
@@ -103,11 +116,11 @@ class Player(pygame.sprite.Sprite):
             # stop movement at the left edge
             self.stop()
 
-    def __check_left_edge(self, seconds):
+    def __check_left_edge(self, seconds: int) -> None:
         """Checks if the player is not beyond the left edge of the play area."""
         return self.rect.x - self.__speed * round(PIXEL_PER_SECOND * seconds) >= 0
 
-    def __move_right(self, seconds):
+    def __move_right(self, seconds: int) -> None:
         """Updates the player state to reflect a move to the right.
            Stops movement if player is on the right edge of the play area.
         """
@@ -117,12 +130,12 @@ class Player(pygame.sprite.Sprite):
             # stop movement at the right edge
             self.stop()
 
-    def __check_right_edge(self, seconds):
+    def __check_right_edge(self, seconds: int) -> bool:
         """Checks is the player is not beyond the right edge of the play area."""
         new_x = self.__surface_rect.width - self.rect.width - self.__speed * round(PIXEL_PER_SECOND * seconds)
         return self.rect.x <= new_x
 
-    def __check_still_on_block(self):
+    def __check_still_on_block(self) -> None:
         """Checks if the player is still on a block. If not player begins to fall."""
         if self.__on_block is not None:
             if self.rect.left > self.__on_block.rect.right or self.rect.right < self.__on_block.rect.left:
@@ -131,7 +144,7 @@ class Player(pygame.sprite.Sprite):
                 self.__jumping = False
                 self.__velocity = Player.VELOCITY
 
-    def set_on_block(self, block):
+    def set_on_block(self, block: Block) -> None:
         """Sets the block on which the player is standing. Stops falling or jumping.
            Returns the block level improvement needed for score calculation.
         """
@@ -149,28 +162,28 @@ class Player(pygame.sprite.Sprite):
 
         return uplevel
 
-    def move_right(self):
+    def move_right(self) -> None:
         """Marks the player as moving to the right. Update method will apply state changes."""
         if self.__dead:
             return
 
         self.__move = "right"
 
-    def move_left(self):
+    def move_left(self) -> None:
         """Marks the player as moving to the left. Update method will apply state changes."""
         if self.__dead:
             return
 
         self.__move = "left"
 
-    def stop(self):
+    def stop(self) -> None:
         """Stops player movement to left or right.  Update method will apply state changes."""
         if self.__dead:
             return
 
         self.__move = None
 
-    def jump(self):
+    def jump(self) -> None:
         # TODO fix jumping, jumping right now is "teleporting" up then falling, looks/feels bad
         """Marks the player as jumping. Update method will apply state changes."""
         if self.__dead:
@@ -199,63 +212,63 @@ class Player(pygame.sprite.Sprite):
             # go up 3 block heights
             self.rect.y = self.rect.y - go_up
 
-    def set_surface_rect(self, surface_rect):
+    def set_surface_rect(self, surface_rect: Rect) -> None:
         """Sets the rect of the play area surface. Needed for calculations of player state.
            Player MUST NOT update the play area surface!
         """
         self.__surface_rect = surface_rect
 
-    def get_joystick(self):
+    def get_joystick(self) -> Joystick:
         """Gets the joystick assigned to the player, if any."""
         return self.__joystick
 
-    def is_falling(self):
+    def is_falling(self) -> bool:
         """Checks if player is falling."""
         return self.__falling
 
-    def is_jumping(self):
+    def is_jumping(self) -> bool:
         """Checks if player is jumping."""
         return self.__jumping
 
-    def get_jump_height(self):
+    def get_jump_height(self) -> int:
         return self.__jump_height
 
-    def get_speed(self):
+    def get_speed(self) -> int:
         """Gets the current player speed (left or right direction)."""
         return self.__speed
 
-    def get_velocity(self):
+    def get_velocity(self) -> int:
         """Gets the current player velocity (falling speed?)."""
         return self.__velocity
 
-    def is_ready(self):
+    def is_ready(self) -> bool:
         """Checks if the player is ready to begin a new game round."""
         return self.__ready
 
-    def set_ready(self, ready):
+    def set_ready(self, ready: bool) -> None:
         """Marks if the player is ready to begin a new game round."""
         self.__ready = ready
 
-    def is_dead(self):
+    def is_dead(self) -> bool:
         """Checks if the player is dead (game over for him, sorry)."""
         return self.__dead
 
-    def set_dead(self):
+    def set_dead(self) -> None:
         self.__dead = True
 
-    def get_number(self):
+    def get_number(self) -> int:
         """Gets the player numer (1 or 2)."""
         return self.__number
 
-    def get_score(self):
+    def get_score(self) -> int:
         """Gets the current player score (number)."""
         return self.__score
 
-    def set_score(self, score):
+    def set_score(self, score: int) -> None:
         """Sets the current player score (number)."""
         self.__score = score
 
-    def add_power_up(self, power_up):
+    def add_power_up(self, power_up: PowerUp) -> None:
         same_name = None
 
         if power_up.get_name() in self.__power_ups:
@@ -266,10 +279,10 @@ class Player(pygame.sprite.Sprite):
 
         same_name.append(power_up)
 
-    def remove_power_up(self, power_up):
+    def remove_power_up(self, power_up: PowerUp) -> None:
         same_name = self.__power_ups[power_up.get_name()]
 
         same_name.remove(power_up)
 
-    def get_power_ups(self):
+    def get_power_ups(self) -> List[PowerUp]:
         return self.__power_ups

@@ -9,12 +9,17 @@ import utils.joysticks
 from in_game.play_area.sprites.player import Player
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
 from in_game.screen.screen import InGameScreen
+from pygame import Surface
+from pygame.joystick import Joystick
+from pygame.mixer import Sound
+from screens.base import BaseScreen
 from screens.start_screen import StartScreen
+from typing import Dict, List
 
 
 class MastersOfDevelopment(object):
     # width and height = 0 -> current screen resolution
-    def __init__(self, width=0, height=0, flags=0, fps=60):
+    def __init__(self, width: int=0, height: int=0, flags: int=0, fps: int=60) -> None:
         """Initialie pygame, window, background, ...
         """
 
@@ -75,10 +80,10 @@ class MastersOfDevelopment(object):
         self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
         self.__running = True
 
-    def get_screens(self):
+    def get_screens(self) -> List[BaseScreen]:
         return self.__screen_dict.values()
 
-    def change_screen(self, old_screen):
+    def change_screen(self, old_screen: BaseScreen) -> None:
         next_screen = old_screen.get_next_screen()
 
         for screen in self.__screen_dict.values():
@@ -86,7 +91,7 @@ class MastersOfDevelopment(object):
                 next_screen.set_active(True)
                 break
 
-    def __init_fonts(self):
+    def __init_fonts(self) -> None:
         self.__fonts = {}
 
         self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 29)
@@ -94,7 +99,7 @@ class MastersOfDevelopment(object):
         self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
         self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
 
-    def __init_sounds(self):
+    def __init_sounds(self) -> None:
         self.__sounds = {}
 
         self.__sounds["start_game"] = pygame.mixer.Sound("assets/sounds/start_game.wav")
@@ -108,7 +113,7 @@ class MastersOfDevelopment(object):
         for i in range(1, 11):
             self.__sounds[str(i)] = pygame.mixer.Sound("assets/sounds/82986__tim-kahn__countdown-{0:02d}.ogg".format(i))
 
-    def __init_images(self):
+    def __init_images(self) -> None:
         self.__images = {}
 
         self.__images["start_screen_bg"] = self.__load_image("assets/images/start_screen_bg.png")
@@ -136,13 +141,13 @@ class MastersOfDevelopment(object):
         self.__images["bug"] = self.__load_image("assets/images/bug.png")
         self.__images[PowerUpShield.NAME] = self.__load_image("assets/images/armor.png")
 
-    def __load_image(self, filename):
+    def __load_image(self, filename: str) -> Surface:
         return pygame.image.load(filename).convert_alpha()
 
-    def __init_joysticks(self):
+    def __init_joysticks(self) -> None:
         self.__joysticks = utils.joysticks.init_joysticks()
 
-    def __init_players(self):
+    def __init_players(self) -> None:
         self.__players = []
 
         joystick_count = len(self.__joysticks)
@@ -156,10 +161,11 @@ class MastersOfDevelopment(object):
             self.__players.append(
                 self.__init_player(i + 1, self.__images, joystick, self.__sounds))
 
-    def __init_player(self, number, images, joystick, sounds):
+    def __init_player(
+            self, number: int, images: Dict[str, Surface], joystick: Joystick, sounds: Dict[str, Sound]) -> None:
         return Player(number, images, 1, joystick, sounds, self.__fonts, self.__fps)
 
-    def switch_music(self):
+    def switch_music(self) -> None:
         self.__music = not self.__music
 
         if self.__music:
@@ -167,7 +173,7 @@ class MastersOfDevelopment(object):
         else:
             pygame.mixer.music.stop()
 
-    def next_music(self):
+    def next_music(self) -> None:
         if not self.__music:
             return
 
@@ -178,7 +184,7 @@ class MastersOfDevelopment(object):
 
         self.__change_loop()
 
-    def prev_music(self):
+    def prev_music(self) -> None:
         if not self.__music:
             return
 
@@ -189,17 +195,17 @@ class MastersOfDevelopment(object):
 
         self.__change_loop()
 
-    def __change_loop(self):
+    def __change_loop(self) -> None:
         pygame.mixer.music.load("assets/loops/" + self.__loops[self.__current_loop])
         pygame.mixer.music.play(-1)
 
-    def shutdown(self):
+    def shutdown(self) -> None:
         self.__running = False
 
-    def get_players(self):
+    def get_players(self) -> List[Player]:
         return self.__players
 
-    def run(self):
+    def run(self) -> None:
         """The mainloop
         """
 

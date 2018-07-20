@@ -1,17 +1,29 @@
 from colors import BLACK, GREEN, RED
 from in_game.play_area.play_area import PlayArea
+from in_game.play_area.sprites.player import Player
 from in_game.screen import InGameScreenTimerElapsedEventHandler
 from in_game.screen.joystick import ScreenJoystickEventHandler
 from in_game.screen.keyboard import ScreenKeyboardEventHandler
 from leaderboard import INSTANCE as LEADERBOARD, MAX_ENTRIES
+from pygame import Rect, Surface
+from pygame.font import Font
+from pygame.mixer import Sound
 from screens.base import BaseScreen
+from typing import Dict, List
 from utils.timer import FontSpriteTimer
 
 import pygame
 
 
 class InGameScreen(BaseScreen):
-    def __init__(self, surface, fonts, sounds, images, players, seconds=100):
+    def __init__(
+            self,
+            surface: Surface,
+            fonts: Dict[str, Font],
+            sounds: Dict[str, Sound],
+            images: Dict[str, Surface],
+            players: List[Player],
+            seconds: int=100) -> None:
         super(InGameScreen, self).__init__(surface, [])
 
         self.__fonts = fonts
@@ -42,7 +54,7 @@ class InGameScreen(BaseScreen):
 
         self.__init_redraw_areas()
 
-    def __init_play_areas(self, fonts, sounds, images):
+    def __init_play_areas(self, fonts: Dict[str, Font], sounds: Dict[str, Sound], images: Dict[str, Surface]) -> None:
         split_screen = []
         player_1_rect = pygame.Rect(55, 85, 850, 735)
         split_screen.append(self._surface.subsurface(player_1_rect))
@@ -55,7 +67,7 @@ class InGameScreen(BaseScreen):
                 self, subsurface, fonts, sounds, images, self.__players[i])
             self.__play_areas.append(play_area)
 
-    def __init_redraw_areas(self):
+    def __init_redraw_areas(self) -> None:
         self.__redraw_areas = {}
 
         background = self.__images["in_game_screen_bg"]
@@ -65,7 +77,7 @@ class InGameScreen(BaseScreen):
         self.__redraw_areas["head_1"] = (background.subsurface((400, 795, 155, 25)), (400, 795))
         self.__redraw_areas["head_2"] = (background.subsurface((1360, 800, 120, 20)), (1360, 800))
 
-    def render(self, seconds):
+    def render(self, seconds: int) -> None:
         if not self.is_active():
             return
 
@@ -84,11 +96,11 @@ class InGameScreen(BaseScreen):
 
         self.__render_timer()
 
-    def __redraw(self):
+    def __redraw(self) -> None:
         for redraw_area in self.__redraw_areas.values():
             self._surface.blit(redraw_area[0], redraw_area[1])
 
-    def all_dead(self):
+    def all_dead(self) -> None:
         all_dead = True
 
         for player in self.__players:
@@ -96,7 +108,7 @@ class InGameScreen(BaseScreen):
 
         return all_dead
 
-    def set_keyboard_states(self):
+    def set_keyboard_states(self) -> None:
         if not self.__keyboard_states_dirty:
             return
 
@@ -124,12 +136,12 @@ class InGameScreen(BaseScreen):
 
         self.__keyboard_states_dirty = False
 
-    def __render_timer(self):
+    def __render_timer(self) -> None:
         self.__timer.clear(self._surface, fill_with_black)
         self.__timer.update()
         self.__timer.draw(self._surface)
 
-    def set_active(self, active):
+    def set_active(self, active: bool) -> None:
         super().set_active(active)
 
         if self.is_active():
@@ -147,24 +159,24 @@ class InGameScreen(BaseScreen):
             self.get_timer().stop()
             self.remove_event_handler(self.get_timer().get_event_handler())
 
-    def play_ending_sound(self, player):
+    def play_ending_sound(self, player: Player) -> None:
         if not self.__ending_sound_played:
             self.__sounds["player{0:d}wins".format(player.get_number())].play()
             self.__ending_sound_played = True
 
-    def set_ending_sound_played(self):
+    def set_ending_sound_played(self) -> None:
         self.__ending_sound_played = True
 
-    def get_players(self):
+    def get_players(self) -> List[Player]:
         return self.__players
 
-    def get_play_areas(self):
+    def get_play_areas(self) -> List[PlayArea]:
         return self.__play_areas
 
-    def get_timer(self):
+    def get_timer(self) -> FontSpriteTimer:
         """Get the timer out of the sprite group."""
         return self.__timer.sprite
 
 
-def fill_with_black(surface, rect):
+def fill_with_black(surface: Surface, rect: Rect):
     surface.fill(BLACK, rect)
