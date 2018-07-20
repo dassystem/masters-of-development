@@ -58,11 +58,11 @@ class GlobalEventHandler(GlobalBaseEventHandler):
         super(GlobalEventHandler, self).__init__(tarent_jumper)
 
     def __get_event_handlers(self) -> List[GlobalBaseEventHandler]:
-        event_handlers = []
-
-        event_handlers.append(GlobalQuitEventHandler(self._tarent_jumper))
-        event_handlers.append(GlobalSwitchMusicEventHandler(self._tarent_jumper))
-        event_handlers.append(GlobalScreenDeactivateEventHandler(self._tarent_jumper))
+        event_handlers = [
+            GlobalQuitEventHandler(self._tarent_jumper),
+            GlobalSwitchMusicEventHandler(self._tarent_jumper),
+            GlobalScreenDeactivateEventHandler(self._tarent_jumper)
+        ]
 
         for screen in self._tarent_jumper.get_screens():
             for event_handler in screen.get_event_handlers():
