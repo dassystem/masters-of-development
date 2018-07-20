@@ -10,7 +10,7 @@ from pygame import Rect, Surface
 from pygame.color import Color
 from pygame.font import Font
 from pygame.sprite import Sprite
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 
 class Block(Sprite):
@@ -105,7 +105,7 @@ class Block(Sprite):
             separator: str,
             global_parts: List[Tuple[Rect, Surface]],
             x: int,
-            override_color: Color=None) -> None:
+            override_color: Color=None) -> int:
         split = line.split(separator)
 
         for i, s in enumerate(split):

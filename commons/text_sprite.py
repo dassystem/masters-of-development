@@ -1,3 +1,4 @@
+from pygame import Surface
 from pygame.color import Color
 from pygame.font import Font
 from pygame.sprite import Sprite
@@ -21,7 +22,7 @@ class TextSprite(Sprite):
 
         self._dirty = False
 
-    def __render(self, text: str, font: Font, font_color: Color) -> None:
+    def __render(self, text: str, font: Font, font_color: Color) -> Surface:
         key = (text, font, font_color.normalize())
 
         if key in TextSprite.render_cache:
