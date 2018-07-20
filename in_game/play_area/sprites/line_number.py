@@ -1,5 +1,3 @@
-import pygame
-
 from colors import LIGHT_GRAY
 from constants import PIXEL_PER_SECOND
 from pygame.font import Font

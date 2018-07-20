@@ -3,7 +3,6 @@ import pygame
 import random
 import sys
 
-import handlers.global_event_handler
 import utils.joysticks
 
 from handlers.global_event_handler import GlobalEventHandler
@@ -80,7 +79,7 @@ class MastersOfDevelopment(object):
             elif item[0] == "ingame":
                 item[1].set_next_screen(self.__screen_dict["start"])
 
-        self.__event_handler: GlobalEventHandler = handlers.global_event_handler.GlobalEventHandler(self)
+        self.__event_handler: GlobalEventHandler = GlobalEventHandler(self)
         self.__running: bool = True
 
     def get_screens(self) -> List[BaseScreen]:

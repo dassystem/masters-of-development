@@ -10,7 +10,7 @@ from pygame import Rect, Surface
 from pygame.color import Color
 from pygame.font import Font
 from pygame.sprite import Sprite
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 
 class Block(Sprite):

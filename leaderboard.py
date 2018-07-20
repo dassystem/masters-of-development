@@ -36,7 +36,7 @@ class Leaderboard(object):
     def get_count(self) -> int:
         return len(self.__board)
 
-    def get_entries(self)-> Tuple["LeaderboardEntry"]:
+    def get_entries(self) -> Tuple["LeaderboardEntry"]:
         return tuple(self.__board)
 
     def add_entry(self, player_info: Tuple[str, int]) -> None:
