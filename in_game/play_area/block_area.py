@@ -129,7 +129,7 @@ class BlockArea(object):
                 self.__block_items.add(power_up)
 
     def __generate_base_block(self) -> None:
-        baseBlock = Block(
+        base_block = Block(
             self.__fonts["big"],
             0,  # level
             0,  # x
@@ -138,10 +138,10 @@ class BlockArea(object):
             self.__surface.get_height() - 1 - Block.BLOCK_HEIGHT  # height
         )
 
-        baseBlock.rect.x = 0
-        baseBlock.rect.width = self.__surface.get_width()
+        base_block.rect.x = 0
+        v.rect.width = self.__surface.get_width()
 
-        self.__blocks.add(baseBlock)
+        self.__blocks.add(base_block)
 
     def update(self, seconds: int) -> None:
         self.__blocks.clear(self.__surface, clear_callback)
