@@ -15,6 +15,9 @@ class PowerUp(Item):
         self.__block_area = block_area
         self.__active_seconds = active_seconds
 
+        self.__timer = None
+        self.__event_handlers = []
+
         # IMPORTANT: call the parent class (Sprite) constructor
         super(PowerUp, self).__init__(block)
 

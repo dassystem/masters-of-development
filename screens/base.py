@@ -32,6 +32,7 @@ class BaseScreen(object):
         self._surface = surface
         self.__event_handlers = event_handlers
         self.__active = active
+        self.__next_screen = None
 
     def get_event_handlers(self) -> List[BaseScreenEventHandler]:
         return self.__event_handlers

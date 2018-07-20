@@ -315,6 +315,7 @@ class Cursor(Sprite):
         self.__active = True
         self.__keyboard = keyboard
         self.__columns = columns
+        self.symbol = None
 
     def reset(self) -> None:
         self.rect.x = self.__initial_x

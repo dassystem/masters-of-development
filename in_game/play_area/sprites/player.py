@@ -36,7 +36,25 @@ class Player(Sprite):
         self.__joystick = joystick
         self.__sounds = sounds
         self.__font = fonts["small"]
-        self.reset()
+        self.__dead = False
+        self.__velocity = 0
+        self.__falling = False
+        self.__jumping = False
+        self.__on_block = None
+        self.__speed = Player.SPEED
+        self.__initial_jump_height = Player.NORMAL_JUMP_HEIGHT
+        self.__jump_height = self.__initial_jump_height
+        self.__move = None
+        self.__ready = False
+        self.__highest_block_level = 0
+        self.__level = 0
+        self.__score = 0
+        self.__power_ups = {}
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = None
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        self.rect = None
+        self.__surface_rect = None
 
     def reset(self) -> None:
         """Resets the player state so that the player can be reused in a new game round."""
@@ -54,10 +72,7 @@ class Player(Sprite):
         self.__level = 0
         self.__score = 0
         self.__power_ups = {}
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
         self.image = self.__images["in_game_screen_player"]
-
-        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
         self.rect = self.image.get_rect()
 
     def update(self, seconds: int) -> None:

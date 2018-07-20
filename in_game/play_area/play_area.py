@@ -111,6 +111,8 @@ class PlayArea(object):
             screen, PlayArea.key_mappings[player.get_number() - 1], player)
         screen.add_event_handler(event_handler)
 
+        self.__game_over_bg = None
+
     def reset(self) -> None:
         """Resets the state of the play area so that it can be (re-) used for a new game.
 

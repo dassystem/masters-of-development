@@ -54,6 +54,9 @@ class InGameScreen(BaseScreen):
 
         self.__init_redraw_areas()
 
+        self.__ending_sound_played = False
+        self.__keyboard_states_dirty = False
+
     def __init_play_areas(self, fonts: Dict[str, Font], sounds: Dict[str, Sound], images: Dict[str, Surface]) -> None:
         split_screen = []
         player_1_rect = pygame.Rect(55, 85, 850, 735)

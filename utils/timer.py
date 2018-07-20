@@ -58,6 +58,12 @@ class SpriteTimer(Sprite, Timer):
         # IMPORTANT: call the parent class (Sprite) constructor
         Sprite.__init__(self)
 
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute image
+        self.image = None
+
+        # https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group.draw demands an attribute rect
+        self.rect = None
+
         self._pos_dict = pos_dict
         self._sounds = sounds
 

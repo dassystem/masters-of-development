@@ -16,6 +16,8 @@ class DebugInfo(Sprite):
 
         self.__font = fonts["micro"]
         self.__color = pygame.Color(0, 255, 0)
+        self.image = None
+        self.rect = None
 
     def update(self, seconds: int) -> None:
         """Updates the debug info. Does nothing if not visible.
