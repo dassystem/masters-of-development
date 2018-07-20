@@ -159,7 +159,7 @@ class Player(Sprite):
                 self.__jumping = False
                 self.__velocity = Player.VELOCITY
 
-    def set_on_block(self, block: Block) -> None:
+    def set_on_block(self, block: Block) -> int:
         """Sets the block on which the player is standing. Stops falling or jumping.
            Returns the block level improvement needed for score calculation.
         """
@@ -299,5 +299,5 @@ class Player(Sprite):
 
         same_name.remove(power_up)
 
-    def get_power_ups(self) -> List[PowerUp]:
+    def get_power_ups(self) -> Dict[str, List[PowerUp]]:
         return self.__power_ups

@@ -38,7 +38,7 @@ class PlayArea(object):
     LEFT_MARGIN: int = 85
     TOP_MARGIN: int = 35
 
-    key_mappings: Dict[str, int] = [
+    key_mappings: List[Dict[str, int]] = [
         {
             "up": pygame.K_w,
             "down": pygame.K_s,

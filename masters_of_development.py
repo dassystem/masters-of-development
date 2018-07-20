@@ -16,7 +16,7 @@ from pygame.mixer import Sound
 from pygame.time import Clock
 from screens.base import BaseScreen
 from screens.start_screen import StartScreen
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
 
 class MastersOfDevelopment(object):
@@ -82,7 +82,7 @@ class MastersOfDevelopment(object):
         self.__event_handler: GlobalEventHandler = GlobalEventHandler(self)
         self.__running: bool = True
 
-    def get_screens(self) -> List[BaseScreen]:
+    def get_screens(self) -> Iterable[BaseScreen]:
         return self.__screen_dict.values()
 
     def change_screen(self, old_screen: BaseScreen) -> None:

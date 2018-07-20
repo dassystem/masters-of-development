@@ -165,7 +165,7 @@ class ImageSpriteTimer(SpriteTimer):
             self.stop()
             post(Event(ELAPSED_EVENT, {"timer": self}))
 
-    def _update_image(self) -> None:
+    def _update_image(self) -> Surface:
         key = "countdown_{0:d}".format(self._seconds_left)
         return self.__images[key]
 
@@ -180,5 +180,5 @@ class TimerCountdownEventHandler(object):
 
         return self.__timer.is_started()
 
-    def handle_event(self, event: Event) -> bool:
+    def handle_event(self, event: Event) -> None:
         self.__timer.countdown()
