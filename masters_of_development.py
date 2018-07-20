@@ -6,12 +6,15 @@ import sys
 import handlers.global_event_handler
 import utils.joysticks
 
+from handlers.global_event_handler import GlobalEventHandler
 from in_game.play_area.sprites.player import Player
 from in_game.play_area.sprites.power_up_shield import PowerUpShield
 from in_game.screen.screen import InGameScreen
 from pygame import Surface
+from pygame.font import Font
 from pygame.joystick import Joystick
 from pygame.mixer import Sound
+from pygame.time import Clock
 from screens.base import BaseScreen
 from screens.start_screen import StartScreen
 from typing import Dict, List
@@ -30,33 +33,33 @@ class MastersOfDevelopment(object):
         pygame.init()
 
         # pygame.HWSURFACE only for fullscreen...
-        self.__display = pygame.display.set_mode((width, height), flags)
+        self.__display: Surface = pygame.display.set_mode((width, height), flags)
         pygame.display.set_caption("Masters of Development")
 
         pygame.event.set_blocked(pygame.MOUSEMOTION)
 
-        self._width = width
-        self._height = height
+        self._width: int = width
+        self._height: int = height
 
-        self.__loops = os.listdir("assets/loops")
+        self.__loops: List[str] = os.listdir("assets/loops")
         self.__loops.sort()
-        self.__current_loop = 0
+        self.__current_loop: int = 0
 
         pygame.mixer.music.load("assets/loops/" + self.__loops[self.__current_loop])
-        self.__music = False
+        self.__music: bool = False
         self.switch_music()
 
         self.__init_fonts()
         self.__init_sounds()
         self.__init_images()
 
-        self.__clock = pygame.time.Clock()
-        self.__fps = fps
+        self.__clock: Clock = Clock()
+        self.__fps: int = fps
 
         self.__init_joysticks()
         self.__init_players()
 
-        self.__screen_dict = {
+        self.__screen_dict: Dict[str, BaseScreen] = {
             "start": StartScreen(
                 self.__display,
                 self.__fonts,
@@ -77,8 +80,8 @@ class MastersOfDevelopment(object):
             elif item[0] == "ingame":
                 item[1].set_next_screen(self.__screen_dict["start"])
 
-        self.__event_handler = handlers.global_event_handler.GlobalEventHandler(self)
-        self.__running = True
+        self.__event_handler: GlobalEventHandler = handlers.global_event_handler.GlobalEventHandler(self)
+        self.__running: bool = True
 
     def get_screens(self) -> List[BaseScreen]:
         return self.__screen_dict.values()
@@ -92,63 +95,57 @@ class MastersOfDevelopment(object):
                 break
 
     def __init_fonts(self) -> None:
-        self.__fonts = {}
-
-        self.__fonts["big"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 29)
-        self.__fonts["medium"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 24)
-        self.__fonts["small"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 12)
-        self.__fonts["micro"] = pygame.font.Font("assets/fonts/PressStart2P.ttf", 8)
+        self.__fonts: Dict[str, Font] = {
+            "big": Font("assets/fonts/PressStart2P.ttf", 29),
+            "medium": Font("assets/fonts/PressStart2P.ttf", 24),
+            "small": Font("assets/fonts/PressStart2P.ttf", 12),
+            "micro": Font("assets/fonts/PressStart2P.ttf", 8)
+        }
 
     def __init_sounds(self) -> None:
-        self.__sounds = {}
-
-        self.__sounds["start_game"] = pygame.mixer.Sound("assets/sounds/start_game.wav")
-
-        self.__sounds["jump"] = pygame.mixer.Sound("assets/sounds/jump.wav")
-        self.__sounds["score"] = pygame.mixer.Sound("assets/sounds/glass.ogg")
-
-        self.__sounds["player1wins"] = pygame.mixer.Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg")
-        self.__sounds["player2wins"] = pygame.mixer.Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
+        self.__sounds: Dict[str, Sound] = {
+            "start_game": Sound("assets/sounds/start_game.wav"),
+             "jump": Sound("assets/sounds/jump.wav"),
+             "score": Sound("assets/sounds/glass.ogg"),
+             "player1wins": Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg"),
+             "player2wins": Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
+        }
 
         for i in range(1, 11):
             self.__sounds[str(i)] = pygame.mixer.Sound("assets/sounds/82986__tim-kahn__countdown-{0:02d}.ogg".format(i))
 
     def __init_images(self) -> None:
-        self.__images = {}
-
-        self.__images["start_screen_bg"] = self.__load_image("assets/images/start_screen_bg.png")
-        self.__images["start_screen_player_1"] = self.__load_image("assets/images/player_1.png")
-        self.__images["start_screen_player_2"] = self.__load_image("assets/images/player_2.png")
-        self.__images["start_screen_start_normal"] = self.__load_image("assets/images/start_button_normal.png")
-        self.__images["start_screen_start_pushed"] = self.__load_image("assets/images/start_button_pushed.png")
-
-        self.__images["start_screen_countdown_bg"] = self.__load_image("assets/images/countdown_screen_bg.png")
-        self.__images["start_screen_countdown_3"] = self.__load_image("assets/images/countdown_3.png")
-        self.__images["start_screen_countdown_2"] = self.__load_image("assets/images/countdown_2.png")
-        self.__images["start_screen_countdown_1"] = self.__load_image("assets/images/countdown_1.png")
-        self.__images["start_screen_countdown_go"] = self.__load_image("assets/images/countdown_lets_code.png")
-
-        self.__images["in_game_screen_bg"] = self.__load_image("assets/images/game_screen_frame.png")
-        self.__images["in_game_screen_game_over_bg"] = self.__load_image("assets/images/inscreen_game_over.png")
-        self.__images["in_game_screen_win_bg"] = self.__load_image("assets/images/inscreen_you_win.png")
-        self.__images["in_game_screen_loose_bg"] = self.__load_image("assets/images/inscreen_you_lose.png")
-        self.__images["in_game_screen_player"] = self.__load_image("assets/images/game_figure.png")
-        self.__images["in_game_screen_player_jumping"] = self.__load_image("assets/images/game_figure_jump.png")
-
-        self.__images["coin"] = self.__load_image("assets/images/coin.png")
-
-        self.__images["power_up_jump_height"] = self.__load_image("assets/images/jump_power.png")
-        self.__images["bug"] = self.__load_image("assets/images/bug.png")
-        self.__images[PowerUpShield.NAME] = self.__load_image("assets/images/armor.png")
+        self.__images: Dict[str, Surface] = {
+            "start_screen_bg": self.__load_image("assets/images/start_screen_bg.png"),
+             "start_screen_player_1": self.__load_image("assets/images/player_1.png"),
+             "start_screen_player_2": self.__load_image("assets/images/player_2.png"),
+             "start_screen_start_normal": self.__load_image("assets/images/start_button_normal.png"),
+             "start_screen_start_pushed": self.__load_image("assets/images/start_button_pushed.png"),
+             "start_screen_countdown_bg": self.__load_image("assets/images/countdown_screen_bg.png"),
+             "start_screen_countdown_3": self.__load_image("assets/images/countdown_3.png"),
+             "start_screen_countdown_2": self.__load_image("assets/images/countdown_2.png"),
+             "start_screen_countdown_1": self.__load_image("assets/images/countdown_1.png"),
+             "start_screen_countdown_go": self.__load_image("assets/images/countdown_lets_code.png"),
+             "in_game_screen_bg": self.__load_image("assets/images/game_screen_frame.png"),
+             "in_game_screen_game_over_bg": self.__load_image("assets/images/inscreen_game_over.png"),
+             "in_game_screen_win_bg": self.__load_image("assets/images/inscreen_you_win.png"),
+             "in_game_screen_loose_bg": self.__load_image("assets/images/inscreen_you_lose.png"),
+             "in_game_screen_player": self.__load_image("assets/images/game_figure.png"),
+             "in_game_screen_player_jumping": self.__load_image("assets/images/game_figure_jump.png"),
+             "coin": self.__load_image("assets/images/coin.png"),
+             "power_up_jump_height": self.__load_image("assets/images/jump_power.png"),
+             "bug": self.__load_image("assets/images/bug.png"),
+             PowerUpShield.NAME: self.__load_image("assets/images/armor.png")
+        }
 
     def __load_image(self, filename: str) -> Surface:
         return pygame.image.load(filename).convert_alpha()
 
     def __init_joysticks(self) -> None:
-        self.__joysticks = utils.joysticks.init_joysticks()
+        self.__joysticks: List[Joystick] = utils.joysticks.init_joysticks()
 
     def __init_players(self) -> None:
-        self.__players = []
+        self.__players: List[Player] = []
 
         joystick_count = len(self.__joysticks)
 
@@ -162,7 +159,7 @@ class MastersOfDevelopment(object):
                 self.__init_player(i + 1, self.__images, joystick, self.__sounds))
 
     def __init_player(
-            self, number: int, images: Dict[str, Surface], joystick: Joystick, sounds: Dict[str, Sound]) -> None:
+            self, number: int, images: Dict[str, Surface], joystick: Joystick, sounds: Dict[str, Sound]) -> Player:
         return Player(number, images, 1, joystick, sounds, self.__fonts, self.__fps)
 
     def switch_music(self) -> None:
@@ -227,9 +224,9 @@ class MastersOfDevelopment(object):
 
 
 if __name__ == "__main__":
-    width = 1920
-    height = 1080
-    flags = 0  # pygame.NOFRAME
+    width: int = 1920
+    height: int = 1080
+    flags: int = 0  # pygame.NOFRAME
 
     for i, arg in enumerate(sys.argv):
         if arg == "fullscreen":
