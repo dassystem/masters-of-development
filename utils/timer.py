@@ -89,7 +89,7 @@ class SpriteTimer(pygame.sprite.Sprite, Timer):
         self._dirty = True
         Timer.countdown(self)
 
-        if self._seconds_left <= 10 and self._seconds_left > 0:
+        if 10 >= self._seconds_left > 0:
             self._sounds[str(self._seconds_left)].play()
 
 
@@ -131,7 +131,7 @@ class ImageSpriteTimer(SpriteTimer):
         self._dirty = True
         self._seconds_left -= 1
 
-        if self._seconds_left <= 10 and self._seconds_left > 0:
+        if 10 >= self._seconds_left > 0:
             self._sounds[str(self._seconds_left)].play()
 
         if self._seconds_left <= -1:
