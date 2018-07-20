@@ -49,7 +49,7 @@ class BlockArea(object):
         self.__generate_blocks()
 
         self.get_player().set_on_block(self.__blocks.sprites()[0])
-        self.get_player().rect.centerx = (self.__surface.get_rect().centerx)
+        self.get_player().rect.centerx = self.__surface.get_rect().centerx
 
         self.__surface.fill(DARKER_GRAY)
 

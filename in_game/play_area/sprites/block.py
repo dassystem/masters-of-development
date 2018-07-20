@@ -159,7 +159,7 @@ class Block(Sprite):
         part_rect = part_image.get_rect().copy()
         part_rect.x += x
 
-        return (part_rect, part_image)
+        return part_rect, part_image
 
     def get_level(self) -> int:
         """Gets the level of this block. Used to calculate the score when a player reaches a higher block"""
