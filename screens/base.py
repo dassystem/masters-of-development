@@ -1,6 +1,7 @@
 import pygame
 import utils.joysticks
 
+from abc import ABCMeta, abstractmethod
 from pygame import Surface, USEREVENT
 from pygame.event import Event, post
 from pygame.joystick import Joystick
@@ -8,6 +9,8 @@ from typing import Dict, List
 
 
 class BaseScreenEventHandler(object):
+    __metaclass__ = ABCMeta
+
     def __init__(self, screen: "BaseScreen"):
         self.__screen = screen
 
@@ -17,6 +20,7 @@ class BaseScreenEventHandler(object):
     def can_handle(self, event: Event) -> bool:
         return self.__screen.is_active()
 
+    @abstractmethod
     def handle_event(self, event: Event) -> None:
         pass
 
@@ -116,6 +120,8 @@ class BaseJoystickEventHandler(BaseScreenEventHandler):
 
 
 class BaseKeyboardEventHandler(BaseScreenEventHandler):
+    __metaclass__ = ABCMeta
+
     def __init__(
             self,
             screen: BaseScreen,
@@ -131,3 +137,7 @@ class BaseKeyboardEventHandler(BaseScreenEventHandler):
             event.type in self.__supported_events and
             event.key in self._key_mappings.values()
         )
+
+    @abstractmethod
+    def handle_event(self, event: Event) -> None:
+        pass

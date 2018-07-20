@@ -20,7 +20,7 @@ from typing import Dict, List
 class MastersOfDevelopment(object):
     # width and height = 0 -> current screen resolution
     def __init__(self, width: int=0, height: int=0, flags: int=0, fps: int=60) -> None:
-        """Initialie pygame, window, background, ...
+        """Initialize pygame, window, background, ...
         """
 
         random.seed()
