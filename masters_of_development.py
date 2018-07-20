@@ -105,10 +105,10 @@ class MastersOfDevelopment(object):
     def __init_sounds(self) -> None:
         self.__sounds: Dict[str, Sound] = {
             "start_game": Sound("assets/sounds/start_game.wav"),
-             "jump": Sound("assets/sounds/jump.wav"),
-             "score": Sound("assets/sounds/glass.ogg"),
-             "player1wins": Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg"),
-             "player2wins": Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
+            "jump": Sound("assets/sounds/jump.wav"),
+            "score": Sound("assets/sounds/glass.ogg"),
+            "player1wins": Sound("assets/sounds/Player_o-NEOKOLOR-7551_hifi.ogg"),
+            "player2wins": Sound("assets/sounds/Player_t-Neokolor-7552_hifi.ogg")
         }
 
         for i in range(1, 11):
@@ -117,25 +117,25 @@ class MastersOfDevelopment(object):
     def __init_images(self) -> None:
         self.__images: Dict[str, Surface] = {
             "start_screen_bg": self.__load_image("assets/images/start_screen_bg.png"),
-             "start_screen_player_1": self.__load_image("assets/images/player_1.png"),
-             "start_screen_player_2": self.__load_image("assets/images/player_2.png"),
-             "start_screen_start_normal": self.__load_image("assets/images/start_button_normal.png"),
-             "start_screen_start_pushed": self.__load_image("assets/images/start_button_pushed.png"),
-             "start_screen_countdown_bg": self.__load_image("assets/images/countdown_screen_bg.png"),
-             "start_screen_countdown_3": self.__load_image("assets/images/countdown_3.png"),
-             "start_screen_countdown_2": self.__load_image("assets/images/countdown_2.png"),
-             "start_screen_countdown_1": self.__load_image("assets/images/countdown_1.png"),
-             "start_screen_countdown_go": self.__load_image("assets/images/countdown_lets_code.png"),
-             "in_game_screen_bg": self.__load_image("assets/images/game_screen_frame.png"),
-             "in_game_screen_game_over_bg": self.__load_image("assets/images/inscreen_game_over.png"),
-             "in_game_screen_win_bg": self.__load_image("assets/images/inscreen_you_win.png"),
-             "in_game_screen_loose_bg": self.__load_image("assets/images/inscreen_you_lose.png"),
-             "in_game_screen_player": self.__load_image("assets/images/game_figure.png"),
-             "in_game_screen_player_jumping": self.__load_image("assets/images/game_figure_jump.png"),
-             "coin": self.__load_image("assets/images/coin.png"),
-             "power_up_jump_height": self.__load_image("assets/images/jump_power.png"),
-             "bug": self.__load_image("assets/images/bug.png"),
-             PowerUpShield.NAME: self.__load_image("assets/images/armor.png")
+            "start_screen_player_1": self.__load_image("assets/images/player_1.png"),
+            "start_screen_player_2": self.__load_image("assets/images/player_2.png"),
+            "start_screen_start_normal": self.__load_image("assets/images/start_button_normal.png"),
+            "start_screen_start_pushed": self.__load_image("assets/images/start_button_pushed.png"),
+            "start_screen_countdown_bg": self.__load_image("assets/images/countdown_screen_bg.png"),
+            "start_screen_countdown_3": self.__load_image("assets/images/countdown_3.png"),
+            "start_screen_countdown_2": self.__load_image("assets/images/countdown_2.png"),
+            "start_screen_countdown_1": self.__load_image("assets/images/countdown_1.png"),
+            "start_screen_countdown_go": self.__load_image("assets/images/countdown_lets_code.png"),
+            "in_game_screen_bg": self.__load_image("assets/images/game_screen_frame.png"),
+            "in_game_screen_game_over_bg": self.__load_image("assets/images/inscreen_game_over.png"),
+            "in_game_screen_win_bg": self.__load_image("assets/images/inscreen_you_win.png"),
+            "in_game_screen_loose_bg": self.__load_image("assets/images/inscreen_you_lose.png"),
+            "in_game_screen_player": self.__load_image("assets/images/game_figure.png"),
+            "in_game_screen_player_jumping": self.__load_image("assets/images/game_figure_jump.png"),
+            "coin": self.__load_image("assets/images/coin.png"),
+            "power_up_jump_height": self.__load_image("assets/images/jump_power.png"),
+            "bug": self.__load_image("assets/images/bug.png"),
+            PowerUpShield.NAME: self.__load_image("assets/images/armor.png")
         }
 
     def __load_image(self, filename: str) -> Surface:
