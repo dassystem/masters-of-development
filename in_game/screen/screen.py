@@ -23,7 +23,7 @@ class InGameScreen(BaseScreen):
             sounds: Dict[str, Sound],
             images: Dict[str, Surface],
             players: List[Player],
-            seconds: int=100) -> None:
+            seconds: int=60) -> None:
         super(InGameScreen, self).__init__(surface, [])
 
         self.__fonts = fonts
