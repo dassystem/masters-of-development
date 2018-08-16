@@ -1,17 +1,16 @@
 import pygame
-from masters_of_development import MastersOfDevelopment
 from pygame.event import Event
 from screens.base import BaseScreen
 from typing import List
 
 
 class GlobalBaseEventHandler(object):
-    def __init__(self, tarent_jumper: MastersOfDevelopment) -> None:
+    def __init__(self, tarent_jumper: "masters_of_development.MastersOfDevelopment") -> None:
         self._tarent_jumper = tarent_jumper
 
 
 class GlobalQuitEventHandler(GlobalBaseEventHandler):
-    def __init__(self, tarent_jumper: MastersOfDevelopment) -> None:
+    def __init__(self, tarent_jumper: "masters_of_development.MastersOfDevelopment") -> None:
         super(GlobalQuitEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event: Event) -> bool:
@@ -23,7 +22,7 @@ class GlobalQuitEventHandler(GlobalBaseEventHandler):
 
 
 class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
-    def __init__(self, tarent_jumper: MastersOfDevelopment) -> None:
+    def __init__(self, tarent_jumper: "masters_of_development.MastersOfDevelopment") -> None:
         super(GlobalSwitchMusicEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event: Event) -> bool:
@@ -43,7 +42,7 @@ class GlobalSwitchMusicEventHandler(GlobalBaseEventHandler):
 
 
 class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
-    def __init__(self, tarent_jumper: MastersOfDevelopment) -> None:
+    def __init__(self, tarent_jumper: "masters_of_development.MastersOfDevelopment") -> None:
         super(GlobalScreenDeactivateEventHandler, self).__init__(tarent_jumper)
 
     def can_handle(self, event: Event) -> bool:
@@ -54,7 +53,7 @@ class GlobalScreenDeactivateEventHandler(GlobalBaseEventHandler):
 
 
 class GlobalEventHandler(GlobalBaseEventHandler):
-    def __init__(self, tarent_jumper: MastersOfDevelopment):
+    def __init__(self, tarent_jumper: "masters_of_development.MastersOfDevelopment"):
         super(GlobalEventHandler, self).__init__(tarent_jumper)
 
     def __get_event_handlers(self) -> List[GlobalBaseEventHandler]:
