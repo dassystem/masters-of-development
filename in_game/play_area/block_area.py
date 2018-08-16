@@ -139,7 +139,7 @@ class BlockArea(object):
         )
 
         base_block.rect.x = 0
-        v.rect.width = self.__surface.get_width()
+        base_block.rect.width = self.__surface.get_width()
 
         self.__blocks.add(base_block)
 
